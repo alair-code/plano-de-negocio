@@ -851,6 +851,15 @@ if(financialModule){
 
 // Módulo 5 — Planos Complementares
 const complementaryStorageKey="business-plan-builder:complementary:v1";
+const complementaryTabFields={
+  marketing:["marketingObjective","marketingAudience","marketingChannels","marketingOffer","marketingMetrics"],
+  operations:["operationsProcess","operationsResources","operationsSuppliers","operationsCapacity","operationsMetrics"],
+  people:["peopleStructure","peopleSkills","peopleHiring","peopleCulture"],
+  legal:["legalEntity","legalLicenses","legalContracts","legalPrivacy"],
+  it:["itSystems","itData","itSecurity","itRoadmap"]
+};
+const complementaryFieldToTab={};
+Object.entries(complementaryTabFields).forEach(([tab,fields])=>fields.forEach(key=>{complementaryFieldToTab[key]=tab;}));
 const complementaryFields=[...document.querySelectorAll("[data-complementary-field]")].map(el=>el.dataset.complementaryField);
 function getComplementaryProgress(){
   const filled=complementaryFields.filter(key=>{const el=document.querySelector('[data-complementary-field="'+key+'"]');return el&&el.value.trim().length>0;}).length;
@@ -859,8 +868,18 @@ function getComplementaryProgress(){
 function updateComplementaryProgress(){
   const value=getComplementaryProgress();
   const percent=document.getElementById("complementaryProgressPercent"),fill=document.getElementById("complementaryProgressFill"),text=document.getElementById("complementaryProgressText");
-  if(percent)percent.textContent=value+"%"; if(fill)fill.style.width=value+"%";
-  if(text)text.textContent=value===100?"Planos complementares preenchidos. Revise os pontos antes de avançar.":Math.round(complementaryFields.filter(key=>document.querySelector('[data-complementary-field="'+key+'"]')?.value.trim()).length)+" de "+complementaryFields.length+" campos preenchidos.";
+  if(percent)percent.textContent=value+"%";
+  if(fill)fill.style.width=value+"%";
+  const completedTabs=[];
+  Object.entries(complementaryTabFields).forEach(([tab,fields])=>{
+    const filled=fields.filter(key=>document.querySelector('[data-complementary-field="'+key+'"]')?.value.trim()).length;
+    const indicator=document.querySelector('[data-complementary-tab-progress="'+tab+'"]');
+    if(indicator)indicator.textContent=filled+"/"+fields.length;
+    const tabEl=document.querySelector('[data-complementary-tab="'+tab+'"]');
+    if(tabEl)tabEl.classList.toggle("complete",filled===fields.length);
+    if(filled===fields.length)completedTabs.push(tab);
+  });
+  if(text)text.textContent=value===100?"Todos os planos complementares estão preenchidos. Revise os pontos antes de avançar.":completedTabs.length+" de 5 planos concluídos · "+Math.round(complementaryFields.filter(key=>document.querySelector('[data-complementary-field="'+key+'"]')?.value.trim()).length)+" de "+complementaryFields.length+" campos preenchidos.";
 }
 function saveComplementaryDraft(){
   const data={}; complementaryFields.forEach(key=>{const el=document.querySelector('[data-complementary-field="'+key+'"]');if(el)data[key]=el.value;});
@@ -873,14 +892,49 @@ function loadComplementaryDraft(){
 const complementaryModule=document.getElementById("complementares");
 if(complementaryModule){
   loadComplementaryDraft();
-  document.querySelectorAll("[data-complementary-tab]").forEach(tab=>tab.addEventListener("click",()=>{
+  const activateComplementaryTab=(tab,focus=true)=>{
     const key=tab.dataset.complementaryTab;
-    document.querySelectorAll("[data-complementary-tab]").forEach(item=>{const active=item===tab;item.classList.toggle("active",active);item.setAttribute("aria-selected",String(active));});
-    document.querySelectorAll("[data-complementary-panel]").forEach(panel=>panel.classList.toggle("active",panel.dataset.complementaryPanel===key));
+    document.querySelectorAll("[data-complementary-tab]").forEach(item=>{
+      const active=item===tab;
+      item.classList.toggle("active",active);
+      item.setAttribute("aria-selected",String(active));
+      item.tabIndex=active?0:-1;
+    });
+    document.querySelectorAll("[data-complementary-panel]").forEach(panel=>{
+      const active=panel.dataset.complementaryPanel===key;
+      panel.classList.toggle("active",active);
+      panel.hidden=!active;
+    });
+    if(focus)tab.focus();
+  };
+  document.querySelectorAll("[data-complementary-tab]").forEach(tab=>tab.addEventListener("click",()=>activateComplementaryTab(tab,false)));
+  document.querySelectorAll("[data-complementary-tab]").forEach(tab=>tab.addEventListener("keydown",event=>{
+    if(!["ArrowRight","ArrowDown","ArrowLeft","ArrowUp","Home","End"].includes(event.key))return;
+    event.preventDefault();
+    const tabs=[...document.querySelectorAll("[data-complementary-tab]")];
+    const index=tabs.indexOf(tab);
+    const next=event.key==="Home"?0:event.key==="End"?tabs.length-1:(index+(event.key==="ArrowRight"||event.key==="ArrowDown"?1:-1)+tabs.length)%tabs.length;
+    activateComplementaryTab(tabs[next]);
   }));
   complementaryModule.querySelectorAll("[data-complementary-field]").forEach(el=>el.addEventListener("input",()=>{
     updateComplementaryProgress();updateDashboardState();clearTimeout(complementaryModule._saveTimer);complementaryModule._saveTimer=setTimeout(saveComplementaryDraft,250);
   }));
+  document.getElementById("suggestComplementaryContent")?.addEventListener("click",()=>{
+    const source={
+      marketingAudience:document.getElementById("audience")?.value,
+      marketingOffer:document.getElementById("differentials")?.value,
+      operationsProcess:document.getElementById("productsDescription")?.value||document.querySelector('[data-plan-field="productsDescription"]')?.value,
+      operationsSuppliers:document.querySelector('[data-plan-field="operationalProcesses"]')?.value,
+      itSystems:document.querySelector('[data-plan-field="companyModel"]')?.value
+    };
+    let filled=0;
+    Object.entries(source).forEach(([key,value])=>{
+      const field=document.querySelector('[data-complementary-field="'+key+'"]');
+      if(field&&value?.trim()&&!field.value.trim()){field.value=value.trim();filled++;}
+    });
+    updateComplementaryProgress();saveComplementaryDraft();updateDashboardState();
+    showToast(filled?filled+" campo(s) preenchido(s) com dados anteriores.":"Nenhum campo vazio encontrou dados anteriores.");
+  });
   document.getElementById("saveComplementary")?.addEventListener("click",()=>{saveComplementaryDraft();showToast("Planos complementares salvos com sucesso.");});
   document.getElementById("clearComplementary")?.addEventListener("click",()=>{
     if(!confirm("Limpar todo o preenchimento do Módulo 5?"))return;
