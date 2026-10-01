@@ -988,7 +988,8 @@ function setExportStatus(message){const el=document.getElementById("exportStatus
 function downloadBlob(content,type,filename){
   const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
-function updateExportPreview(){const el=document.getElementById("exportDocumentPreview");if(el)el.innerHTML=buildExportHtml().replace(/^[\s\S]*?<body>|<\/body>[\s\S]*$/g,"");}\nfunction buildExportHtml(){
+function updateExportPreview(){const el=document.getElementById("exportDocumentPreview");if(el)el.innerHTML=buildExportHtml().replace(/^[\s\S]*?<body>|<\/body>[\s\S]*$/g,"");}
+function buildExportHtml(){
   const name=document.getElementById("businessName")?.value?.trim()||"Plano de Negócio";
   const rows=getExportRows();
   return "<!doctype html><html lang='pt-BR'><head><meta charset='utf-8'><title>"+escapeExport(name)+"</title><style>body{font-family:Arial,sans-serif;max-width:900px;margin:40px auto;color:#202532}h1{margin-bottom:6px}p{color:#626a78}table{width:100%;border-collapse:collapse;margin-top:24px}td{border:1px solid #ddd;padding:10px;vertical-align:top}td:first-child{width:30%;font-weight:700;background:#f5f5f5}</style></head><body><h1>"+escapeExport(name)+"</h1><p>Plano de negócio — exportado em "+new Date().toLocaleString("pt-BR")+"</p><table>"+rows.map(row=>"<tr><td>"+escapeExport(row[0])+"</td><td>"+escapeExport(row[1]).replace(/\n/g,"<br>")+"</td></tr>").join("")+"</table></body></html>";
