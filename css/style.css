@@ -171,3 +171,10 @@ button { font: inherit; }
 .swot-actions small{color:var(--muted);font-size:9px}
 .environment-actions{margin-top:2px;padding-top:4px}
 @media(max-width:760px){.environment-tabs{position:relative}.swot-actions{align-items:flex-start;flex-direction:column}.swot-actions .button{width:100%;justify-content:center}}
+
+.module-card.completed{border-color:#b9dfd0;box-shadow:0 8px 25px rgba(47,155,115,.08)}
+.module-card.completed .module-status{color:#2f9b73;border-color:#c7e8dc;background:#f3fbf7}
+.module-action{margin-top:auto;padding-top:17px;color:var(--primary);font-size:11px;font-weight:800}
+.porter-insight{display:grid;gap:5px;margin-top:15px;padding:15px 16px;border-radius:13px;border:1px solid #e2e4ff;background:#f8f8ff}
+.porter-insight strong{font-size:11px;color:var(--primary)}
+.porter-insight span{font-size:10px;color:var(--muted);line-height:1.5}
