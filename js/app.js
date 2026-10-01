@@ -16,13 +16,7 @@ window.neonClient = neonClient;
 
 
 
-// Microinterações: menu móvel, estado ativo e feedback de navegação.
-document.querySelectorAll(".nav-item").forEach((item) => {
-  item.addEventListener("click", () => {
-    document.querySelectorAll(".nav-item").forEach((nav) => nav.classList.remove("active"));
-    item.classList.add("active");
-  });
-});
+// Microinterações: feedback visual de navegação sem duplicar a lógica de estado ativo.
 document.querySelectorAll(".module-card a").forEach((link) => {
   link.addEventListener("click", () => {
     const card = link.closest(".module-card");
@@ -49,7 +43,7 @@ function showToast(message) {
   toast.classList.add("show");
   window.setTimeout(() => toast.classList.remove("show"), 3200);
 }
-demoButton?.addEventListener("click", () => showToast("A demonstração será ampliada conforme os módulos forem construídos."));
+demoButton?.addEventListener("click", () => openTutorial("#dashboard"));
 
 const tutorialButton = document.getElementById("tutorialButton");
 const tutorialModal = document.getElementById("tutorialModal");
