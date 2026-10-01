@@ -125,6 +125,11 @@
     if (document.getElementById("serverPlanManager")) return;
     const actions = document.querySelector(".topbar-actions");
     if (!actions) return;
+    if (!document.getElementById("serverPlanManagerStyles")) {
+      const style=document.createElement("style"); style.id="serverPlanManagerStyles";
+      style.textContent=".server-plan-manager{display:flex;align-items:center;gap:6px}.server-plan-label{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:#6c7585}.server-plan-select{min-width:180px;max-width:260px;height:36px;border:1px solid rgba(20,32,55,.14);border-radius:10px;padding:0 10px;background:#fff;color:#202532}.server-plan-button{height:36px;border:1px solid rgba(20,32,55,.14);border-radius:10px;background:#fff;padding:0 10px;cursor:pointer;color:#202532}.server-plan-button:hover{background:#f5f7fa}@media(max-width:900px){.server-plan-manager{max-width:calc(100vw - 110px);flex-wrap:wrap}.server-plan-select{min-width:130px;max-width:180px}.server-plan-label{display:none}}";
+      document.head.appendChild(style);
+    }
     const wrap = document.createElement("div");
     wrap.id = "serverPlanManager";
     wrap.className = "server-plan-manager";
@@ -374,7 +379,7 @@
     if(swot.error||pestel.error||porter.error)throw(swot.error||pestel.error||porter.error);
     const lists={forca:"strengths",fraqueza:"weaknesses",oportunidade:"opportunities",ameaca:"threats"};
     for(const key of Object.values(lists)){const list=document.querySelector('[data-swot-list="'+key+'"]');if(list)list.innerHTML="";}
-    if(typeof window.addSwotItem==="function") (swot.data||[]).forEach(row=>window.addSwotItem(lists[row.categoria],row.conteudo));
+    (swot.data||[]).forEach(row=>{ const key=lists[row.categoria]; const list=document.querySelector('[data-swot-list="'+key+'"]'); if(!list)return; const item=document.createElement("div"); item.className="swot-item"; item.draggable=true; item.innerHTML='<span class="swot-drag" aria-hidden="true">⋮⋮</span><textarea rows="2" maxlength="500" placeholder="Descreva um item específico..."></textarea><button type="button" class="swot-remove" aria-label="Remover item">×</button>'; const area=item.querySelector("textarea"); area.value=row.conteudo||""; area.addEventListener("input",debounceSync); item.querySelector(".swot-remove").addEventListener("click",()=>{item.remove();debounceSync()}); list.appendChild(item); });
     (pestel.data||[]).forEach(row=>{const id=Object.keys(FACTOR_MAP).find(k=>FACTOR_MAP[k]===row.fator);const el=document.getElementById(id);if(el)el.value=row.analise||"";});
     const porterReverse=Object.entries(PORTER_MAP);
     (porter.data||[]).forEach(row=>{
@@ -429,7 +434,7 @@
       const fields={problem:o?.problema,solution:o?.solucao,audience:o?.publico_alvo,marketLocation:o?.localizacao,differentials:o?.diferenciais,customerJobs:v?.trabalhos_clientes,customerPains:v?.dores,customerGains:v?.ganhos,products:v?.produtos_servicos,painRelievers:v?.alivios_dores,gainCreators:v?.criadores_ganhos};
       Object.entries(fields).forEach(([id,value])=>{const el=document.getElementById(id);if(el&&value!==undefined)el.value=value||"";});
       await loadEnvironment(planId); await loadPlanSections(planId); await loadFinancial(planId); await loadComplementary(planId);
-      window.updateScore?.();window.updateCompletion?.();window.updateCounters?.();window.updateEnvironmentProgress?.();window.updatePlanCounters?.();window.updatePlanProgress?.();window.updateExportProgress?.();window.updateDashboardState?.();
+      document.querySelectorAll("#opportunityForm input,#opportunityForm textarea,#ambientes input,#ambientes textarea,#ambientes select,#plano input,#plano textarea,#financeiro input,#financeiro select,#complementares input,#complementares textarea").forEach(el=>el.dispatchEvent(new Event("input",{bubbles:true})));
       showToastSafe("Plano carregado do banco.");
     } catch(err) { console.error("Neon: carregamento do plano",err); showToastSafe("Não foi possível carregar o plano selecionado."); }
   }
