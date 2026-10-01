@@ -500,6 +500,63 @@
         </div>
       </section>
 
+      <section class="module-section export-section" id="exportacao">
+        <div class="module-header">
+          <div>
+            <p class="eyebrow">MÓDULO 06 · EXPORTAÇÃO E COMPARTILHAMENTO</p>
+            <h2>Transforme seu plano em um documento pronto para usar.</h2>
+            <p>Exporte o conteúdo preenchido, compartilhe uma cópia do plano ou mantenha versões locais para acompanhar sua evolução.</p>
+          </div>
+          <a class="button secondary-light" href="#complementares">← Módulo 5</a>
+        </div>
+
+        <div class="export-overview">
+          <div class="export-progress">
+            <span>Prontidão para exportação</span>
+            <strong id="exportProgressPercent">0%</strong>
+            <div class="completion-track"><i id="exportProgressFill"></i></div>
+            <small id="exportProgressText">Complete os módulos anteriores para preparar o plano.</small>
+          </div>
+          <div class="export-summary" id="exportSummary" aria-live="polite">
+            <strong>Plano de negócio</strong>
+            <span id="exportSummaryText">Nenhum conteúdo consolidado ainda.</span>
+          </div>
+        </div>
+
+        <div class="export-grid">
+          <section class="form-card export-card">
+            <div class="form-card-title"><span class="section-number">01</span><div><h3>Exportar plano</h3><p>Gere arquivos a partir dos dados salvos neste navegador.</p></div></div>
+            <div class="export-actions">
+              <button type="button" class="button primary" id="exportPdf">Imprimir / PDF</button>
+              <button type="button" class="button secondary-light" id="exportWord">Word (.doc)</button>
+              <button type="button" class="button secondary-light" id="exportExcel">Excel (.csv)</button>
+            </div>
+            <small class="export-note">O PDF usa a impressão do navegador. O CSV abre normalmente no Excel e preserva os dados do plano em formato tabular.</small>
+          </section>
+
+          <section class="form-card export-card">
+            <div class="form-card-title"><span class="section-number">02</span><div><h3>Compartilhar uma cópia</h3><p>Crie um link local com os dados do plano para abrir em outro navegador.</p></div></div>
+            <div class="share-row">
+              <button type="button" class="button primary" id="createShareLink">Criar link de compartilhamento</button>
+              <button type="button" class="button secondary-light" id="copyShareLink" disabled>Copiar link</button>
+            </div>
+            <textarea id="shareLinkOutput" class="share-link-output" rows="3" readonly placeholder="O link gerado aparecerá aqui."></textarea>
+            <small class="export-note">O link contém os dados no endereço da página; não há armazenamento em servidor. Evite compartilhar informações sensíveis.</small>
+          </section>
+
+          <section class="form-card export-card">
+            <div class="form-card-title"><span class="section-number">03</span><div><h3>Versões do plano</h3><p>Salve pontos de controle antes de mudanças importantes.</p></div></div>
+            <div class="version-create">
+              <input class="text-input" id="versionName" maxlength="80" placeholder="Ex.: Plano inicial">
+              <button type="button" class="button primary" id="savePlanVersion">Salvar versão</button>
+            </div>
+            <div id="planVersions" class="plan-versions" aria-live="polite"></div>
+          </section>
+        </div>
+
+        <div class="export-status" id="exportStatus" aria-live="polite">Pronto.</div>
+      </section>
+
       <section class="module-section environment-section" id="ambientes">
         <div class="module-header">
           <div>
