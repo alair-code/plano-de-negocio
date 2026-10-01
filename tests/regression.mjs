@@ -15,7 +15,7 @@ const sections=[
 for (const key of sections) {
   assert.match(html,new RegExp('data-plan-section="'+key+'"'),"Seção ausente no HTML/JS: "+key);
 }
-assert.equal((management.match(/Plano · /g)||[]).length,10,"Checklist do M3 deve conter 10 seções individuais");
+for (const label of ["Resumo Executivo","Descrição da Empresa","Produtos e Serviços","Mercado e Concorrência","Marketing e Vendas","Plano Operacional","Gestão de Pessoas","Plano Financeiro","Análise Estratégica","Anexos"]) assert.match(management,new RegExp(label),"Checklist do M3 deve conter a seção: "+label);
 
 const protectedTables=[
   "usuarios_perfis","espacos_trabalho","membros_espaco_trabalho","planos_negocio",
