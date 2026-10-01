@@ -165,6 +165,75 @@
           </div>
         </form>
       </section>
+
+      <section class="module-section environment-section" id="ambientes">
+        <div class="module-header">
+          <div>
+            <p class="eyebrow">MÓDULO 02 · ANÁLISE DE AMBIENTES</p>
+            <h2>Entenda o cenário onde seu negócio vai competir.</h2>
+            <p>Mapeie fatores internos e externos antes de tomar decisões estratégicas. O preenchimento é salvo automaticamente neste navegador.</p>
+          </div>
+          <a class="button secondary-light" href="#oportunidade">← Módulo 1</a>
+        </div>
+
+        <div class="environment-progress">
+          <div><span>Progresso do módulo</span><strong id="environmentProgressPercent">0%</strong></div>
+          <div class="completion-track"><i id="environmentProgressFill"></i></div>
+        </div>
+
+        <div class="environment-tabs" role="tablist" aria-label="Ferramentas de análise">
+          <button class="environment-tab active" type="button" data-environment-tab="swot">SWOT</button>
+          <button class="environment-tab" type="button" data-environment-tab="pestel">PESTEL</button>
+          <button class="environment-tab" type="button" data-environment-tab="porter">5 Forças de Porter</button>
+        </div>
+
+        <div class="environment-panel active" data-environment-panel="swot">
+          <div class="form-card">
+            <div class="form-card-title"><span class="section-number">SW</span><div><h3>Matriz SWOT</h3><p>Separe o que está dentro do negócio do que vem do ambiente externo.</p></div></div>
+            <div class="swot-grid">
+              <label class="swot-card strength"><span>Forças <small>Interno · positivo</small></span><textarea id="swotStrengths" rows="7" placeholder="Ex.: experiência, localização, equipe, tecnologia..."></textarea></label>
+              <label class="swot-card weakness"><span>Fraquezas <small>Interno · negativo</small></span><textarea id="swotWeaknesses" rows="7" placeholder="Ex.: poucos recursos, marca nova, dependência de fornecedor..."></textarea></label>
+              <label class="swot-card opportunity"><span>Oportunidades <small>Externo · positivo</small></span><textarea id="swotOpportunities" rows="7" placeholder="Ex.: demanda crescente, novo canal, mudança de hábito..."></textarea></label>
+              <label class="swot-card threat"><span>Ameaças <small>Externo · negativo</small></span><textarea id="swotThreats" rows="7" placeholder="Ex.: concorrência, custos, legislação, sazonalidade..."></textarea></label>
+            </div>
+            <div class="environment-tip"><strong>Como usar</strong><span>Seja específico. Registre fatos e hipóteses que possam ser verificados depois.</span></div>
+          </div>
+        </div>
+
+        <div class="environment-panel" data-environment-panel="pestel">
+          <div class="form-card">
+            <div class="form-card-title"><span class="section-number">PE</span><div><h3>Análise PESTEL</h3><p>Registre fatores externos que podem afetar seu negócio.</p></div></div>
+            <div class="strategy-grid">
+              <label class="strategy-card"><span>Político</span><textarea id="pestelPolitical" rows="4" placeholder="Governo, políticas públicas, estabilidade..."></textarea></label>
+              <label class="strategy-card"><span>Econômico</span><textarea id="pestelEconomic" rows="4" placeholder="Inflação, juros, renda, câmbio..."></textarea></label>
+              <label class="strategy-card"><span>Social</span><textarea id="pestelSocial" rows="4" placeholder="Comportamento, demografia, hábitos..."></textarea></label>
+              <label class="strategy-card"><span>Tecnológico</span><textarea id="pestelTechnological" rows="4" placeholder="Tecnologias, automação, inovação..."></textarea></label>
+              <label class="strategy-card"><span>Ambiental</span><textarea id="pestelEnvironmental" rows="4" placeholder="Recursos, clima, sustentabilidade..."></textarea></label>
+              <label class="strategy-card"><span>Legal</span><textarea id="pestelLegal" rows="4" placeholder="Leis, normas, licenças, obrigações..."></textarea></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="environment-panel" data-environment-panel="porter">
+          <div class="form-card">
+            <div class="form-card-title"><span class="section-number">5F</span><div><h3>5 Forças de Porter</h3><p>Avalie a pressão competitiva que pode influenciar a atratividade do setor.</p></div></div>
+            <div class="porter-list">
+              <label class="porter-row"><div><span>Rivalidade entre concorrentes</span><small>Quantidade e intensidade da concorrência.</small></div><select id="porterRivalry"><option value="">Selecione</option><option>Baixa</option><option>Média</option><option>Alta</option></select><textarea id="porterRivalryNote" rows="2" placeholder="Evidências ou observações"></textarea></label>
+              <label class="porter-row"><div><span>Ameaça de novos entrantes</span><small>Facilidade de novos concorrentes entrarem no mercado.</small></div><select id="porterEntrants"><option value="">Selecione</option><option>Baixa</option><option>Média</option><option>Alta</option></select><textarea id="porterEntrantsNote" rows="2" placeholder="Evidências ou observações"></textarea></label>
+              <label class="porter-row"><div><span>Poder dos fornecedores</span><small>Dependência e capacidade de negociação dos fornecedores.</small></div><select id="porterSuppliers"><option value="">Selecione</option><option>Baixo</option><option>Médio</option><option>Alto</option></select><textarea id="porterSuppliersNote" rows="2" placeholder="Evidências ou observações"></textarea></label>
+              <label class="porter-row"><div><span>Poder dos clientes</span><small>Capacidade dos clientes influenciarem preço e condições.</small></div><select id="porterCustomers"><option value="">Selecione</option><option>Baixo</option><option>Médio</option><option>Alto</option></select><textarea id="porterCustomersNote" rows="2" placeholder="Evidências ou observações"></textarea></label>
+              <label class="porter-row"><div><span>Ameaça de substitutos</span><small>Existência de alternativas que resolvem a mesma necessidade.</small></div><select id="porterSubstitutes"><option value="">Selecione</option><option>Baixa</option><option>Média</option><option>Alta</option></select><textarea id="porterSubstitutesNote" rows="2" placeholder="Evidências ou observações"></textarea></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions environment-actions">
+          <span id="environmentSaveStatus" class="save-status">Rascunho salvo automaticamente.</span>
+          <button type="button" class="button secondary-light" id="clearEnvironment">Limpar módulo</button>
+          <button type="button" class="button primary" id="saveEnvironment">Salvar análise →</button>
+        </div>
+      </section>
+
     </main>
   </div>
   <div class="toast" id="toast" role="status">Demonstração da interface — módulos serão construídos por etapas.</div>
