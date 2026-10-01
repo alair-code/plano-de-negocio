@@ -186,6 +186,19 @@
           <small id="planProgressText">0 de 10 seções preenchidas</small>
         </div>
 
+
+            <div class="plan-smart-tools">
+              <div class="plan-smart-copy">
+                <span class="smart-badge">ASSISTENTE DO PLANO</span>
+                <strong>Use o que você já preencheu</strong>
+                <p>O Módulo 3 pode aproveitar dados dos Módulos 1 e 2 para acelerar o preenchimento sem apagar seu conteúdo.</p>
+              </div>
+              <button type="button" class="button secondary-light" id="suggestPlanContent">Preencher sugestões</button>
+            </div>
+            <div class="plan-source-panel" id="planSourcePanel" hidden>
+              <div><strong>Dados disponíveis</strong><span id="planSourceSummary">Nenhuma fonte identificada.</span></div>
+              <button type="button" class="text-button" id="closePlanSource">Fechar</button>
+            </div>
         <div class="plan-layout">
           <aside class="plan-outline" aria-label="Seções do plano">
             <div class="plan-outline-head"><strong>Estrutura</strong><span id="planSectionCount">0/10</span></div>
@@ -205,13 +218,13 @@
 
           <div class="plan-editor" id="planEditor">
             <section class="plan-section-card active" data-plan-section="executiveSummary">
-              <div class="plan-section-head"><span>01</span><div><h3>Resumo Executivo</h3><p>Sintetize o negócio, a oportunidade, o público e os objetivos principais.</p></div></div>
+              <div class="plan-section-head"><span>01</span><div><h3>Resumo Executivo</h3><p>Sintetize o negócio, a oportunidade, o público e os objetivos principais.</p></div></div><div class="plan-section-actions"><button type="button" class="text-button" data-plan-suggest="executiveSummary">Usar dados da oportunidade</button></div>
               <label class="field"><span>Resumo do negócio</span><textarea data-plan-field="executiveSummary" rows="7" maxlength="2500" placeholder="Explique em poucas linhas o que é o negócio, qual problema resolve, para quem e qual resultado pretende alcançar."></textarea><small class="field-help" data-plan-count="executiveSummary">0/2500</small></label>
               <div class="plan-guidance"><strong>Dica</strong><span>Escreva esta parte por último se ainda não tiver clareza suficiente. Ela funciona como uma visão geral do plano.</span></div>
             </section>
 
             <section class="plan-section-card" data-plan-section="companyDescription">
-              <div class="plan-section-head"><span>02</span><div><h3>Descrição da Empresa</h3><p>Defina identidade, localização, modelo de negócio e objetivos.</p></div></div>
+              <div class="plan-section-head"><span>02</span><div><h3>Descrição da Empresa</h3><p>Defina identidade, localização, modelo de negócio e objetivos.</p></div></div><div class="plan-section-actions"><button type="button" class="text-button" data-plan-suggest="companyDescription">Usar dados da oportunidade</button></div>
               <div class="field-grid">
                 <label class="field"><span>Missão</span><textarea data-plan-field="companyMission" rows="4" maxlength="1000" placeholder="Por que a empresa existe?"></textarea></label>
                 <label class="field"><span>Visão</span><textarea data-plan-field="companyVision" rows="4" maxlength="1000" placeholder="Onde pretende chegar?"></textarea></label>
@@ -221,13 +234,13 @@
             </section>
 
             <section class="plan-section-card" data-plan-section="productsServices">
-              <div class="plan-section-head"><span>03</span><div><h3>Produtos e Serviços</h3><p>Descreva o que será oferecido e por que isso gera valor para o cliente.</p></div></div>
+              <div class="plan-section-head"><span>03</span><div><h3>Produtos e Serviços</h3><p>Descreva o que será oferecido e por que isso gera valor para o cliente.</p></div></div><div class="plan-section-actions"><button type="button" class="text-button" data-plan-suggest="productsServices">Usar dados da oportunidade</button></div>
               <label class="field"><span>Portfólio</span><textarea data-plan-field="productsDescription" rows="6" maxlength="2200" placeholder="Liste produtos ou serviços, características, benefícios e diferenciais."></textarea></label>
               <label class="field"><span>Política de preços</span><textarea data-plan-field="productsPricing" rows="5" maxlength="1600" placeholder="Como os preços serão definidos?"></textarea></label>
             </section>
 
             <section class="plan-section-card" data-plan-section="marketCompetition">
-              <div class="plan-section-head"><span>04</span><div><h3>Mercado e Concorrência</h3><p>Conecte público, tamanho do mercado, tendências e concorrentes às análises do módulo 2.</p></div></div>
+              <div class="plan-section-head"><span>04</span><div><h3>Mercado e Concorrência</h3><p>Conecte público, tamanho do mercado, tendências e concorrentes às análises do módulo 2.</p></div></div><div class="plan-section-actions"><button type="button" class="text-button" data-plan-suggest="marketCompetition">Usar dados dos módulos anteriores</button></div>
               <div class="field-grid">
                 <label class="field"><span>Público-alvo</span><textarea data-plan-field="marketAudience" rows="5" maxlength="1600" placeholder="Quem compra, usa ou influencia a compra?"></textarea></label>
                 <label class="field"><span>Tendências e demanda</span><textarea data-plan-field="marketTrends" rows="5" maxlength="1600" placeholder="Quais mudanças sustentam a oportunidade?"></textarea></label>
@@ -278,7 +291,7 @@
             </section>
 
             <section class="plan-section-card" data-plan-section="strategicAnalysis">
-              <div class="plan-section-head"><span>09</span><div><h3>Análise Estratégica</h3><p>Converta as análises anteriores em prioridades e decisões.</p></div></div>
+              <div class="plan-section-head"><span>09</span><div><h3>Análise Estratégica</h3><p>Converta as análises anteriores em prioridades e decisões.</p></div></div><div class="plan-section-actions"><button type="button" class="text-button" data-plan-suggest="strategicAnalysis">Usar SWOT e PESTEL</button></div>
               <label class="field"><span>Objetivos estratégicos</span><textarea data-plan-field="strategicObjectives" rows="6" maxlength="1800" placeholder="Quais resultados estratégicos devem ser alcançados nos próximos períodos?"></textarea></label>
               <label class="field"><span>Prioridades e ações</span><textarea data-plan-field="strategicActions" rows="6" maxlength="1800" placeholder="O que precisa ser feito primeiro, por quem e com qual prazo?"></textarea></label>
             </section>
