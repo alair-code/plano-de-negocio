@@ -704,10 +704,10 @@ let activeFinancialScenario="realistic";
 function financialNumber(id,fallback=0){const el=document.getElementById(id);const value=Number(el?.value);return Number.isFinite(value)?value:fallback;}
 function financialMoney(value){return Number.isFinite(value)?"R$ "+value.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2}):"—";}
 function financialPercent(value){return Number.isFinite(value)?value.toLocaleString("pt-BR",{minimumFractionDigits:1,maximumFractionDigits:1})+"%":"—";}
-function financialScenarioParams(){
-  return activeFinancialScenario==="pessimistic"?{demand:.8,variable:1.1}:activeFinancialScenario==="optimistic"?{demand:1.2,variable:.9}:{demand:1,variable:1};
+function financialScenarioParams(scenario=activeFinancialScenario){
+  return scenario==="pessimistic"?{demand:.8,variable:1.1}:scenario==="optimistic"?{demand:1.2,variable:.9}:{demand:1,variable:1};
 }
-function calculateFinancial(){
+function calculateFinancial(scenario=activeFinancialScenario){
   const investment=financialNumber("financialInvestment");
   const fixed=financialNumber("financialFixedCosts");
   const variable=financialNumber("financialVariableCost");
@@ -716,7 +716,7 @@ function calculateFinancial(){
   const growth=financialNumber("financialGrowthRate")/100;
   const horizon=Math.max(1,Math.min(60,financialNumber("financialHorizon",12)));
   const annualDiscount=financialNumber("financialDiscountRate")/100;
-  const params=financialScenarioParams();
+  const params=financialScenarioParams(scenario);
   const demandBase=initialDemand*params.demand;
   const variableBase=variable*params.variable;
   const rows=[]; let cumulative=-investment, revenue=0, costs=0, profit=0, payback=null;
@@ -730,7 +730,7 @@ function calculateFinancial(){
     if(payback===null && cumulative>=0) payback=month-1+(net>0?(Math.abs(cumulative-net)/net):0);
     rows.push({month,demand,revenue:monthlyRevenue,costs:monthlyCosts,net,cumulative});
   }
-  const margin=revenue>0?((profit-costs*0+revenue-costs)/revenue):null;
+  const margin=revenue>0?(profit/revenue):null;
   const contribution=price-variableBase;
   const breakEven=contribution>0?fixed/contribution:null;
   const monthlyDiscount=annualDiscount>0?Math.pow(1+annualDiscount,1/12)-1:0;
@@ -748,11 +748,16 @@ function calculateFinancial(){
   }
   const roi=investment>0?((profit-investment)/investment)*100:null;
   const annualizedIrr=irr===null?null:(Math.pow(1+irr,12)-1);
-  return {investment,fixed,variable,price,initialDemand,growth,horizon,annualDiscount,rows,revenue,costs,profit,margin,breakEven,npv,irr,annualizedIrr,roi};
+  return {investment,fixed,variable,price,initialDemand,growth,horizon,annualDiscount,rows,revenue,costs,profit,margin,breakEven,npv,irr,annualizedIrr,roi,payback};
 }
 function updateFinancialProgress(){
   const required=["financialInvestment","financialFixedCosts","financialVariableCost","financialUnitPrice","financialInitialDemand"];
-  const filled=required.filter(id=>financialNumber(id)>0).length;
+  const filled=required.filter(id=>{
+    const el=document.getElementById(id);
+    if(!el || el.value==="") return false;
+    const value=Number(el.value);
+    return Number.isFinite(value) && (["financialInvestment","financialUnitPrice","financialInitialDemand"].includes(id) ? value>0 : value>=0);
+  }).length;
   const percent=Math.round((filled/required.length)*100);
   const el=document.getElementById("financialProgressPercent"),fill=document.getElementById("financialProgressFill"),txt=document.getElementById("financialProgressText");
   if(el)el.textContent=percent+"%"; if(fill)fill.style.width=percent+"%";
@@ -772,24 +777,42 @@ function renderFinancial(){
     return;
   }
   set("financialRevenue",financialMoney(data.revenue));
-  set("financialProfit",financialMoney(data.profit-data.investment));
+  set("financialProfit",financialMoney(data.profit));
   set("financialBreakEven",Number.isFinite(data.breakEven)?Math.ceil(data.breakEven).toLocaleString("pt-BR"):"—");
   set("financialMargin",financialPercent(data.margin*100));
   set("financialNpv",financialMoney(data.npv));
   set("financialIrr",data.annualizedIrr===null?"—":financialPercent(data.annualizedIrr*100));
-  set("financialPayback",data.rows[data.rows.length-1].cumulative<0?"Não atingido":data.rows.length?data.rows[Math.min(Math.ceil(data.rows.findIndex(r=>r.cumulative>=0)+1,data.rows.length)-1, data.rows.length-1)].month+" meses":"—");
+  set("financialPayback",data.payback===null?"Não atingido":data.payback.toLocaleString("pt-BR",{minimumFractionDigits:1,maximumFractionDigits:1})+" meses");
   set("financialRoi",financialPercent(data.roi));
   const chart=document.getElementById("financialCashflowChart");
   if(chart){
     const max=Math.max(...data.rows.map(r=>Math.abs(r.net)),1);
     chart.innerHTML=data.rows.map(r=>'<div class="cashflow-bar '+(r.net<0?"negative":"")+'" title="Mês '+r.month+': '+financialMoney(r.net)+'"><i style="height:'+Math.max(3,Math.min(100,Math.abs(r.net)/max*100))+'%"></i><span>'+r.month+'</span></div>').join("");
   }
-  const positive=data.npv>=0&&data.profit>data.investment;
+  document.querySelectorAll("[data-financial-scenario]").forEach(button=>button.classList.toggle("active",button.dataset.financialScenario===activeFinancialScenario));
+  document.querySelectorAll("[data-financial-scenario-card]").forEach(card=>card.classList.toggle("selected",card.dataset.financialScenarioCard===activeFinancialScenario));
+  renderFinancialScenarioComparison();
+  const positive=data.npv>=0&&data.roi>=0;
   set("financialReading",positive?"Cenário com resultado positivo":"Cenário exige atenção");
-  set("financialReadingText",positive?"As premissas atuais indicam recuperação do investimento no horizonte projetado. Compare também os cenários antes de tomar decisões.":"Com estas premissas, o retorno projetado não cobre o investimento no horizonte selecionado. Revise preço, demanda, custos ou prazo.");
+  set("financialReadingText",positive?"As premissas atuais indicam recuperação do investimento no horizonte projetado. Compare os três cenários antes de tomar decisões.":"Com estas premissas, o retorno projetado não cobre o investimento no horizonte selecionado. Revise preço, demanda, custos ou prazo.");
   const body=document.getElementById("financialCashflowBody");
   if(body)body.innerHTML=data.rows.map(r=>'<tr><td>'+r.month+'</td><td>'+Math.round(r.demand).toLocaleString("pt-BR")+'</td><td>'+financialMoney(r.revenue)+'</td><td>'+financialMoney(r.costs)+'</td><td>'+financialMoney(r.net)+'</td><td>'+financialMoney(r.cumulative)+'</td></tr>').join("");
 }
+function renderFinancialScenarioComparison(){
+  const body=document.getElementById("financialScenarioComparisonBody");
+  if(!body) return;
+  const scenarios=[
+    ["pessimistic","Pessimista"],
+    ["realistic","Realista"],
+    ["optimistic","Otimista"]
+  ];
+  body.innerHTML=scenarios.map(([key,label])=>{
+    const data=calculateFinancial(key);
+    const payback=data.payback===null?"Não atingido":data.payback.toLocaleString("pt-BR",{minimumFractionDigits:1,maximumFractionDigits:1})+" meses";
+    return '<tr class="'+(key===activeFinancialScenario?"selected":"")+'"><th scope="row">'+label+'</th><td>'+financialMoney(data.revenue)+'</td><td>'+financialMoney(data.profit)+'</td><td>'+financialPercent(data.margin*100)+'</td><td>'+financialMoney(data.npv)+'</td><td>'+(data.annualizedIrr===null?"—":financialPercent(data.annualizedIrr*100))+'</td><td>'+payback+'</td><td>'+financialPercent(data.roi)+'</td></tr>';
+  }).join("");
+}
+
 function saveFinancialDraft(){
   const data={scenario:activeFinancialScenario};
   financialFieldIds.forEach(id=>{const el=document.getElementById(id);if(el)data[id]=el.value;});
@@ -833,7 +856,7 @@ updateDashboardState=function(){
   const planValues=typeof getPlanSectionProgress==="function"?getPlanSectionProgress():[];
   const plan=planValues.length?Math.round(planValues.reduce((a,b)=>a+b,0)/planValues.length):0;
   const financialRequired=["financialInvestment","financialFixedCosts","financialVariableCost","financialUnitPrice","financialInitialDemand"];
-  const financialFilled=financialRequired.filter(id=>{const el=document.getElementById(id);return el&&el.value!==""&&Number.isFinite(Number(el.value));}).length;
+  const financialFilled=financialRequired.filter(id=>{const el=document.getElementById(id);if(!el||el.value==="")return false;const value=Number(el.value);return Number.isFinite(value)&&(["financialInvestment","financialUnitPrice","financialInitialDemand"].includes(id)?value>0:value>=0);}).length;
   const financial=financialFilled===financialRequired.length?100:financialFilled/financialRequired.length*100;
   const modules=[opportunity,environment,plan,financial,0,0,0];
   const overall=Math.round(modules.reduce((sum,value)=>sum+value,0)/modules.length);
