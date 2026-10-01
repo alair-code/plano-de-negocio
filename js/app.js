@@ -331,6 +331,11 @@ async function loadOpportunityFromServer() {
   const user = await getCurrentUser();
   if (!user || !form) return;
   try {
+    const localDraft = localStorage.getItem(storageKey);
+    if (localDraft) {
+      if (saveStatus) saveStatus.textContent = "Rascunho local preservado. Salve a oportunidade para sincronizar com o banco.";
+      return;
+    }
     const { data: plans, error: plansError } = await neonClient
       .from("planos_negocio")
       .select("id, nome")

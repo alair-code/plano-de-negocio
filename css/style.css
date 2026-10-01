@@ -338,23 +338,3 @@ button { font: inherit; }
 
 /* Refinamento M6 */
 .export-guidance{display:flex;gap:12px;align-items:flex-start;padding:15px 17px;margin-bottom:18px;border:1px solid #e4e7ec;border-radius:14px;background:#f8fafc}.export-guidance .info-symbol{flex:0 0 auto}.export-guidance strong{display:block;margin-bottom:3px}.export-guidance p{margin:0;color:#687180;line-height:1.5;font-size:.9rem}.export-card{display:flex;flex-direction:column}.export-card .export-note{margin-top:auto;padding-top:14px}.export-actions .button,.share-row .button{min-height:42px}.share-link-output{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;line-height:1.45}.share-link-output.share-link-long{border-color:#d4a72c}.plan-version{transition:transform .15s ease,box-shadow .15s ease}.plan-version:hover{transform:translateY(-1px);box-shadow:0 5px 18px rgba(20,30,50,.07)}.plan-version .text-button{padding:5px 7px}.export-status{min-height:22px}.export-document-preview{background:#fff}.export-document-preview table{margin-top:18px}
-
-
-/* Integração Neon Auth + Neon Data API */
-.auth-button{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:10px;padding:8px 12px;font:inherit;font-size:11px;font-weight:800;cursor:pointer}
-.auth-button:hover{border-color:#aaaaff;color:var(--primary)}
-.auth-modal{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:20px;background:rgba(15,23,42,.38);backdrop-filter:blur(5px)}
-.auth-modal[hidden]{display:none}
-.auth-card{position:relative;width:min(440px,100%);padding:28px;border:1px solid var(--line);border-radius:22px;background:#fff;box-shadow:0 24px 70px rgba(15,23,42,.2)}
-.auth-card h2{margin:4px 0 8px;font-size:24px}
-.auth-card>p:not(.eyebrow){margin:0 0 20px;color:var(--muted);line-height:1.5;font-size:12px}
-.auth-close{position:absolute;right:16px;top:14px;width:34px;height:34px;border:0;border-radius:9px;background:#f4f5f8;color:#667085;font-size:22px;cursor:pointer}
-.auth-form,.auth-card form{display:grid;gap:13px}
-.auth-feedback{min-height:18px;margin:0;color:#b54747;font-size:11px;line-height:1.4}
-.auth-divider{display:flex;align-items:center;gap:10px;margin:16px 0;color:#98a2b3;font-size:10px}
-.auth-divider:before,.auth-divider:after{content:"";height:1px;flex:1;background:var(--line)}
-.auth-google,.auth-switch,.auth-logout{width:100%;margin-top:8px}
-.auth-switch,.auth-logout{border:0;background:transparent;color:var(--primary);font:inherit;font-size:11px;font-weight:800;cursor:pointer}
-.auth-logout{color:#b54747}
-.auth-logged-in .auth-card h2{font-size:20px}
-@media(max-width:560px){.topbar-actions{gap:6px}.auth-button{padding:7px 9px}.auth-card{padding:22px}.auth-card h2{font-size:20px}}
