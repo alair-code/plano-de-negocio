@@ -137,8 +137,23 @@ function openAuthModal(mode = "signin") {
   authEmail?.focus();
 }
 
+function setApplicationAccess(user) {
+  const locked = !user;
+  document.body.classList.toggle("auth-required", locked);
+  if (authModal) authModal.hidden = !locked && authModal.hidden;
+  if (locked) {
+    openAuthModal("signin");
+    if (authFeedback) authFeedback.textContent = "Faça login ou crie uma conta para acessar o sistema.";
+  }
+}
+
 function closeAuthModal() {
+  if (!getCurrentUserSync()) return;
   if (authModal) authModal.hidden = true;
+}
+
+function getCurrentUserSync() {
+  return window.__currentAuthUser || null;
 }
 
 function extractSession(result) {
@@ -158,6 +173,7 @@ async function getCurrentUser() {
 
 async function updateAuthUI(user = null) {
   if (!user) user = await getCurrentUser();
+  window.__currentAuthUser = user || null;
   if (authButton) authButton.textContent = user ? "Minha conta" : "Entrar";
   const avatar = document.getElementById("userAvatar");
   if (avatar) {
@@ -260,8 +276,9 @@ authForm?.addEventListener("submit", signInOrSignUp);
 authSwitch?.addEventListener("click", () => setAuthMode(authMode === "signin" ? "signup" : "signin"));
 authLogout?.addEventListener("click", async () => {
   await neonClient.auth.signOut();
-  closeAuthModal();
+  window.__currentAuthUser = null;
   updateAuthUI(null);
+  setApplicationAccess(null);
   showToast("Você saiu da conta.");
 });
 // Neon Auth Better Auth não expõe o listener Supabase-compatível neste cliente.
@@ -540,7 +557,10 @@ if (form) {
   updateScore();
   updateCompletion();
   updateDashboardState();
-  getCurrentUser().then((user) => updateAuthUI(user).then(() => { if (user) loadOpportunityFromServer(); }));
+  getCurrentUser().then((user) => updateAuthUI(user).then((currentUser) => {
+    setApplicationAccess(currentUser);
+    if (currentUser) loadOpportunityFromServer();
+  }));
 }
 
 
