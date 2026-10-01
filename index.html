@@ -116,16 +116,16 @@
           <div class="step"><b>03</b><span>Atratividade</span></div>
         </div>
 
-        <form id="opportunityForm" class="opportunity-form">
+        <form id="opportunityForm" class="opportunity-form" novalidate>
           <section class="form-card">
             <div class="form-card-title"><span class="section-number">01</span><div><h3>Defina a oportunidade</h3><p>Comece pelo problema que você pretende resolver.</p></div></div>
             <div class="field-grid">
-              <label class="field full"><span>Nome provisório do negócio</span><input id="businessName" name="businessName" type="text" placeholder="Ex.: Studio Nova Forma" maxlength="100"></label>
-              <label class="field full"><span>Qual problema ou necessidade você identificou?</span><textarea id="problem" name="problem" rows="4" placeholder="Descreva a situação que hoje gera dificuldade, custo, demora ou frustração para alguém."></textarea></label>
-              <label class="field full"><span>Qual solução você pretende oferecer?</span><textarea id="solution" name="solution" rows="4" placeholder="Explique de forma simples o produto, serviço ou experiência que resolverá o problema."></textarea></label>
-              <label class="field"><span>Quem é o público principal?</span><input id="audience" name="audience" type="text" placeholder="Ex.: Pequenas empresas locais"></label>
+              <label class="field full"><span>Nome provisório do negócio <em>obrigatório</em></span><input id="businessName" name="businessName" type="text" placeholder="Ex.: Studio Nova Forma" maxlength="100" required><small class="field-help" data-count-for="businessName">0/100</small></label>
+              <label class="field full"><span>Qual problema ou necessidade você identificou? <em>obrigatório</em></span><textarea id="problem" name="problem" rows="4" maxlength="1000" placeholder="Descreva a situação que hoje gera dificuldade, custo, demora ou frustração para alguém." required></textarea><small class="field-help" data-count-for="problem">0/1000</small></label>
+              <label class="field full"><span>Qual solução você pretende oferecer? <em>obrigatório</em></span><textarea id="solution" name="solution" rows="4" maxlength="1000" placeholder="Explique de forma simples o produto, serviço ou experiência que resolverá o problema." required></textarea><small class="field-help" data-count-for="solution">0/1000</small></label>
+              <label class="field"><span>Quem é o público principal? <em>obrigatório</em></span><input id="audience" name="audience" type="text" maxlength="180" placeholder="Ex.: Pequenas empresas locais" required><small class="field-help" data-count-for="audience">0/180</small></label>
               <label class="field"><span>Onde esse público está?</span><input id="marketLocation" name="marketLocation" type="text" placeholder="Ex.: Manhumirim e região"></label>
-              <label class="field full"><span>Quais são seus principais diferenciais?</span><textarea id="differentials" name="differentials" rows="3" placeholder="Preço, experiência, localização, atendimento, tecnologia, especialização..."></textarea></label>
+              <label class="field full"><span>Quais são seus principais diferenciais?</span><textarea id="differentials" name="differentials" rows="3" maxlength="800" placeholder="Preço, experiência, localização, atendimento, tecnologia, especialização..."></textarea><small class="field-help" data-count-for="differentials">0/800</small></label>
             </div>
           </section>
 
