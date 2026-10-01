@@ -31,6 +31,116 @@ function showToast(message) {
 }
 demoButton?.addEventListener("click", () => showToast("A demonstração será ampliada conforme os módulos forem construídos."));
 
+const tutorialButton = document.getElementById("tutorialButton");
+const tutorialModal = document.getElementById("tutorialModal");
+const tutorialClose = document.getElementById("tutorialClose");
+const tutorialTitle = document.getElementById("tutorialTitle");
+const tutorialIntro = document.getElementById("tutorialIntro");
+const tutorialSteps = document.getElementById("tutorialSteps");
+const tutorialTip = document.getElementById("tutorialTip");
+const tutorialStart = document.getElementById("tutorialStart");
+
+const tutorials = {
+  "#dashboard": {
+    title: "Como usar o Dashboard",
+    intro: "O Dashboard é o ponto de partida. Ele mostra sua jornada, o progresso e quais módulos estão disponíveis.",
+    steps: [
+      ["1","Comece pelo módulo 01","Clique em Oportunidade e responda as perguntas sobre sua ideia, problema, solução e público."],
+      ["2","Avance na ordem","Os próximos módulos são liberados conforme você conclui as etapas anteriores."],
+      ["3","Acompanhe o progresso","Use os indicadores do Dashboard para saber o que já foi preenchido e o que falta."]
+    ],
+    tip: "<strong>Dica:</strong> não tente preencher tudo de uma vez. O sistema foi pensado para construir o plano passo a passo."
+  },
+  "#oportunidade": {
+    title: "Como usar Oportunidade",
+    intro: "Aqui você transforma uma ideia inicial em uma oportunidade de negócio clara e estruturada.",
+    steps: [
+      ["1","Descreva a ideia","Informe o nome provisório, o problema identificado, a solução e o público principal."],
+      ["2","Explique o valor","Use os campos seguintes para mostrar por que sua solução é relevante e quais são seus diferenciais."],
+      ["3","Conclua o módulo","Revise as respostas e complete os campos obrigatórios para liberar o próximo módulo."]
+    ],
+    tip: "<strong>Dica:</strong> escreva com exemplos reais e evite respostas genéricas. Quanto mais concreta a informação, melhor será a análise."
+  },
+  "#ambientes": {
+    title: "Como usar Ambientes",
+    intro: "Este módulo ajuda você a analisar o contexto interno e externo do negócio antes de montar o plano.",
+    steps: [
+      ["1","Analise o ambiente","Preencha os fatores relevantes do ambiente e observe como eles podem afetar o negócio."],
+      ["2","Use PESTEL e Porter","Avalie fatores políticos, econômicos, sociais, tecnológicos, ambientais e legais, além das forças competitivas."],
+      ["3","Monte a SWOT","Registre forças, fraquezas, oportunidades e ameaças para transformar a análise em decisões práticas."]
+    ],
+    tip: "<strong>Dica:</strong> diferencie fatos de suposições. Quando possível, use dados ou evidências para justificar suas análises."
+  },
+  "#plano": {
+    title: "Como usar Plano de Negócios",
+    intro: "Aqui você transforma as análises anteriores em um plano estruturado para o negócio.",
+    steps: [
+      ["1","Preencha cada seção","Avance pelas seções do plano e responda aos campos com base no que você já analisou."],
+      ["2","Use as sugestões","Quando houver sugestões ou exemplos, use-os como orientação e adapte ao seu negócio."],
+      ["3","Revise a coerência","Confira se estratégia, público, operação, marketing e demais partes estão alinhados."]
+    ],
+    tip: "<strong>Dica:</strong> não copie exemplos literalmente. O objetivo é construir um plano específico para o seu negócio."
+  },
+  "#financeiro": {
+    title: "Como usar Viabilidade Financeira",
+    intro: "Este módulo ajuda a transformar as hipóteses do negócio em números para avaliar sua sustentabilidade.",
+    steps: [
+      ["1","Informe as premissas","Preencha preços, volumes, receitas, custos e demais dados solicitados."],
+      ["2","Compare cenários","Use os cenários disponíveis para entender como mudanças nas premissas afetam os resultados."],
+      ["3","Leia os indicadores","Observe fluxo de caixa, resultados e indicadores antes de tirar conclusões sobre a viabilidade."]
+    ],
+    tip: "<strong>Dica:</strong> teste cenários conservadores e realistas. Pequenas mudanças nas premissas podem alterar bastante os resultados."
+  },
+  "#complementares": {
+    title: "Como usar Planos Complementares",
+    intro: "Aqui você detalha áreas que ajudam a transformar o plano em execução.",
+    steps: [
+      ["1","Escolha uma área","Navegue pelas abas de marketing, operações, pessoas, jurídico, tecnologia e outras disponíveis."],
+      ["2","Detalhe a execução","Descreva ações, responsáveis, recursos e decisões necessárias para cada área."],
+      ["3","Conecte com o plano","Mantenha as informações complementares coerentes com estratégia, público e capacidade financeira."]
+    ],
+    tip: "<strong>Dica:</strong> use esta etapa para transformar ideias estratégicas em ações concretas."
+  },
+  "#exportacao": {
+    title: "Como usar Exportação",
+    intro: "Use este menu para revisar, preparar e compartilhar o conteúdo do seu plano.",
+    steps: [
+      ["1","Revise o conteúdo","Confira a prévia e verifique se as informações importantes estão preenchidas."],
+      ["2","Prepare a versão final","Faça os últimos ajustes antes de apresentar ou compartilhar o plano."],
+      ["3","Compartilhe com segurança","Use os recursos de compartilhamento disponíveis e confira o que será enviado."]
+    ],
+    tip: "<strong>Dica:</strong> faça uma revisão final antes de exportar. A versão compartilhada deve representar o estado atual do seu plano."
+  },
+  "#gestao": {
+    title: "Como usar Gestão",
+    intro: "O menu Gestão serve para acompanhar a evolução do plano e manter suas informações organizadas.",
+    steps: [
+      ["1","Acompanhe pendências","Identifique o que ainda precisa ser preenchido ou revisado."],
+      ["2","Revise versões","Quando houver histórico, use-o para comparar ou recuperar versões anteriores do plano."],
+      ["3","Mantenha o plano atualizado","Volte a esta área durante a execução para acompanhar mudanças e próximos passos."]
+    ],
+    tip: "<strong>Dica:</strong> trate o plano como um documento vivo. Atualize as informações quando as condições do negócio mudarem."
+  }
+};
+
+function getCurrentTutorialKey() {
+  const hash = window.location.hash || "#dashboard";
+  return tutorials[hash] ? hash : "#dashboard";
+}
+function openTutorial(key = getCurrentTutorialKey()) {
+  const tutorial = tutorials[key] || tutorials["#dashboard"];
+  if (!tutorialModal) return;
+  if (tutorialTitle) tutorialTitle.textContent = tutorial.title;
+  if (tutorialIntro) tutorialIntro.textContent = tutorial.intro;
+  if (tutorialSteps) tutorialSteps.innerHTML = tutorial.steps.map(([n,title,text]) => `<div class="tutorial-step"><div class="tutorial-step-number">${n}</div><div><strong>${title}</strong><span>${text}</span></div></div>`).join("");
+  if (tutorialTip) tutorialTip.innerHTML = tutorial.tip;
+  tutorialModal.hidden = false;
+}
+tutorialButton?.addEventListener("click", () => openTutorial());
+tutorialClose?.addEventListener("click", () => { tutorialModal.hidden = true; });
+tutorialStart?.addEventListener("click", () => { tutorialModal.hidden = true; });
+tutorialModal?.addEventListener("click", (event) => { if (event.target === tutorialModal) tutorialModal.hidden = true; });
+
 const navItems = document.querySelectorAll(".nav-item");
 function updateActiveNav() {
   const hash = window.location.hash || "#dashboard";
