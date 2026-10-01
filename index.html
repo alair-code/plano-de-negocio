@@ -65,8 +65,8 @@
             <div class="visual-card">
               <span class="visual-label">PLANO EM CONSTRUÇÃO</span>
               <strong>Nova oportunidade</strong>
-              <div class="visual-metric"><b>0%</b><span>progresso</span></div>
-              <div class="visual-bar"><i></i></div>
+              <div class="visual-metric"><b id="heroProgressPercent">0%</b><span>progresso</span></div>
+              <div class="visual-bar"><i id="heroProgressFill"></i></div>
               <div class="visual-list"><span>01 Oportunidade</span><span>02 Ambientes</span><span>03 Plano</span></div>
             </div>
           </div>
@@ -74,22 +74,22 @@
 
         <div class="section-heading">
           <div><p class="eyebrow">VISÃO GERAL</p><h2>Sua jornada</h2></div>
-          <span class="status-pill">0 de 7 módulos iniciados</span>
+          <span class="status-pill" id="dashboardStatus">0 de 7 módulos concluídos</span>
         </div>
 
         <div class="module-grid">
-          <article class="module-card current">
+          <article class="module-card current" data-dashboard-module="1">
             <div class="module-top"><span class="module-icon">01</span><span class="module-status">Próximo</span></div>
             <h3>Identificação da Oportunidade</h3>
             <p>Defina problema, solução, público, diferenciais e proposta de valor.</p>
             <a href="#oportunidade">Começar →</a>
           </article>
-          <article class="module-card"><div class="module-top"><span class="module-icon">02</span><span class="module-status muted">Bloqueado</span></div><h3>Análise de Ambientes</h3><p>Entenda forças internas, mercado, PESTEL, Porter e SWOT.</p><span class="locked">Disponível após o módulo 1</span></article>
-          <article class="module-card"><div class="module-top"><span class="module-icon">03</span><span class="module-status muted">Bloqueado</span></div><h3>Plano de Negócios</h3><p>Estruture as dez seções essenciais do seu plano.</p><span class="locked">Disponível após o módulo 2</span></article>
-          <article class="module-card"><div class="module-top"><span class="module-icon">04</span><span class="module-status muted">Bloqueado</span></div><h3>Viabilidade Financeira</h3><p>Projete receitas, custos, fluxo de caixa e indicadores.</p><span class="locked">Disponível após o módulo 3</span></article>
-          <article class="module-card"><div class="module-top"><span class="module-icon">05</span><span class="module-status muted">Bloqueado</span></div><h3>Planos Complementares</h3><p>Desenvolva marketing, operações, RH, jurídico e TI.</p><span class="locked">Disponível após o módulo 4</span></article>
-          <article class="module-card"><div class="module-top"><span class="module-icon">06</span><span class="module-status muted">Bloqueado</span></div><h3>Exportação e Compartilhamento</h3><p>Prepare seu plano para apresentação e compartilhamento.</p><span class="locked">Disponível após o módulo 5</span></article>
-          <article class="module-card"><div class="module-top"><span class="module-icon">07</span><span class="module-status muted">Bloqueado</span></div><h3>Painel e Gestão</h3><p>Acompanhe progresso, pendências e consistência do plano.</p><span class="locked">Disponível após o módulo 6</span></article>
+          <article class="module-card" data-dashboard-module="2"><div class="module-top"><span class="module-icon">02</span><span class="module-status muted">Bloqueado</span></div><h3>Análise de Ambientes</h3><p>Entenda forças internas, mercado, PESTEL, Porter e SWOT.</p><span class="locked">Disponível após o módulo 1</span></article>
+          <article class="module-card" data-dashboard-module="3"><div class="module-top"><span class="module-icon">03</span><span class="module-status muted">Bloqueado</span></div><h3>Plano de Negócios</h3><p>Estruture as dez seções essenciais do seu plano.</p><span class="locked">Disponível após o módulo 2</span></article>
+          <article class="module-card" data-dashboard-module="4"><div class="module-top"><span class="module-icon">04</span><span class="module-status muted">Bloqueado</span></div><h3>Viabilidade Financeira</h3><p>Projete receitas, custos, fluxo de caixa e indicadores.</p><span class="locked">Disponível após o módulo 3</span></article>
+          <article class="module-card" data-dashboard-module="5"><div class="module-top"><span class="module-icon">05</span><span class="module-status muted">Bloqueado</span></div><h3>Planos Complementares</h3><p>Desenvolva marketing, operações, RH, jurídico e TI.</p><span class="locked">Disponível após o módulo 4</span></article>
+          <article class="module-card" data-dashboard-module="6"><div class="module-top"><span class="module-icon">06</span><span class="module-status muted">Bloqueado</span></div><h3>Exportação e Compartilhamento</h3><p>Prepare seu plano para apresentação e compartilhamento.</p><span class="locked">Disponível após o módulo 5</span></article>
+          <article class="module-card" data-dashboard-module="7"><div class="module-top"><span class="module-icon">07</span><span class="module-status muted">Bloqueado</span></div><h3>Painel e Gestão</h3><p>Acompanhe progresso, pendências e consistência do plano.</p><span class="locked">Disponível após o módulo 6</span></article>
         </div>
 
         <div class="info-banner">
@@ -165,9 +165,477 @@
           </div>
         </form>
       </section>
+
+
+      <section class="module-section business-plan-section" id="plano">
+        <div class="module-header">
+          <div>
+            <p class="eyebrow">MÓDULO 03 · ESTRUTURA DO PLANO DE NEGÓCIOS</p>
+            <h2>Agora vamos transformar as análises em um plano completo.</h2>
+            <p>Preencha as dez seções essenciais. O conteúdo é salvo automaticamente neste navegador e pode ser refinado a qualquer momento.</p>
+          </div>
+          <a class="button secondary-light" href="#ambientes">← Módulo 2</a>
+        </div>
+
+        <div class="plan-progress-card">
+          <div>
+            <span>Progresso do plano</span>
+            <strong id="planProgressPercent">0%</strong>
+          </div>
+          <div class="completion-track"><i id="planProgressFill"></i></div>
+          <small id="planProgressText">0 de 10 seções preenchidas</small>
+        </div>
+
+
+            <div class="plan-smart-tools">
+              <div class="plan-smart-copy">
+                <span class="smart-badge">ASSISTENTE DO PLANO</span>
+                <strong>Use o que você já preencheu</strong>
+                <p>O Módulo 3 pode aproveitar dados dos Módulos 1 e 2 para acelerar o preenchimento sem apagar seu conteúdo.</p>
+              </div>
+              <button type="button" class="button secondary-light" id="suggestPlanContent">Preencher sugestões</button>
+            </div>
+            <div class="plan-source-panel" id="planSourcePanel" hidden>
+              <div><strong>Dados disponíveis</strong><span id="planSourceSummary">Nenhuma fonte identificada.</span></div>
+              <button type="button" class="text-button" id="closePlanSource">Fechar</button>
+            </div>
+        <div class="plan-layout">
+          <aside class="plan-outline" aria-label="Seções do plano">
+            <div class="plan-outline-head"><strong>Estrutura</strong><span id="planSectionCount">0/10</span></div>
+            <nav id="planSectionNav">
+              <button type="button" class="plan-nav-item active" data-plan-target="executiveSummary"><b>01</b><span>Resumo Executivo</span><i></i></button>
+              <button type="button" class="plan-nav-item" data-plan-target="companyDescription"><b>02</b><span>Descrição da Empresa</span><i></i></button>
+              <button type="button" class="plan-nav-item" data-plan-target="productsServices"><b>03</b><span>Produtos e Serviços</span><i></i></button>
+              <button type="button" class="plan-nav-item" data-plan-target="marketCompetition"><b>04</b><span>Mercado e Concorrência</span><i></i></button>
+              <button type="button" class="plan-nav-item" data-plan-target="marketingSales"><b>05</b><span>Marketing e Vendas</span><i></i></button>
+              <button type="button" class="plan-nav-item" data-plan-target="operationalPlan"><b>06</b><span>Plano Operacional</span><i></i></button>
+              <button type="button" class="plan-nav-item" data-plan-target="peopleManagement"><b>07</b><span>Gestão de Pessoas</span><i></i></button>
+              <button type="button" class="plan-nav-item" data-plan-target="financialPlan"><b>08</b><span>Plano Financeiro</span><i></i></button>
+              <button type="button" class="plan-nav-item" data-plan-target="strategicAnalysis"><b>09</b><span>Análise Estratégica</span><i></i></button>
+              <button type="button" class="plan-nav-item" data-plan-target="appendices"><b>10</b><span>Anexos</span><i></i></button>
+            </nav>
+          </aside>
+
+          <div class="plan-editor" id="planEditor">
+            <section class="plan-section-card active" data-plan-section="executiveSummary">
+              <div class="plan-section-head"><span>01</span><div><h3>Resumo Executivo</h3><p>Sintetize o negócio, a oportunidade, o público e os objetivos principais.</p></div></div><div class="plan-section-actions"><button type="button" class="text-button" data-plan-suggest="executiveSummary">Usar dados da oportunidade</button></div>
+              <label class="field"><span>Resumo do negócio</span><textarea data-plan-field="executiveSummary" rows="7" maxlength="2500" placeholder="Explique em poucas linhas o que é o negócio, qual problema resolve, para quem e qual resultado pretende alcançar."></textarea><small class="field-help" data-plan-count="executiveSummary">0/2500</small></label>
+              <div class="plan-guidance"><strong>Dica</strong><span>Escreva esta parte por último se ainda não tiver clareza suficiente. Ela funciona como uma visão geral do plano.</span></div>
+            </section>
+
+            <section class="plan-section-card" data-plan-section="companyDescription">
+              <div class="plan-section-head"><span>02</span><div><h3>Descrição da Empresa</h3><p>Defina identidade, localização, modelo de negócio e objetivos.</p></div></div><div class="plan-section-actions"><button type="button" class="text-button" data-plan-suggest="companyDescription">Usar dados da oportunidade</button></div>
+              <div class="field-grid">
+                <label class="field"><span>Missão</span><textarea data-plan-field="companyMission" rows="4" maxlength="1000" placeholder="Por que a empresa existe?"></textarea></label>
+                <label class="field"><span>Visão</span><textarea data-plan-field="companyVision" rows="4" maxlength="1000" placeholder="Onde pretende chegar?"></textarea></label>
+                <label class="field"><span>Modelo de negócio</span><textarea data-plan-field="companyModel" rows="4" maxlength="1200" placeholder="Como a empresa cria, entrega e captura valor?"></textarea></label>
+                <label class="field"><span>Localização e estrutura</span><textarea data-plan-field="companyLocation" rows="4" maxlength="1200" placeholder="Onde opera e qual estrutura será necessária?"></textarea></label>
+              </div>
+            </section>
+
+            <section class="plan-section-card" data-plan-section="productsServices">
+              <div class="plan-section-head"><span>03</span><div><h3>Produtos e Serviços</h3><p>Descreva o que será oferecido e por que isso gera valor para o cliente.</p></div></div><div class="plan-section-actions"><button type="button" class="text-button" data-plan-suggest="productsServices">Usar dados da oportunidade</button></div>
+              <label class="field"><span>Portfólio</span><textarea data-plan-field="productsDescription" rows="6" maxlength="2200" placeholder="Liste produtos ou serviços, características, benefícios e diferenciais."></textarea></label>
+              <label class="field"><span>Política de preços</span><textarea data-plan-field="productsPricing" rows="5" maxlength="1600" placeholder="Como os preços serão definidos?"></textarea></label>
+            </section>
+
+            <section class="plan-section-card" data-plan-section="marketCompetition">
+              <div class="plan-section-head"><span>04</span><div><h3>Mercado e Concorrência</h3><p>Conecte público, tamanho do mercado, tendências e concorrentes às análises do módulo 2.</p></div></div><div class="plan-section-actions"><button type="button" class="text-button" data-plan-suggest="marketCompetition">Usar dados dos módulos anteriores</button></div>
+              <div class="field-grid">
+                <label class="field"><span>Público-alvo</span><textarea data-plan-field="marketAudience" rows="5" maxlength="1600" placeholder="Quem compra, usa ou influencia a compra?"></textarea></label>
+                <label class="field"><span>Tendências e demanda</span><textarea data-plan-field="marketTrends" rows="5" maxlength="1600" placeholder="Quais mudanças sustentam a oportunidade?"></textarea></label>
+                <label class="field"><span>Concorrentes</span><textarea data-plan-field="competitors" rows="5" maxlength="1800" placeholder="Quem já atende essa necessidade?"></textarea></label>
+                <label class="field"><span>Posicionamento</span><textarea data-plan-field="marketPositioning" rows="5" maxlength="1600" placeholder="Como pretende ser percebido frente às alternativas?"></textarea></label>
+              </div>
+            </section>
+
+            <section class="plan-section-card" data-plan-section="marketingSales">
+              <div class="plan-section-head"><span>05</span><div><h3>Marketing e Vendas</h3><p>Defina como o mercado conhecerá, avaliará e comprará sua solução.</p></div></div>
+              <div class="field-grid">
+                <label class="field"><span>Canais de divulgação</span><textarea data-plan-field="marketingChannels" rows="5" maxlength="1600" placeholder="Redes sociais, indicação, tráfego pago, parceiros..."></textarea></label>
+                <label class="field"><span>Estratégia comercial</span><textarea data-plan-field="salesStrategy" rows="5" maxlength="1600" placeholder="Como será o processo de venda?"></textarea></label>
+                <label class="field"><span>Relacionamento</span><textarea data-plan-field="customerRelationship" rows="5" maxlength="1600" placeholder="Como atrair, atender e fidelizar clientes?"></textarea></label>
+                <label class="field"><span>Metas comerciais</span><textarea data-plan-field="salesGoals" rows="5" maxlength="1200" placeholder="Quais metas iniciais serão acompanhadas?"></textarea></label>
+              </div>
+            </section>
+
+            <section class="plan-section-card" data-plan-section="operationalPlan">
+              <div class="plan-section-head"><span>06</span><div><h3>Plano Operacional</h3><p>Explique como o negócio funcionará no dia a dia.</p></div></div>
+              <div class="field-grid">
+                <label class="field"><span>Processos principais</span><textarea data-plan-field="operationalProcesses" rows="5" maxlength="1800" placeholder="Quais atividades precisam acontecer para entregar valor?"></textarea></label>
+                <label class="field"><span>Fornecedores e parceiros</span><textarea data-plan-field="suppliersPartners" rows="5" maxlength="1600" placeholder="Quem fornece recursos ou apoia a operação?"></textarea></label>
+                <label class="field"><span>Capacidade e recursos</span><textarea data-plan-field="operationalCapacity" rows="5" maxlength="1600" placeholder="Equipe, equipamentos, espaço, tecnologia..."></textarea></label>
+                <label class="field"><span>Indicadores operacionais</span><textarea data-plan-field="operationalMetrics" rows="5" maxlength="1200" placeholder="Quais indicadores mostram se a operação está funcionando?"></textarea></label>
+              </div>
+            </section>
+
+            <section class="plan-section-card" data-plan-section="peopleManagement">
+              <div class="plan-section-head"><span>07</span><div><h3>Gestão de Pessoas</h3><p>Planeje funções, responsabilidades, competências e crescimento da equipe.</p></div></div>
+              <div class="field-grid">
+                <label class="field"><span>Estrutura da equipe</span><textarea data-plan-field="teamStructure" rows="5" maxlength="1600" placeholder="Quais funções existirão e quem será responsável por cada uma?"></textarea></label>
+                <label class="field"><span>Competências necessárias</span><textarea data-plan-field="teamSkills" rows="5" maxlength="1600" placeholder="Quais conhecimentos e habilidades são essenciais?"></textarea></label>
+                <label class="field"><span>Contratação e desenvolvimento</span><textarea data-plan-field="hiringDevelopment" rows="5" maxlength="1600" placeholder="Como contratar, treinar e desenvolver pessoas?"></textarea></label>
+                <label class="field"><span>Cultura e liderança</span><textarea data-plan-field="cultureLeadership" rows="5" maxlength="1200" placeholder="Que comportamentos e princípios orientarão a equipe?"></textarea></label>
+              </div>
+            </section>
+
+            <section class="plan-section-card" data-plan-section="financialPlan">
+              <div class="plan-section-head"><span>08</span><div><h3>Plano Financeiro</h3><p>Prepare a base financeira que será aprofundada no Módulo 4.</p></div></div>
+              <div class="field-grid">
+                <label class="field"><span>Investimento inicial</span><textarea data-plan-field="financialInvestment" rows="5" maxlength="1400" placeholder="Quais recursos serão necessários para iniciar?"></textarea></label>
+                <label class="field"><span>Fontes de receita</span><textarea data-plan-field="financialRevenue" rows="5" maxlength="1400" placeholder="Como o negócio gerará receita?"></textarea></label>
+                <label class="field"><span>Principais custos</span><textarea data-plan-field="financialCosts" rows="5" maxlength="1400" placeholder="Quais custos fixos e variáveis precisam ser considerados?"></textarea></label>
+                <label class="field"><span>Premissas financeiras</span><textarea data-plan-field="financialAssumptions" rows="5" maxlength="1400" placeholder="Quais hipóteses sustentam suas projeções?"></textarea></label>
+              </div>
+              <div class="plan-guidance"><strong>Importante</strong><span>O Módulo 4 transformará essas premissas em projeções, fluxo de caixa e indicadores financeiros.</span></div>
+            </section>
+
+            <section class="plan-section-card" data-plan-section="strategicAnalysis">
+              <div class="plan-section-head"><span>09</span><div><h3>Análise Estratégica</h3><p>Converta as análises anteriores em prioridades e decisões.</p></div></div><div class="plan-section-actions"><button type="button" class="text-button" data-plan-suggest="strategicAnalysis">Usar SWOT e PESTEL</button></div>
+              <label class="field"><span>Objetivos estratégicos</span><textarea data-plan-field="strategicObjectives" rows="6" maxlength="1800" placeholder="Quais resultados estratégicos devem ser alcançados nos próximos períodos?"></textarea></label>
+              <label class="field"><span>Prioridades e ações</span><textarea data-plan-field="strategicActions" rows="6" maxlength="1800" placeholder="O que precisa ser feito primeiro, por quem e com qual prazo?"></textarea></label>
+            </section>
+
+            <section class="plan-section-card" data-plan-section="appendices">
+              <div class="plan-section-head"><span>10</span><div><h3>Anexos</h3><p>Registre documentos, fontes, pesquisas e observações que sustentam o plano.</p></div></div>
+              <label class="field"><span>Referências e documentos</span><textarea data-plan-field="appendices" rows="8" maxlength="3000" placeholder="Liste pesquisas, links, documentos, tabelas, entrevistas, evidências ou observações complementares."></textarea></label>
+            </section>
+
+            <div class="plan-editor-actions">
+              <span id="planSaveStatus" class="save-status">Rascunho salvo automaticamente.</span>
+              <button type="button" class="button secondary-light" id="clearPlan">Limpar módulo</button>
+              <button type="button" class="button primary" id="savePlan">Salvar plano →</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="module-section financial-section" id="financeiro">
+        <div class="module-header">
+          <div>
+            <p class="eyebrow">MÓDULO 04 · VIABILIDADE FINANCEIRA</p>
+            <h2>Descubra se os números sustentam a ideia.</h2>
+            <p>Informe premissas básicas, projete o caixa e compare cenários. Os cálculos são feitos localmente neste navegador.</p>
+          </div>
+          <a class="button secondary-light" href="#plano">← Módulo 3</a>
+        </div>
+
+        <div class="financial-progress">
+          <div><span>Progresso da análise</span><strong id="financialProgressPercent">0%</strong></div>
+          <div class="completion-track"><i id="financialProgressFill"></i></div>
+          <small id="financialProgressText">Preencha as premissas para iniciar a análise.</small>
+        </div>
+
+        <div class="financial-grid">
+          <section class="form-card financial-assumptions">
+            <div class="form-card-title"><span class="section-number">01</span><div><h3>Premissas do negócio</h3><p>Use valores mensais médios para começar. Você poderá ajustar depois.</p></div></div>
+            <div class="field-grid">
+              <label class="field"><span>Investimento inicial <em>obrigatório</em></span><input id="financialInvestment" type="number" min="0" step="0.01" placeholder="Ex.: 50000"></label>
+              <label class="field"><span>Custos fixos mensais <em>obrigatório</em></span><input id="financialFixedCosts" type="number" min="0" step="0.01" placeholder="Ex.: 8000"></label>
+              <label class="field"><span>Custo variável por unidade <em>obrigatório</em></span><input id="financialVariableCost" type="number" min="0" step="0.01" placeholder="Ex.: 35"></label>
+              <label class="field"><span>Preço médio por unidade <em>obrigatório</em></span><input id="financialUnitPrice" type="number" min="0" step="0.01" placeholder="Ex.: 100"></label>
+              <label class="field"><span>Demanda inicial (unidades/mês) <em>obrigatório</em></span><input id="financialInitialDemand" type="number" min="0" step="1" placeholder="Ex.: 150"></label>
+              <label class="field"><span>Crescimento mensal da demanda (%)</span><input id="financialGrowthRate" type="number" min="-100" max="100" step="0.1" value="2" placeholder="Ex.: 2"></label>
+              <label class="field"><span>Horizonte da projeção (meses)</span><select id="financialHorizon"><option value="12">12 meses</option><option value="24">24 meses</option><option value="36">36 meses</option><option value="48">48 meses</option><option value="60">60 meses</option></select></label>
+              <label class="field"><span>Taxa de desconto anual (%)</span><input id="financialDiscountRate" type="number" min="0" max="100" step="0.1" value="12" placeholder="Ex.: 12"></label>
+            </div>
+          </section>
+
+          <section class="form-card scenario-card">
+            <div class="form-card-title"><span class="section-number">02</span><div><h3>Cenários</h3><p>Compare uma leitura pessimista, realista e otimista sem alterar suas premissas-base.</p></div></div>
+            <div class="scenario-selector" role="tablist" aria-label="Cenário financeiro">
+              <button type="button" class="scenario-button active" data-financial-scenario="realistic" aria-selected="true">Realista</button>
+              <button type="button" class="scenario-button" data-financial-scenario="pessimistic" aria-selected="false">Pessimista</button>
+              <button type="button" class="scenario-button" data-financial-scenario="optimistic" aria-selected="false">Otimista</button>
+            </div>
+            <div class="scenario-cards">
+              <div class="scenario-mini" data-financial-scenario-card="pessimistic"><span>Pessimista</span><strong>−20% demanda</strong><small>+10% custos variáveis</small></div>
+              <div class="scenario-mini selected" data-financial-scenario-card="realistic"><span>Realista</span><strong>Base</strong><small>Premissas informadas</small></div>
+              <div class="scenario-mini" data-financial-scenario-card="optimistic"><span>Otimista</span><strong>+20% demanda</strong><small>−10% custos variáveis</small></div>
+            </div>
+            <div class="financial-note"><strong>Boa prática</strong><span>Altere as premissas conforme pesquisas reais de preço, demanda e custos. Os indicadores são estimativas, não garantias.</span></div>
+          </section>
+        </div>
+
+        <section class="form-card financial-results">
+          <div class="form-card-title"><span class="section-number">03</span><div><h3>Indicadores de viabilidade</h3><p>Os principais indicadores são recalculados automaticamente a cada alteração.</p></div></div>
+          <div class="metric-grid financial-metrics">
+            <article class="financial-metric"><span>Receita acumulada</span><strong id="financialRevenue">R$ 0,00</strong><small>no horizonte selecionado</small></article>
+            <article class="financial-metric"><span>Lucro operacional acumulado</span><strong id="financialProfit">R$ 0,00</strong><small>receita menos custos; investimento é separado</small></article>
+            <article class="financial-metric"><span>Ponto de equilíbrio</span><strong id="financialBreakEven">—</strong><small>unidades/mês</small></article>
+            <article class="financial-metric"><span>Margem líquida</span><strong id="financialMargin">—</strong><small>sobre a receita</small></article>
+            <article class="financial-metric"><span>VPL</span><strong id="financialNpv">—</strong><small>valor presente líquido</small></article>
+            <article class="financial-metric"><span>TIR</span><strong id="financialIrr">—</strong><small>taxa interna de retorno</small></article>
+            <article class="financial-metric"><span>Payback simples</span><strong id="financialPayback">—</strong><small>tempo estimado</small></article>
+            <article class="financial-metric"><span>ROI líquido</span><strong id="financialRoi">—</strong><small>resultado após investimento ÷ investimento</small></article>
+          </div>
+          <div class="financial-reading" aria-live="polite"><strong id="financialReading">Preencha as premissas.</strong><span id="financialReadingText">Quando houver dados suficientes, esta área apresentará uma leitura objetiva dos resultados.</span></div>
+        </section>
+
+        <section class="form-card cashflow-card">
+          <div class="form-card-title"><span class="section-number">04</span><div><h3>Fluxo de caixa projetado</h3><p>Veja receita, custos e caixa líquido mês a mês para o cenário selecionado.</p></div></div>
+          <div class="cashflow-chart" id="financialCashflowChart" aria-label="Gráfico do caixa líquido projetado"></div>
+          <div class="cashflow-wrap">
+            <table class="cashflow-table">
+              <thead><tr><th>Mês</th><th>Demanda</th><th>Receita</th><th>Custos</th><th>Caixa líquido</th><th>Caixa acumulado</th></tr></thead>
+              <tbody id="financialCashflowBody"><tr><td colspan="6">Preencha as premissas para gerar a projeção.</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="form-card financial-comparison">
+          <div class="form-card-title"><span class="section-number">05</span><div><h3>Comparação dos cenários</h3><p>Veja os principais indicadores lado a lado sem alterar as premissas-base.</p></div></div>
+          <div class="cashflow-wrap">
+            <table class="cashflow-table financial-scenario-table">
+              <thead><tr><th scope="col">Cenário</th><th scope="col">Receita</th><th scope="col">Lucro</th><th scope="col">Margem</th><th scope="col">VPL</th><th scope="col">TIR</th><th scope="col">Payback</th><th scope="col">ROI</th></tr></thead>
+              <tbody id="financialScenarioComparisonBody"><tr><td colspan="8">Preencha as premissas para comparar os cenários.</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="form-actions financial-actions" aria-live="polite">
+          <span id="financialSaveStatus" class="save-status">Rascunho salvo automaticamente.</span>
+          <button type="button" class="button secondary-light" id="clearFinancial">Limpar módulo</button>
+          <button type="button" class="button primary" id="saveFinancial">Salvar análise →</button>
+        </div>
+      </section>
+
+
+      <section class="module-section complementary-section" id="complementares">
+        <div class="module-header">
+          <div>
+            <p class="eyebrow">MÓDULO 05 · PLANOS COMPLEMENTARES</p>
+            <h2>Transforme a estratégia em planos de execução.</h2>
+            <p>Organize marketing, operações, pessoas, aspectos legais e tecnologia. O preenchimento é salvo automaticamente neste navegador.</p>
+          </div>
+          <a class="button secondary-light" href="#financeiro">← Módulo 4</a>
+        </div>
+
+        <div class="complementary-progress">
+          <div><span>Progresso do módulo</span><strong id="complementaryProgressPercent">0%</strong></div>
+          <div class="completion-track"><i id="complementaryProgressFill"></i></div>
+          <small id="complementaryProgressText">Preencha os planos para iniciar esta etapa.</small>
+        </div>
+
+        <div class="complementary-tabs" role="tablist" aria-label="Planos complementares">
+          <button type="button" class="complementary-tab active" role="tab" aria-selected="true" aria-controls="complementary-marketing" data-complementary-tab="marketing" tabindex="0"><span>Marketing</span><i data-complementary-tab-progress="marketing">0/5</i></button>
+          <button type="button" class="complementary-tab" role="tab" aria-selected="false" aria-controls="complementary-operations" data-complementary-tab="operations" tabindex="-1"><span>Operações</span><i data-complementary-tab-progress="operations">0/5</i></button>
+          <button type="button" class="complementary-tab" role="tab" aria-selected="false" aria-controls="complementary-people" data-complementary-tab="people" tabindex="-1"><span>Pessoas & RH</span><i data-complementary-tab-progress="people">0/4</i></button>
+          <button type="button" class="complementary-tab" role="tab" aria-selected="false" aria-controls="complementary-legal" data-complementary-tab="legal" tabindex="-1"><span>Jurídico</span><i data-complementary-tab-progress="legal">0/4</i></button>
+          <button type="button" class="complementary-tab" role="tab" aria-selected="false" aria-controls="complementary-it" data-complementary-tab="it" tabindex="-1"><span>Tecnologia</span><i data-complementary-tab-progress="it">0/4</i></button>
+        </div>
+        <div class="complementary-guidance" aria-live="polite">
+          <strong>Como preencher</strong>
+          <span>Complete os campos essenciais de cada aba. Você pode voltar a qualquer etapa e revisar o plano quando quiser.</span>
+          <button type="button" class="text-button" id="suggestComplementaryContent">Usar dados anteriores</button>
+        </div>
+
+        <div class="complementary-panel active" id="complementary-marketing" role="tabpanel" data-complementary-panel="marketing">
+          <section class="form-card">
+            <div class="form-card-title"><span class="section-number">01</span><div><h3>Plano de Marketing</h3><p>Defina como o negócio será encontrado, percebido e convertido.</p></div></div>
+            <div class="field-grid">
+              <label class="field full"><span>Objetivo de marketing</span><textarea data-complementary-field="marketingObjective" rows="3" maxlength="1500" placeholder="Ex.: gerar reconhecimento local e conquistar os primeiros 100 clientes."></textarea></label>
+              <label class="field"><span>Público e posicionamento</span><textarea data-complementary-field="marketingAudience" rows="4" maxlength="1500" placeholder="Quem você quer alcançar e como deseja ser percebido?"></textarea></label>
+              <label class="field"><span>Canais de divulgação</span><textarea data-complementary-field="marketingChannels" rows="4" maxlength="1500" placeholder="Instagram, Google, indicação, anúncios, parceiros..."></textarea></label>
+              <label class="field"><span>Oferta e comunicação</span><textarea data-complementary-field="marketingOffer" rows="4" maxlength="1500" placeholder="Mensagem principal, ofertas, diferenciais e chamadas para ação."></textarea></label>
+              <label class="field"><span>Indicadores e metas</span><textarea data-complementary-field="marketingMetrics" rows="4" maxlength="1500" placeholder="Leads, alcance, conversão, CAC, clientes, receita..."></textarea></label>
+            </div>
+          </section>
+        </div>
+
+        <div class="complementary-panel" id="complementary-operations" role="tabpanel" data-complementary-panel="operations">
+          <section class="form-card">
+            <div class="form-card-title"><span class="section-number">02</span><div><h3>Plano Operacional</h3><p>Descreva como a entrega acontecerá no dia a dia.</p></div></div>
+            <div class="field-grid">
+              <label class="field full"><span>Processo principal</span><textarea data-complementary-field="operationsProcess" rows="4" maxlength="1800" placeholder="Descreva o fluxo desde o pedido do cliente até a entrega."></textarea></label>
+              <label class="field"><span>Recursos e estrutura</span><textarea data-complementary-field="operationsResources" rows="4" maxlength="1500" placeholder="Equipamentos, espaço, materiais e recursos necessários."></textarea></label>
+              <label class="field"><span>Fornecedores e parceiros</span><textarea data-complementary-field="operationsSuppliers" rows="4" maxlength="1500" placeholder="Quem fornece, apoia ou viabiliza a operação?"></textarea></label>
+              <label class="field"><span>Capacidade e rotina</span><textarea data-complementary-field="operationsCapacity" rows="4" maxlength="1500" placeholder="Capacidade de atendimento/produção, horários e rotina."></textarea></label>
+              <label class="field"><span>Indicadores operacionais</span><textarea data-complementary-field="operationsMetrics" rows="4" maxlength="1500" placeholder="Prazo, qualidade, produtividade, perdas, satisfação..."></textarea></label>
+            </div>
+          </section>
+        </div>
+
+        <div class="complementary-panel" id="complementary-people" role="tabpanel" data-complementary-panel="people">
+          <section class="form-card">
+            <div class="form-card-title"><span class="section-number">03</span><div><h3>Plano de Pessoas & RH</h3><p>Planeje equipe, competências, contratação e cultura.</p></div></div>
+            <div class="field-grid">
+              <label class="field"><span>Estrutura da equipe</span><textarea data-complementary-field="peopleStructure" rows="4" maxlength="1500" placeholder="Funções, responsabilidades e quantidade de pessoas."></textarea></label>
+              <label class="field"><span>Competências necessárias</span><textarea data-complementary-field="peopleSkills" rows="4" maxlength="1500" placeholder="Conhecimentos, habilidades e comportamentos essenciais."></textarea></label>
+              <label class="field"><span>Contratação e desenvolvimento</span><textarea data-complementary-field="peopleHiring" rows="4" maxlength="1500" placeholder="Quando contratar, como selecionar e como desenvolver a equipe."></textarea></label>
+              <label class="field"><span>Cultura e liderança</span><textarea data-complementary-field="peopleCulture" rows="4" maxlength="1500" placeholder="Princípios, estilo de liderança e ambiente desejado."></textarea></label>
+            </div>
+          </section>
+        </div>
+
+        <div class="complementary-panel" id="complementary-legal" role="tabpanel" data-complementary-panel="legal">
+          <section class="form-card">
+            <div class="form-card-title"><span class="section-number">04</span><div><h3>Plano Jurídico</h3><p>Mapeie obrigações e pontos que precisam de validação profissional.</p></div></div>
+            <div class="legal-notice"><strong>Importante</strong><span>Este espaço organiza pontos de atenção e não substitui orientação de contador ou advogado.</span></div>
+            <div class="field-grid">
+              <label class="field"><span>Tipo societário e formalização</span><textarea data-complementary-field="legalEntity" rows="4" maxlength="1500" placeholder="MEI, empresário individual, sociedade, outra estrutura ou ponto a validar."></textarea></label>
+              <label class="field"><span>Licenças e registros</span><textarea data-complementary-field="legalLicenses" rows="4" maxlength="1500" placeholder="Alvarás, licenças, registros profissionais ou setoriais."></textarea></label>
+              <label class="field"><span>Contratos e relações</span><textarea data-complementary-field="legalContracts" rows="4" maxlength="1500" placeholder="Contratos com clientes, fornecedores, parceiros e equipe."></textarea></label>
+              <label class="field"><span>Privacidade e proteção de dados</span><textarea data-complementary-field="legalPrivacy" rows="4" maxlength="1500" placeholder="Dados pessoais tratados, consentimentos, segurança e responsabilidades."></textarea></label>
+            </div>
+          </section>
+        </div>
+
+        <div class="complementary-panel" id="complementary-it" role="tabpanel" data-complementary-panel="it">
+          <section class="form-card">
+            <div class="form-card-title"><span class="section-number">05</span><div><h3>Plano de Tecnologia</h3><p>Defina sistemas, dados, segurança e evolução tecnológica.</p></div></div>
+            <div class="field-grid">
+              <label class="field"><span>Sistemas e ferramentas</span><textarea data-complementary-field="itSystems" rows="4" maxlength="1500" placeholder="Site, ERP, CRM, agenda, pagamentos, comunicação..."></textarea></label>
+              <label class="field"><span>Dados e integrações</span><textarea data-complementary-field="itData" rows="4" maxlength="1500" placeholder="Quais dados serão registrados e quais sistemas precisarão conversar?"></textarea></label>
+              <label class="field"><span>Segurança e continuidade</span><textarea data-complementary-field="itSecurity" rows="4" maxlength="1500" placeholder="Acessos, backups, proteção de dados e recuperação."></textarea></label>
+              <label class="field"><span>Roadmap tecnológico</span><textarea data-complementary-field="itRoadmap" rows="4" maxlength="1500" placeholder="O que será feito agora, depois e em uma fase futura?"></textarea></label>
+            </div>
+          </section>
+        </div>
+
+        <div class="form-actions complementary-actions" aria-live="polite">
+          <span id="complementarySaveStatus" class="save-status">Rascunho salvo automaticamente.</span>
+          <button type="button" class="button secondary-light" id="clearComplementary">Limpar módulo</button>
+          <button type="button" class="button primary" id="saveComplementary">Salvar planos →</button>
+        </div>
+      </section>
+
+      <section class="module-section export-section" id="exportacao">
+        <div class="module-header">
+          <div>
+            <p class="eyebrow">MÓDULO 06 · EXPORTAÇÃO E COMPARTILHAMENTO</p>
+            <h2>Transforme seu plano em um documento pronto para usar.</h2>
+            <p>Exporte o conteúdo preenchido, compartilhe uma cópia do plano ou mantenha versões locais para acompanhar sua evolução.</p>
+          </div>
+          <a class="button secondary-light" href="#complementares">← Módulo 5</a>
+        </div>
+
+        <div class="export-guidance"><span class="info-symbol">i</span><div><strong>Antes de exportar</strong><p>Revise os módulos anteriores. O M6 reúne os dados preenchidos neste navegador e cria arquivos sem enviar o plano para um servidor.</p></div></div>
+        <div class="export-overview">
+          <div class="export-progress">
+            <span>Prontidão para exportação</span>
+            <strong id="exportProgressPercent">0%</strong>
+            <div class="completion-track"><i id="exportProgressFill"></i></div>
+            <small id="exportProgressText">Complete os módulos anteriores para preparar o plano.</small>
+          </div>
+          <div class="export-summary" id="exportSummary" aria-live="polite">
+            <strong>Plano de negócio</strong>
+            <span id="exportSummaryText">Nenhum conteúdo consolidado ainda.</span>
+          </div>
+        </div>
+
+        <div class="export-grid">
+          <section class="form-card export-card">
+            <div class="form-card-title"><span class="section-number">01</span><div><h3>Exportar plano</h3><p>Gere arquivos a partir dos dados salvos neste navegador.</p></div></div>
+            <div class="export-actions">
+              <button type="button" class="button primary" id="exportPdf">Imprimir / PDF</button>
+              <button type="button" class="button secondary-light" id="exportWord">Word (.doc)</button>
+              <button type="button" class="button secondary-light" id="exportExcel">Excel (.csv)</button>
+            </div>
+            <small class="export-note">PDF: abre a impressão para salvar como PDF. Word: gera um documento editável. Excel: gera CSV com UTF-8 e separador compatível com Excel.</small>
+          </section>
+
+          <section class="form-card export-card">
+            <div class="form-card-title"><span class="section-number">02</span><div><h3>Compartilhar uma cópia</h3><p>Crie um link local com os dados do plano para abrir em outro navegador.</p></div></div>
+            <div class="share-row">
+              <button type="button" class="button primary" id="createShareLink">Criar link de compartilhamento</button>
+              <button type="button" class="button secondary-light" id="copyShareLink" disabled>Copiar link</button>
+            </div>
+            <textarea id="shareLinkOutput" class="share-link-output" rows="3" readonly placeholder="O link gerado aparecerá aqui."></textarea>
+            <small class="export-note">O link contém os dados no endereço da página; não há armazenamento em servidor. Evite compartilhar informações sensíveis.</small>
+          </section>
+
+          <section class="form-card export-card">
+            <div class="form-card-title"><span class="section-number">03</span><div><h3>Versões do plano</h3><p>Salve pontos de controle antes de mudanças importantes.</p></div></div>
+            <div class="version-create">
+              <input class="text-input" id="versionName" maxlength="80" placeholder="Ex.: Plano inicial">
+              <button type="button" class="button primary" id="savePlanVersion">Salvar versão</button>
+            </div>
+            <div id="planVersions" class="plan-versions" aria-live="polite"></div>
+          </section>
+        </div>
+
+        <div class="export-status" id="exportStatus" aria-live="polite">Pronto.</div><div id="exportDocumentPreview" class="export-document-preview" aria-hidden="true"></div>
+      </section>
+
+      <section class="module-section environment-section" id="ambientes">
+        <div class="module-header">
+          <div>
+            <p class="eyebrow">MÓDULO 02 · ANÁLISE DE AMBIENTES</p>
+            <h2>Entenda o cenário onde seu negócio vai competir.</h2>
+            <p>Mapeie fatores internos e externos antes de tomar decisões estratégicas. O preenchimento é salvo automaticamente neste navegador.</p>
+          </div>
+          <a class="button secondary-light" href="#oportunidade">← Módulo 1</a>
+        </div>
+
+        <div class="environment-progress">
+          <div><span>Progresso do módulo</span><strong id="environmentProgressPercent">0%</strong></div>
+          <div class="completion-track"><i id="environmentProgressFill"></i></div>
+        </div>
+
+        <div class="environment-tabs" role="tablist" aria-label="Ferramentas de análise">
+          <button class="environment-tab active" type="button" role="tab" aria-selected="true" aria-controls="panel-swot" data-environment-tab="swot">SWOT</button>
+          <button class="environment-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-pestel" data-environment-tab="pestel">PESTEL</button>
+          <button class="environment-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-porter" data-environment-tab="porter">5 Forças de Porter</button>
+        </div>
+
+        <div class="environment-panel active" id="panel-swot" role="tabpanel" data-environment-panel="swot">
+          <div class="form-card">
+            <div class="form-card-title"><span class="section-number">SW</span><div><h3>Matriz SWOT</h3><p>Separe o que está dentro do negócio do que vem do ambiente externo.</p></div></div>
+            <div class="swot-grid">
+              <section class="swot-card strength" data-swot-card="strengths"><span>Forças <small>Interno · positivo</small></span><div class="swot-items" id="swotStrengthsList" data-swot-list="strengths"></div><button type="button" class="swot-add" data-swot-add="strengths">+ Adicionar força</button></section>
+              <section class="swot-card weakness" data-swot-card="weaknesses"><span>Fraquezas <small>Interno · negativo</small></span><div class="swot-items" id="swotWeaknessesList" data-swot-list="weaknesses"></div><button type="button" class="swot-add" data-swot-add="weaknesses">+ Adicionar fraqueza</button></section>
+              <section class="swot-card opportunity" data-swot-card="opportunities"><span>Oportunidades <small>Externo · positivo</small></span><div class="swot-items" id="swotOpportunitiesList" data-swot-list="opportunities"></div><button type="button" class="swot-add" data-swot-add="opportunities">+ Adicionar oportunidade</button></section>
+              <section class="swot-card threat" data-swot-card="threats"><span>Ameaças <small>Externo · negativo</small></span><div class="swot-items" id="swotThreatsList" data-swot-list="threats"></div><button type="button" class="swot-add" data-swot-add="threats">+ Adicionar ameaça</button></section>
+            </div>
+            <div class="environment-tip"><strong>Como usar</strong><span>Seja específico. Registre fatos e hipóteses que possam ser verificados depois.</span></div>
+            <div class="swot-reading" aria-live="polite"><strong id="swotReading">Matriz ainda sem dados</strong><span id="swotReadingText">Preencha os quatro quadrantes para gerar um resumo da análise.</span></div>
+            <div class="swot-actions">
+              <button type="button" class="button secondary-light" id="suggestSwot">Adicionar exemplos</button>
+              <small>Você pode editar, apagar ou reorganizar os itens depois.</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="environment-panel" id="panel-pestel" role="tabpanel" data-environment-panel="pestel">
+          <div class="form-card">
+            <div class="form-card-title"><span class="section-number">PE</span><div><h3>Análise PESTEL</h3><p>Registre fatores externos que podem afetar seu negócio.</p></div></div>
+            <div class="pestel-reading" aria-live="polite"><strong id="pestelReading">PESTEL em aberto</strong><span id="pestelReadingText">Registre os seis fatores para concluir esta análise.</span></div>
+            <div class="strategy-grid">
+              <label class="strategy-card"><span>Político</span><textarea id="pestelPolitical" rows="4" placeholder="Governo, políticas públicas, estabilidade..."></textarea></label>
+              <label class="strategy-card"><span>Econômico</span><textarea id="pestelEconomic" rows="4" placeholder="Inflação, juros, renda, câmbio..."></textarea></label>
+              <label class="strategy-card"><span>Social</span><textarea id="pestelSocial" rows="4" placeholder="Comportamento, demografia, hábitos..."></textarea></label>
+              <label class="strategy-card"><span>Tecnológico</span><textarea id="pestelTechnological" rows="4" placeholder="Tecnologias, automação, inovação..."></textarea></label>
+              <label class="strategy-card"><span>Ambiental</span><textarea id="pestelEnvironmental" rows="4" placeholder="Recursos, clima, sustentabilidade..."></textarea></label>
+              <label class="strategy-card"><span>Legal</span><textarea id="pestelLegal" rows="4" placeholder="Leis, normas, licenças, obrigações..."></textarea></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="environment-panel" id="panel-porter" role="tabpanel" data-environment-panel="porter">
+          <div class="form-card">
+            <div class="form-card-title"><span class="section-number">5F</span><div><h3>5 Forças de Porter</h3><p>Avalie a pressão competitiva que pode influenciar a atratividade do setor.</p></div></div>
+            <div class="porter-list">
+              <label class="porter-row"><div><span>Rivalidade entre concorrentes</span><small>Quantidade e intensidade da concorrência.</small></div><select id="porterRivalry"><option value="">Selecione</option><option>Baixa</option><option>Média</option><option>Alta</option></select><textarea id="porterRivalryNote" rows="2" placeholder="Evidências ou observações"></textarea></label>
+              <label class="porter-row"><div><span>Ameaça de novos entrantes</span><small>Facilidade de novos concorrentes entrarem no mercado.</small></div><select id="porterEntrants"><option value="">Selecione</option><option>Baixa</option><option>Média</option><option>Alta</option></select><textarea id="porterEntrantsNote" rows="2" placeholder="Evidências ou observações"></textarea></label>
+              <label class="porter-row"><div><span>Poder dos fornecedores</span><small>Dependência e capacidade de negociação dos fornecedores.</small></div><select id="porterSuppliers"><option value="">Selecione</option><option>Baixo</option><option>Médio</option><option>Alto</option></select><textarea id="porterSuppliersNote" rows="2" placeholder="Evidências ou observações"></textarea></label>
+              <label class="porter-row"><div><span>Poder dos clientes</span><small>Capacidade dos clientes influenciarem preço e condições.</small></div><select id="porterCustomers"><option value="">Selecione</option><option>Baixo</option><option>Médio</option><option>Alto</option></select><textarea id="porterCustomersNote" rows="2" placeholder="Evidências ou observações"></textarea></label>
+              <label class="porter-row"><div><span>Ameaça de substitutos</span><small>Existência de alternativas que resolvem a mesma necessidade.</small></div><select id="porterSubstitutes"><option value="">Selecione</option><option>Baixa</option><option>Média</option><option>Alta</option></select><textarea id="porterSubstitutesNote" rows="2" placeholder="Evidências ou observações"></textarea></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions environment-actions" aria-live="polite">
+          <span id="environmentSaveStatus" class="save-status">Rascunho salvo automaticamente.</span>
+          <button type="button" class="button secondary-light" id="clearEnvironment">Limpar módulo</button>
+          <button type="button" class="button primary" id="saveEnvironment">Salvar análise →</button>
+        </div>
+      </section>
+
     </main>
   </div>
   <div class="toast" id="toast" role="status">Demonstração da interface — módulos serão construídos por etapas.</div>
   <script src="js/app.js"></script>
+  <script src="js/management.js"></script>
 </body>
 </html>

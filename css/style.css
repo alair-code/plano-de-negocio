@@ -155,3 +155,186 @@ button { font: inherit; }
 .completion-bar{padding:15px 18px;border:1px solid var(--line);border-radius:14px;background:#fff}
 .completion-bar>div:first-child{display:flex;justify-content:space-between;margin-bottom:8px;font-size:10px;color:var(--muted)}
 .completion-bar strong{color:var(--primary)}.completion-track{height:6px;border-radius:20px;background:#eceef4;overflow:hidden}.completion-track i{display:block;width:0;height:100%;background:var(--primary);transition:.25s ease}
+
+.environment-progress{padding:15px 18px;border:1px solid var(--line);border-radius:14px;background:#fff;margin-bottom:18px}.environment-progress>div:first-child{display:flex;justify-content:space-between;margin-bottom:8px;font-size:10px;color:var(--muted)}.environment-progress strong{color:var(--primary)}
+.environment-tabs{display:flex;gap:8px;padding:6px;border:1px solid var(--line);border-radius:14px;background:#fff;margin-bottom:16px;overflow:auto}.environment-tab{border:0;background:transparent;color:var(--muted);padding:10px 14px;border-radius:9px;cursor:pointer;font-size:11px;font-weight:750;white-space:nowrap}.environment-tab.active{background:#ededff;color:var(--primary)}
+.environment-panel{display:none}.environment-panel.active{display:block}.swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.swot-card,.strategy-card{display:grid;gap:9px;padding:17px;border:1px solid var(--line);border-radius:14px;background:#fafbfc}.swot-card>span,.strategy-card>span{font-size:12px;font-weight:800}.swot-card small{display:block;margin-top:4px;color:var(--muted);font-size:9px;font-weight:500}.swot-card textarea,.strategy-card textarea,.porter-row textarea{width:100%;border:1px solid #dfe4ee;border-radius:10px;padding:12px;background:#fff;color:var(--text);font:inherit;font-size:12px;resize:vertical;outline:none}.swot-card textarea:focus,.strategy-card textarea:focus,.porter-row textarea:focus{border-color:#aaaaff;box-shadow:0 0 0 3px rgba(91,92,226,.08)}.swot-card.strength{border-top:3px solid #4ca77d}.swot-card.weakness{border-top:3px solid #e0a14b}.swot-card.opportunity{border-top:3px solid #5b86d8}.swot-card.threat{border-top:3px solid #d66b6b}
+.strategy-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.strategy-card span{color:var(--primary)}.porter-list{display:grid;gap:12px}.porter-row{display:grid;grid-template-columns:1.2fr 150px 1fr;gap:12px;align-items:center;padding:15px;border:1px solid var(--line);border-radius:13px;background:#fafbfc}.porter-row>div span{display:block;font-size:11px;font-weight:800}.porter-row>div small{display:block;margin-top:4px;color:var(--muted);font-size:9px;line-height:1.4}.porter-row select{width:100%;border:1px solid #dfe4ee;border-radius:10px;padding:11px;background:#fff;color:var(--text);font:inherit;font-size:11px;outline:none}.environment-tip{display:flex;gap:10px;margin-top:15px;padding:13px 15px;border-radius:12px;background:#f8f8ff;border:1px solid #e2e4ff;font-size:10px}.environment-tip strong{color:var(--primary)}.environment-tip span{color:var(--muted)}
+@media(max-width:760px){.swot-grid,.strategy-grid{grid-template-columns:1fr}.porter-row{grid-template-columns:1fr}.environment-tabs{scrollbar-width:none}.environment-actions .button{width:100%;justify-content:center}}
+
+/* Refinos de UX — Módulo 2 */
+.environment-tabs{position:sticky;top:0;z-index:4;box-shadow:0 4px 16px rgba(20,28,55,.035)}
+.environment-tab:focus-visible,.button:focus-visible,.field input:focus-visible,.field textarea:focus-visible,.porter-row select:focus-visible,.swot-card textarea:focus-visible,.strategy-card textarea:focus-visible{outline:3px solid rgba(91,92,226,.18);outline-offset:2px}
+.swot-card{transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+.swot-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(20,28,55,.06)}
+.swot-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;padding:12px 14px;border-top:1px solid #eceef4}
+.swot-actions small{color:var(--muted);font-size:9px}
+.environment-actions{margin-top:2px;padding-top:4px}
+@media(max-width:760px){.environment-tabs{position:relative}.swot-actions{align-items:flex-start;flex-direction:column}.swot-actions .button{width:100%;justify-content:center}}
+
+.module-card.completed{border-color:#b9dfd0;box-shadow:0 8px 25px rgba(47,155,115,.08)}
+.module-card.completed .module-status{color:#2f9b73;border-color:#c7e8dc;background:#f3fbf7}
+.module-action{margin-top:auto;padding-top:17px;color:var(--primary);font-size:11px;font-weight:800}
+.porter-insight{display:grid;gap:5px;margin-top:15px;padding:15px 16px;border-radius:13px;border:1px solid #e2e4ff;background:#f8f8ff}
+.porter-insight strong{font-size:11px;color:var(--primary)}
+.porter-insight span{font-size:10px;color:var(--muted);line-height:1.5}
+
+.swot-reading,.pestel-reading{display:grid;gap:5px;margin-top:15px;padding:15px 16px;border:1px solid #e2e4ff;border-radius:13px;background:#f8f8ff}
+.swot-reading strong,.pestel-reading strong{font-size:11px;color:var(--primary)}
+.swot-reading span,.pestel-reading span{font-size:10px;color:var(--muted);line-height:1.5}
+.module-action.disabled{color:#a0a7b5;pointer-events:none;cursor:not-allowed}
+.module-action[aria-disabled="true"]{opacity:.65}
+.nav-item[aria-disabled="true"]{cursor:not-allowed;opacity:.55}
+@media(max-width:760px){
+  .swot-reading,.pestel-reading{padding:13px}
+}
+
+.swot-items{display:grid;gap:8px;min-height:34px}
+.swot-item{display:grid;grid-template-columns:20px 1fr 28px;gap:7px;align-items:start;padding:7px;border:1px solid #e0e4ec;border-radius:10px;background:#fff;transition:.15s ease}
+.swot-item:hover{border-color:#c9ccda;box-shadow:0 3px 12px rgba(20,28,55,.04)}
+.swot-item.dragging{opacity:.55;border-style:dashed}
+.swot-item textarea{width:100%;min-height:58px;border:1px solid #e1e5ed;border-radius:8px;padding:9px;background:#fbfcfe;color:var(--text);font:inherit;font-size:11px;resize:vertical;outline:none}
+.swot-item textarea:focus{border-color:#aaaaff;box-shadow:0 0 0 3px rgba(91,92,226,.08);background:#fff}
+.swot-drag{padding-top:9px;color:#a0a8b7;font-size:12px;letter-spacing:-3px;cursor:grab;user-select:none}
+.swot-item:active .swot-drag{cursor:grabbing}
+.swot-remove{width:28px;height:28px;border:0;border-radius:8px;background:#f5f6f9;color:#8992a3;cursor:pointer;font-size:17px;line-height:1}
+.swot-remove:hover{background:#fff0f0;color:#c34f4f}
+.swot-add{border:1px dashed #cfd4df;border-radius:9px;background:#fbfcfe;color:var(--primary);padding:9px 10px;text-align:left;font-size:10px;font-weight:800;cursor:pointer}
+.swot-add:hover{border-color:#aaaaff;background:#f8f8ff}
+.swot-card:has(.swot-item){box-shadow:0 5px 18px rgba(20,28,55,.035)}
+@media(max-width:760px){
+  .swot-item{grid-template-columns:18px 1fr 28px}
+  .swot-item textarea{min-height:54px}
+}
+
+/* Módulo 3 — estrutura do plano de negócios */
+.plan-progress-card{margin:22px 0;padding:18px 20px;border:1px solid var(--border,#e5e7eb);border-radius:18px;background:#fff;box-shadow:0 8px 24px rgba(15,23,42,.05)}
+.plan-progress-card>div:first-child{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:10px}
+.plan-progress-card strong{font-size:20px}
+.plan-progress-card small{display:block;margin-top:9px;color:#64748b}
+.plan-layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:22px;align-items:start}
+.plan-outline{position:sticky;top:18px;border:1px solid var(--border,#e5e7eb);border-radius:18px;background:#fff;padding:12px;box-shadow:0 8px 24px rgba(15,23,42,.04)}
+.plan-outline-head{display:flex;justify-content:space-between;padding:8px 10px 12px;color:#334155}
+.plan-outline-head span{font-size:12px;color:#64748b}
+.plan-nav-item{width:100%;display:grid;grid-template-columns:30px 1fr 8px;gap:8px;align-items:center;text-align:left;border:0;background:transparent;border-radius:12px;padding:10px;color:#475569;cursor:pointer}
+.plan-nav-item:hover,.plan-nav-item.active{background:#f5f3ff;color:#4f46e5}
+.plan-nav-item b{font-size:11px}
+.plan-nav-item span{font-size:13px}
+.plan-nav-item i{width:7px;height:7px;border-radius:50%;background:#cbd5e1}
+.plan-nav-item.complete i{background:#22c55e}
+.plan-nav-item.active i{background:#6366f1}
+.plan-editor{min-width:0}
+.plan-section-card{display:none;padding:24px;border:1px solid var(--border,#e5e7eb);border-radius:20px;background:#fff;box-shadow:0 8px 24px rgba(15,23,42,.04)}
+.plan-section-card.active{display:block}
+.plan-section-head{display:flex;gap:14px;align-items:flex-start;margin-bottom:22px}
+.plan-section-head>span{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:#eef2ff;color:#4f46e5;font-weight:800;flex:0 0 auto}
+.plan-section-head h3{margin:0 0 5px}
+.plan-section-head p{margin:0;color:#64748b;line-height:1.55}
+.plan-guidance{display:flex;gap:10px;margin-top:16px;padding:13px 15px;border-radius:12px;background:#f8fafc;color:#475569}
+.plan-guidance strong{color:#334155}
+.plan-editor-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:16px;flex-wrap:wrap}
+.plan-editor-actions .save-status{margin-right:auto}
+@media(max-width:900px){.plan-layout{grid-template-columns:1fr}.plan-outline{position:static}.plan-outline nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}.plan-nav-item{padding:9px}}
+@media(max-width:560px){.plan-outline nav{grid-template-columns:1fr}.plan-section-card{padding:18px}.plan-editor-actions{align-items:stretch;flex-direction:column}.plan-editor-actions .save-status{margin-right:0}.plan-editor-actions .button{width:100%}}
+
+/* Refinamento do Módulo 3 */
+.plan-smart-tools{display:flex;justify-content:space-between;align-items:center;gap:18px;margin:18px 0;padding:18px 20px;border:1px solid #ddd6fe;border-radius:18px;background:#faf9ff}
+.plan-smart-copy{display:grid;gap:4px}.plan-smart-copy p{margin:0;color:#64748b;line-height:1.5;font-size:14px}.smart-badge{font-size:10px;font-weight:800;letter-spacing:.08em;color:#6366f1}
+.plan-source-panel{display:flex;justify-content:space-between;gap:16px;align-items:center;margin:-8px 0 18px;padding:12px 16px;border-radius:12px;background:#f8fafc;color:#475569;font-size:13px}
+.plan-source-panel>div{display:grid;gap:3px}.plan-source-panel span{color:#64748b}.plan-section-actions{display:flex;justify-content:flex-end;margin:-10px 0 14px}
+.text-button{border:0;background:transparent;color:#4f46e5;font-weight:700;cursor:pointer;padding:6px 0}.text-button:hover{text-decoration:underline}
+.plan-section-card textarea:focus{box-shadow:0 0 0 3px rgba(99,102,241,.1)}
+.plan-nav-item:focus-visible,.text-button:focus-visible{outline:3px solid rgba(99,102,241,.25);outline-offset:2px}
+@media(max-width:600px){.plan-smart-tools{align-items:stretch;flex-direction:column}.plan-smart-tools .button{width:100%}.plan-source-panel{align-items:flex-start;flex-direction:column}}
+
+
+/* Módulo 4 — Viabilidade Financeira */
+.financial-progress{margin:24px 0 18px;padding:18px 20px;background:#fff;border:1px solid var(--border,#e5e7eb);border-radius:18px;box-shadow:0 8px 24px rgba(15,23,42,.04)}
+.financial-progress>div:first-child{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:10px}
+.financial-progress strong{font-size:1.05rem}
+.financial-progress small{display:block;margin-top:9px;color:#667085}
+.financial-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(300px,.65fr);gap:18px}
+.financial-assumptions,.scenario-card,.financial-results,.cashflow-card{margin-bottom:18px}
+.scenario-selector{display:flex;gap:8px;margin-bottom:16px;padding:5px;background:#f4f5f8;border-radius:12px}
+.scenario-button{flex:1;border:0;background:transparent;border-radius:9px;padding:10px 12px;font:inherit;font-weight:700;color:#667085;cursor:pointer}
+.scenario-button.active{background:#fff;color:#4338ca;box-shadow:0 2px 8px rgba(15,23,42,.08)}
+.scenario-cards{display:grid;gap:10px}
+.scenario-mini{padding:14px;border:1px solid #e6e8ef;border-radius:13px;background:#fafbfc}
+.scenario-mini.selected{border-color:#c7c4ff;background:#f7f6ff}
+.scenario-mini span,.scenario-mini strong,.scenario-mini small{display:block}
+.scenario-mini span{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:#667085}
+.scenario-mini strong{margin:5px 0 2px}
+.scenario-mini small{color:#667085}
+.financial-note,.financial-reading{display:flex;gap:12px;padding:14px 16px;border-radius:13px;background:#f7f8fb;color:#667085}
+.financial-note{margin-top:16px}
+.financial-note strong,.financial-reading strong{color:#1f2937;white-space:nowrap}
+.metric-grid.financial-metrics{grid-template-columns:repeat(4,minmax(0,1fr))}
+.financial-metric{padding:18px;border:1px solid #e7e8ee;border-radius:14px;background:#fff}
+.financial-metric span,.financial-metric small{display:block;color:#667085}
+.financial-metric span{font-size:.82rem}
+.financial-metric strong{display:block;margin:7px 0;font-size:1.22rem;letter-spacing:-.02em}
+.financial-metric small{font-size:.75rem}
+.financial-reading{margin-top:18px;align-items:flex-start}
+.cashflow-wrap{overflow:auto}
+.cashflow-table{width:100%;border-collapse:collapse;min-width:720px}
+.cashflow-table th,.cashflow-table td{padding:12px 10px;border-bottom:1px solid #eceef2;text-align:right;white-space:nowrap}
+.cashflow-table th:first-child,.cashflow-table td:first-child{text-align:left}
+.cashflow-table th{font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;color:#667085;background:#fafbfc}
+.cashflow-table td{font-size:.9rem}
+.cashflow-table tr:last-child td{border-bottom:0}
+@media(max-width:980px){.financial-grid{grid-template-columns:1fr}.metric-grid.financial-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.metric-grid.financial-metrics{grid-template-columns:1fr}.financial-note,.financial-reading{display:block}.financial-note strong,.financial-reading strong{display:block;margin-bottom:5px}.scenario-selector{flex-direction:column}}
+
+.cashflow-chart{display:flex;align-items:flex-end;gap:5px;height:170px;padding:18px 8px 8px;margin-bottom:18px;border:1px solid #eceef2;border-radius:14px;background:#fafbfc;overflow:hidden}
+.cashflow-bar{flex:1;min-width:5px;height:100%;display:flex;align-items:flex-end;position:relative}
+.cashflow-bar i{display:block;width:100%;min-height:2px;border-radius:4px 4px 2px 2px;background:#4f46e5}
+.cashflow-bar.negative i{background:#d97706}
+.cashflow-bar span{position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);font-size:9px;color:#98a2b3}
+
+/* Refinamento final — Módulo 4 */
+.scenario-mini{transition:border-color .18s ease,background .18s ease,box-shadow .18s ease}
+.scenario-mini.selected{box-shadow:0 0 0 2px rgba(79,70,229,.08)}
+.financial-comparison{overflow:hidden}
+.financial-scenario-table th:first-child,.financial-scenario-table td:first-child{text-align:left}
+.financial-scenario-table tbody tr.selected{background:#f7f6ff}
+.financial-scenario-table tbody th{font-size:.9rem;border-bottom:1px solid #eceef2;white-space:nowrap}
+@media(max-width:900px){.financial-scenario-table{min-width:980px}}
+
+/* Módulo 5 — Planos Complementares */
+.complementary-progress{margin:0 0 24px;padding:14px 18px;border:1px solid #e7e8ee;border-radius:14px;background:#fff}
+.complementary-progress>div:first-child{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:9px}
+.complementary-progress strong{font-size:1rem}
+.complementary-progress small{display:block;margin-top:8px;color:#6b7280}
+.complementary-tabs{display:flex;gap:8px;overflow:auto;padding-bottom:8px;margin-bottom:16px}
+.complementary-tab{border:1px solid #e4e5eb;background:#fff;border-radius:10px;padding:10px 14px;white-space:nowrap;cursor:pointer;font:inherit}
+.complementary-tab:hover,.complementary-tab:focus-visible,.complementary-tab.active{border-color:#4f46e5}
+.complementary-tab.active{background:#f5f3ff;font-weight:700}
+.complementary-panel{display:none}
+.complementary-panel.active{display:block}
+.complementary-actions{margin-top:20px}
+.legal-notice{display:flex;gap:10px;align-items:flex-start;padding:13px 15px;margin-bottom:18px;border-radius:12px;background:#fff8e8;border:1px solid #f1dfad;color:#6b5420}
+.legal-notice strong{white-space:nowrap}
+@media(max-width:700px){.complementary-tabs{scrollbar-width:thin}.complementary-progress{padding:12px}.legal-notice{display:block}.legal-notice strong{display:block;margin-bottom:4px}}
+
+/* Refinamento M5 */
+.complementary-tabs{align-items:stretch}
+.complementary-tab{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:132px}
+.complementary-tab i{font-style:normal;font-size:.72rem;color:#7b8190;padding:2px 6px;border-radius:999px;background:#f2f3f7}
+.complementary-tab.complete i{background:#e9f8ef;color:#176b3a}
+.complementary-tab.complete{border-color:#b8dec7}
+.complementary-guidance{display:flex;align-items:center;gap:12px;margin:-4px 0 20px;padding:12px 15px;border:1px solid #e7e8ee;border-radius:12px;background:#fafafa;color:#5f6675;font-size:.88rem}
+.complementary-guidance strong{color:#202532;white-space:nowrap}
+.complementary-guidance .text-button{margin-left:auto;white-space:nowrap}
+.complementary-panel[hidden]{display:none}
+@media(max-width:700px){.complementary-guidance{align-items:flex-start;flex-wrap:wrap}.complementary-guidance .text-button{margin-left:0}.complementary-tab{min-width:124px}}
+
+/* Módulo 6 — Exportação */
+.export-overview{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;margin-bottom:20px}
+.export-progress,.export-summary{padding:18px;border:1px solid #e7e8ee;border-radius:14px;background:#fff}
+.export-progress{display:grid;grid-template-columns:1fr auto;gap:8px 16px;align-items:center}.export-progress strong{font-size:1.1rem}.export-progress .completion-track{grid-column:1/-1}.export-progress small{grid-column:1/-1;color:#6b7280}.export-summary{display:flex;flex-direction:column;justify-content:center;gap:6px}.export-summary span{color:#6b7280;font-size:.9rem}
+.export-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.export-card{height:100%}.export-card:nth-child(3){grid-column:1/-1}.export-actions,.share-row,.version-create{display:flex;gap:10px;flex-wrap:wrap}.export-note{display:block;margin-top:12px;color:#6b7280;line-height:1.5}.share-link-output{width:100%;margin-top:14px;resize:vertical;font-size:.8rem}.version-create .text-input{flex:1;min-width:180px}.plan-versions{margin-top:14px;display:grid;gap:8px}.plan-version{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:12px 14px;border:1px solid #e7e8ee;border-radius:10px;background:#fafafa}.plan-version div:first-child{display:flex;flex-direction:column;gap:3px}.plan-version small{color:#6b7280}.plan-version .text-button{margin-left:8px}.text-button.danger{color:#a33}.export-status{margin-top:18px;padding:12px 14px;border-radius:10px;background:#f5f6f8;color:#596170}
+@media(max-width:800px){.export-overview,.export-grid{grid-template-columns:1fr}.export-card:nth-child(3){grid-column:auto}}
+@media print{body>*:not(main){display:none!important}.export-document-preview{display:block!important}.export-document-preview table{width:100%;border-collapse:collapse}.export-document-preview td{border:1px solid #ccc;padding:8px;vertical-align:top}.export-document-preview td:first-child{width:30%;font-weight:700}.export-document-preview h1{margin-bottom:6px}.export-document-preview p{color:#555}.module-section:not(#exportacao){display:none!important}#exportacao{display:block!important;border:0!important;box-shadow:none!important}#exportacao .export-document-preview{display:block!important}#exportacao .module-header>a,#exportacao .export-progress,#exportacao .export-actions,#exportacao .share-row,#exportacao .share-link-output,#exportacao .version-create,#exportacao .plan-versions,#exportacao .export-status,.export-document-preview{display:none!important}.export-grid{display:block}.export-card{border:0!important;box-shadow:none!important;break-inside:avoid;margin-bottom:20px}.export-card:nth-child(2),.export-card:nth-child(3){display:block}.export-card .form-card-title{display:none}.export-card:nth-child(1){display:block}.export-card:nth-child(1)::after{content:"O conteúdo completo do plano está disponível nos módulos preenchidos. Para uma versão consolidada, utilize Word ou Excel.";display:block;margin-top:10px}.export-overview{display:none}}
+
+/* Refinamento M6 */
+.export-guidance{display:flex;gap:12px;align-items:flex-start;padding:15px 17px;margin-bottom:18px;border:1px solid #e4e7ec;border-radius:14px;background:#f8fafc}.export-guidance .info-symbol{flex:0 0 auto}.export-guidance strong{display:block;margin-bottom:3px}.export-guidance p{margin:0;color:#687180;line-height:1.5;font-size:.9rem}.export-card{display:flex;flex-direction:column}.export-card .export-note{margin-top:auto;padding-top:14px}.export-actions .button,.share-row .button{min-height:42px}.share-link-output{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;line-height:1.45}.share-link-output.share-link-long{border-color:#d4a72c}.plan-version{transition:transform .15s ease,box-shadow .15s ease}.plan-version:hover{transform:translateY(-1px);box-shadow:0 5px 18px rgba(20,30,50,.07)}.plan-version .text-button{padding:5px 7px}.export-status{min-height:22px}.export-document-preview{background:#fff}.export-document-preview table{margin-top:18px}
