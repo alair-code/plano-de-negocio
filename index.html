@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Business Plan Builder — criação, análise e gestão de planos de negócios.">
+  <meta name="theme-color" content="#11162a">
+  <meta property="og:title" content="Business Plan Builder">
+  <meta property="og:description" content="Jornada guiada para transformar uma ideia em um plano de negócio: oportunidade, ambientes, plano, viabilidade financeira, planos complementares, exportação e gestão.">
+  <meta property="og:type" content="website">
   <title>Business Plan Builder</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -36,16 +40,16 @@
           <div class="progress-label"><span>Progresso geral</span><strong>0%</strong></div>
           <div class="progress-track"><span></span></div>
         </div>
-        <small>Fase 0 · Estrutura inicial</small>
+        <small>Módulos 1–7 disponíveis</small>
       </div>
     </aside>
 
     <main class="main-content">
       <header class="topbar">
-        <button class="menu-button" id="menuButton" aria-label="Abrir menu">☰</button>
+        <button class="menu-button" id="menuButton" type="button" aria-label="Abrir menu" aria-controls="sidebar" aria-expanded="false">☰</button>
         <div class="breadcrumb">Business Plan Builder <span>/</span> Visão geral</div>
         <div class="topbar-actions">
-          <button class="tutorial-button" id="tutorialButton" type="button" aria-label="Como usar este menu">?</button><button class="icon-button" aria-label="Notificações">♢</button>
+          <button class="tutorial-button" id="tutorialButton" type="button" aria-label="Como usar este menu">?</button>
           <button class="auth-button" id="authButton" type="button">Entrar</button>
           <div class="avatar" id="userAvatar" aria-label="Usuário">A</div>
         </div>
@@ -178,6 +182,11 @@
           <div class="step"><b>03</b><span>Atratividade</span></div>
         </div>
 
+        <div class="completion-bar">
+          <div><span>Conclusão do módulo 1</span><strong id="completionPercent">0%</strong></div>
+          <div class="completion-track"><i id="completionFill"></i></div>
+        </div>
+
         <form id="opportunityForm" class="opportunity-form" novalidate>
           <section class="form-card">
             <div class="form-card-title"><span class="section-number">01</span><div><h3>Defina a oportunidade</h3><p>Comece pelo problema que você pretende resolver.</p></div></div>
@@ -228,6 +237,81 @@
         </form>
       </section>
 
+
+      <section class="module-section environment-section" id="ambientes">
+        <div class="module-header">
+          <div>
+            <p class="eyebrow">MÓDULO 02 · ANÁLISE DE AMBIENTES</p>
+            <h2>Entenda o cenário onde seu negócio vai competir.</h2>
+            <p>Mapeie fatores internos e externos antes de tomar decisões estratégicas. O preenchimento é salvo automaticamente neste navegador.</p>
+          </div>
+          <a class="button secondary-light" href="#oportunidade">← Módulo 1</a>
+        </div>
+
+        <div class="environment-progress">
+          <div><span>Progresso do módulo</span><strong id="environmentProgressPercent">0%</strong></div>
+          <div class="completion-track"><i id="environmentProgressFill"></i></div>
+        </div>
+
+        <div class="environment-tabs" role="tablist" aria-label="Ferramentas de análise">
+          <button class="environment-tab active" type="button" role="tab" aria-selected="true" aria-controls="panel-swot" data-environment-tab="swot">SWOT</button>
+          <button class="environment-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-pestel" data-environment-tab="pestel">PESTEL</button>
+          <button class="environment-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-porter" data-environment-tab="porter">5 Forças de Porter</button>
+        </div>
+
+        <div class="environment-panel active" id="panel-swot" role="tabpanel" data-environment-panel="swot">
+          <div class="form-card">
+            <div class="form-card-title"><span class="section-number">SW</span><div><h3>Matriz SWOT</h3><p>Separe o que está dentro do negócio do que vem do ambiente externo.</p></div></div>
+            <div class="swot-grid">
+              <section class="swot-card strength" data-swot-card="strengths"><span>Forças <small>Interno · positivo</small></span><div class="swot-items" id="swotStrengthsList" data-swot-list="strengths"></div><button type="button" class="swot-add" data-swot-add="strengths">+ Adicionar força</button></section>
+              <section class="swot-card weakness" data-swot-card="weaknesses"><span>Fraquezas <small>Interno · negativo</small></span><div class="swot-items" id="swotWeaknessesList" data-swot-list="weaknesses"></div><button type="button" class="swot-add" data-swot-add="weaknesses">+ Adicionar fraqueza</button></section>
+              <section class="swot-card opportunity" data-swot-card="opportunities"><span>Oportunidades <small>Externo · positivo</small></span><div class="swot-items" id="swotOpportunitiesList" data-swot-list="opportunities"></div><button type="button" class="swot-add" data-swot-add="opportunities">+ Adicionar oportunidade</button></section>
+              <section class="swot-card threat" data-swot-card="threats"><span>Ameaças <small>Externo · negativo</small></span><div class="swot-items" id="swotThreatsList" data-swot-list="threats"></div><button type="button" class="swot-add" data-swot-add="threats">+ Adicionar ameaça</button></section>
+            </div>
+            <div class="environment-tip"><strong>Como usar</strong><span>Seja específico. Registre fatos e hipóteses que possam ser verificados depois.</span></div>
+            <div class="swot-reading" aria-live="polite"><strong id="swotReading">Matriz ainda sem dados</strong><span id="swotReadingText">Preencha os quatro quadrantes para gerar um resumo da análise.</span></div>
+            <div class="swot-actions">
+              <button type="button" class="button secondary-light" id="suggestSwot">Adicionar exemplos</button>
+              <small>Você pode editar, apagar ou reorganizar os itens depois.</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="environment-panel" id="panel-pestel" role="tabpanel" data-environment-panel="pestel">
+          <div class="form-card">
+            <div class="form-card-title"><span class="section-number">PE</span><div><h3>Análise PESTEL</h3><p>Registre fatores externos que podem afetar seu negócio.</p></div></div>
+            <div class="pestel-reading" aria-live="polite"><strong id="pestelReading">PESTEL em aberto</strong><span id="pestelReadingText">Registre os seis fatores para concluir esta análise.</span></div>
+            <div class="strategy-grid">
+              <label class="strategy-card"><span>Político</span><textarea id="pestelPolitical" rows="4" placeholder="Governo, políticas públicas, estabilidade..."></textarea></label>
+              <label class="strategy-card"><span>Econômico</span><textarea id="pestelEconomic" rows="4" placeholder="Inflação, juros, renda, câmbio..."></textarea></label>
+              <label class="strategy-card"><span>Social</span><textarea id="pestelSocial" rows="4" placeholder="Comportamento, demografia, hábitos..."></textarea></label>
+              <label class="strategy-card"><span>Tecnológico</span><textarea id="pestelTechnological" rows="4" placeholder="Tecnologias, automação, inovação..."></textarea></label>
+              <label class="strategy-card"><span>Ambiental</span><textarea id="pestelEnvironmental" rows="4" placeholder="Recursos, clima, sustentabilidade..."></textarea></label>
+              <label class="strategy-card"><span>Legal</span><textarea id="pestelLegal" rows="4" placeholder="Leis, normas, licenças, obrigações..."></textarea></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="environment-panel" id="panel-porter" role="tabpanel" data-environment-panel="porter">
+          <div class="form-card">
+            <div class="form-card-title"><span class="section-number">5F</span><div><h3>5 Forças de Porter</h3><p>Avalie a pressão competitiva que pode influenciar a atratividade do setor.</p></div></div>
+            <div class="porter-list">
+              <label class="porter-row"><div><span>Rivalidade entre concorrentes</span><small>Quantidade e intensidade da concorrência.</small></div><select id="porterRivalry"><option value="">Selecione</option><option>Baixa</option><option>Média</option><option>Alta</option></select><textarea id="porterRivalryNote" rows="2" placeholder="Evidências ou observações"></textarea></label>
+              <label class="porter-row"><div><span>Ameaça de novos entrantes</span><small>Facilidade de novos concorrentes entrarem no mercado.</small></div><select id="porterEntrants"><option value="">Selecione</option><option>Baixa</option><option>Média</option><option>Alta</option></select><textarea id="porterEntrantsNote" rows="2" placeholder="Evidências ou observações"></textarea></label>
+              <label class="porter-row"><div><span>Poder dos fornecedores</span><small>Dependência e capacidade de negociação dos fornecedores.</small></div><select id="porterSuppliers"><option value="">Selecione</option><option>Baixo</option><option>Médio</option><option>Alto</option></select><textarea id="porterSuppliersNote" rows="2" placeholder="Evidências ou observações"></textarea></label>
+              <label class="porter-row"><div><span>Poder dos clientes</span><small>Capacidade dos clientes influenciarem preço e condições.</small></div><select id="porterCustomers"><option value="">Selecione</option><option>Baixo</option><option>Médio</option><option>Alto</option></select><textarea id="porterCustomersNote" rows="2" placeholder="Evidências ou observações"></textarea></label>
+              <label class="porter-row"><div><span>Ameaça de substitutos</span><small>Existência de alternativas que resolvem a mesma necessidade.</small></div><select id="porterSubstitutes"><option value="">Selecione</option><option>Baixa</option><option>Média</option><option>Alta</option></select><textarea id="porterSubstitutesNote" rows="2" placeholder="Evidências ou observações"></textarea></label>
+            </div>
+            <div class="porter-insight" aria-live="polite"><strong id="porterReading">Aguardando avaliação</strong><span id="porterReadingText">Preencha as cinco forças para receber uma leitura consolidada.</span></div>
+          </div>
+        </div>
+
+        <div class="form-actions environment-actions" aria-live="polite">
+          <span id="environmentSaveStatus" class="save-status">Rascunho salvo automaticamente.</span>
+          <button type="button" class="button secondary-light" id="clearEnvironment">Limpar módulo</button>
+          <button type="button" class="button primary" id="saveEnvironment">Salvar análise →</button>
+        </div>
+      </section>
 
       <section class="module-section business-plan-section" id="plano">
         <div class="module-header">
@@ -598,13 +682,13 @@
           </section>
 
           <section class="form-card export-card">
-            <div class="form-card-title"><span class="section-number">02</span><div><h3>Compartilhar uma cópia</h3><p>Crie um link local com os dados do plano para abrir em outro navegador.</p></div></div>
+            <div class="form-card-title"><span class="section-number">02</span><div><h3>Compartilhar uma cópia</h3><p>Gere um link persistente no banco para reabrir este plano em outro navegador.</p></div></div>
             <div class="share-row">
               <button type="button" class="button primary" id="createShareLink">Criar link de compartilhamento</button>
               <button type="button" class="button secondary-light" id="copyShareLink" disabled>Copiar link</button>
             </div>
             <textarea id="shareLinkOutput" class="share-link-output" rows="3" readonly placeholder="O link gerado aparecerá aqui."></textarea>
-            <small class="export-note">O link contém os dados no endereço da página; não há armazenamento em servidor. Evite compartilhar informações sensíveis.</small>
+            <small class="export-note">O link é registrado no banco, exige login para ser aberto e pode ser revogado ou expirar. Compartilhe apenas com pessoas de confiança.</small>
           </section>
 
           <section class="form-card export-card">
@@ -620,83 +704,11 @@
         <div class="export-status" id="exportStatus" aria-live="polite">Pronto.</div><div id="exportDocumentPreview" class="export-document-preview" aria-hidden="true"></div>
       </section>
 
-      <section class="module-section environment-section" id="ambientes">
-        <div class="module-header">
-          <div>
-            <p class="eyebrow">MÓDULO 02 · ANÁLISE DE AMBIENTES</p>
-            <h2>Entenda o cenário onde seu negócio vai competir.</h2>
-            <p>Mapeie fatores internos e externos antes de tomar decisões estratégicas. O preenchimento é salvo automaticamente neste navegador.</p>
-          </div>
-          <a class="button secondary-light" href="#oportunidade">← Módulo 1</a>
-        </div>
 
-        <div class="environment-progress">
-          <div><span>Progresso do módulo</span><strong id="environmentProgressPercent">0%</strong></div>
-          <div class="completion-track"><i id="environmentProgressFill"></i></div>
-        </div>
-
-        <div class="environment-tabs" role="tablist" aria-label="Ferramentas de análise">
-          <button class="environment-tab active" type="button" role="tab" aria-selected="true" aria-controls="panel-swot" data-environment-tab="swot">SWOT</button>
-          <button class="environment-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-pestel" data-environment-tab="pestel">PESTEL</button>
-          <button class="environment-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-porter" data-environment-tab="porter">5 Forças de Porter</button>
-        </div>
-
-        <div class="environment-panel active" id="panel-swot" role="tabpanel" data-environment-panel="swot">
-          <div class="form-card">
-            <div class="form-card-title"><span class="section-number">SW</span><div><h3>Matriz SWOT</h3><p>Separe o que está dentro do negócio do que vem do ambiente externo.</p></div></div>
-            <div class="swot-grid">
-              <section class="swot-card strength" data-swot-card="strengths"><span>Forças <small>Interno · positivo</small></span><div class="swot-items" id="swotStrengthsList" data-swot-list="strengths"></div><button type="button" class="swot-add" data-swot-add="strengths">+ Adicionar força</button></section>
-              <section class="swot-card weakness" data-swot-card="weaknesses"><span>Fraquezas <small>Interno · negativo</small></span><div class="swot-items" id="swotWeaknessesList" data-swot-list="weaknesses"></div><button type="button" class="swot-add" data-swot-add="weaknesses">+ Adicionar fraqueza</button></section>
-              <section class="swot-card opportunity" data-swot-card="opportunities"><span>Oportunidades <small>Externo · positivo</small></span><div class="swot-items" id="swotOpportunitiesList" data-swot-list="opportunities"></div><button type="button" class="swot-add" data-swot-add="opportunities">+ Adicionar oportunidade</button></section>
-              <section class="swot-card threat" data-swot-card="threats"><span>Ameaças <small>Externo · negativo</small></span><div class="swot-items" id="swotThreatsList" data-swot-list="threats"></div><button type="button" class="swot-add" data-swot-add="threats">+ Adicionar ameaça</button></section>
-            </div>
-            <div class="environment-tip"><strong>Como usar</strong><span>Seja específico. Registre fatos e hipóteses que possam ser verificados depois.</span></div>
-            <div class="swot-reading" aria-live="polite"><strong id="swotReading">Matriz ainda sem dados</strong><span id="swotReadingText">Preencha os quatro quadrantes para gerar um resumo da análise.</span></div>
-            <div class="swot-actions">
-              <button type="button" class="button secondary-light" id="suggestSwot">Adicionar exemplos</button>
-              <small>Você pode editar, apagar ou reorganizar os itens depois.</small>
-            </div>
-          </div>
-        </div>
-
-        <div class="environment-panel" id="panel-pestel" role="tabpanel" data-environment-panel="pestel">
-          <div class="form-card">
-            <div class="form-card-title"><span class="section-number">PE</span><div><h3>Análise PESTEL</h3><p>Registre fatores externos que podem afetar seu negócio.</p></div></div>
-            <div class="pestel-reading" aria-live="polite"><strong id="pestelReading">PESTEL em aberto</strong><span id="pestelReadingText">Registre os seis fatores para concluir esta análise.</span></div>
-            <div class="strategy-grid">
-              <label class="strategy-card"><span>Político</span><textarea id="pestelPolitical" rows="4" placeholder="Governo, políticas públicas, estabilidade..."></textarea></label>
-              <label class="strategy-card"><span>Econômico</span><textarea id="pestelEconomic" rows="4" placeholder="Inflação, juros, renda, câmbio..."></textarea></label>
-              <label class="strategy-card"><span>Social</span><textarea id="pestelSocial" rows="4" placeholder="Comportamento, demografia, hábitos..."></textarea></label>
-              <label class="strategy-card"><span>Tecnológico</span><textarea id="pestelTechnological" rows="4" placeholder="Tecnologias, automação, inovação..."></textarea></label>
-              <label class="strategy-card"><span>Ambiental</span><textarea id="pestelEnvironmental" rows="4" placeholder="Recursos, clima, sustentabilidade..."></textarea></label>
-              <label class="strategy-card"><span>Legal</span><textarea id="pestelLegal" rows="4" placeholder="Leis, normas, licenças, obrigações..."></textarea></label>
-            </div>
-          </div>
-        </div>
-
-        <div class="environment-panel" id="panel-porter" role="tabpanel" data-environment-panel="porter">
-          <div class="form-card">
-            <div class="form-card-title"><span class="section-number">5F</span><div><h3>5 Forças de Porter</h3><p>Avalie a pressão competitiva que pode influenciar a atratividade do setor.</p></div></div>
-            <div class="porter-list">
-              <label class="porter-row"><div><span>Rivalidade entre concorrentes</span><small>Quantidade e intensidade da concorrência.</small></div><select id="porterRivalry"><option value="">Selecione</option><option>Baixa</option><option>Média</option><option>Alta</option></select><textarea id="porterRivalryNote" rows="2" placeholder="Evidências ou observações"></textarea></label>
-              <label class="porter-row"><div><span>Ameaça de novos entrantes</span><small>Facilidade de novos concorrentes entrarem no mercado.</small></div><select id="porterEntrants"><option value="">Selecione</option><option>Baixa</option><option>Média</option><option>Alta</option></select><textarea id="porterEntrantsNote" rows="2" placeholder="Evidências ou observações"></textarea></label>
-              <label class="porter-row"><div><span>Poder dos fornecedores</span><small>Dependência e capacidade de negociação dos fornecedores.</small></div><select id="porterSuppliers"><option value="">Selecione</option><option>Baixo</option><option>Médio</option><option>Alto</option></select><textarea id="porterSuppliersNote" rows="2" placeholder="Evidências ou observações"></textarea></label>
-              <label class="porter-row"><div><span>Poder dos clientes</span><small>Capacidade dos clientes influenciarem preço e condições.</small></div><select id="porterCustomers"><option value="">Selecione</option><option>Baixo</option><option>Médio</option><option>Alto</option></select><textarea id="porterCustomersNote" rows="2" placeholder="Evidências ou observações"></textarea></label>
-              <label class="porter-row"><div><span>Ameaça de substitutos</span><small>Existência de alternativas que resolvem a mesma necessidade.</small></div><select id="porterSubstitutes"><option value="">Selecione</option><option>Baixa</option><option>Média</option><option>Alta</option></select><textarea id="porterSubstitutesNote" rows="2" placeholder="Evidências ou observações"></textarea></label>
-            </div>
-          </div>
-        </div>
-
-        <div class="form-actions environment-actions" aria-live="polite">
-          <span id="environmentSaveStatus" class="save-status">Rascunho salvo automaticamente.</span>
-          <button type="button" class="button secondary-light" id="clearEnvironment">Limpar módulo</button>
-          <button type="button" class="button primary" id="saveEnvironment">Salvar análise →</button>
-        </div>
-      </section>
 
     </main>
   </div>
-  <div class="toast" id="toast" role="status">Demonstração da interface — módulos serão construídos por etapas.</div>
+  <div class="toast" id="toast" role="status">Bem-vindo ao Business Plan Builder. Preencha os módulos na ordem para montar seu plano.</div>
   <script type="module" src="js/app.js"></script>
   <script src="js/management.js"></script>
   <script type="module" src="js/server-sync.js"></script>

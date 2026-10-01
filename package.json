@@ -1,0 +1,10 @@
+{
+  "name": "business-plan-builder",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Aplicação web para criação, análise e gestão de planos de negócios (HTML5, CSS3 e JavaScript vanilla + Neon).",
+  "scripts": {
+    "test": "node tests/syntax.mjs && node tests/smoke.mjs && node tests/regression.mjs && node tests/security.mjs",
+    "serve": "python3 -m http.server 8080 --bind 0.0.0.0"
+  }
+}

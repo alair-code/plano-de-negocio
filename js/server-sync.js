@@ -3,6 +3,17 @@
   const CLIENT_WAIT_MS = 100;
   const PLAN_KEY = "business-plan-builder:server-plan:v1";
   const VERSION_KEY = "business-plan-builder:versions:v1";
+  const DRAFT_KEYS = [
+    "business-plan-builder:opportunity:v2",
+    "business-plan-builder:environments:v1",
+    "business-plan-builder:plan:v1",
+    "business-plan-builder:financial:v1",
+    "business-plan-builder:complementary:v1"
+  ];
+
+  function hasLocalDrafts() {
+    return DRAFT_KEYS.some(key => { try { return !!localStorage.getItem(key); } catch { return false; } });
+  }
   const FACTOR_MAP = {
     pestelPolitical: "politico", pestelEconomic: "economico", pestelSocial: "social",
     pestelTechnological: "tecnologico", pestelEnvironmental: "ambiental", pestelLegal: "legal"
@@ -180,6 +191,7 @@
       if (planError) throw planError;
       storePlanId(plans[0].id);
       clearUI();
+      dispatchModuleInputs();
       await refreshPlanSelector();
       showToastSafe("Novo plano criado.");
     } catch (err) {
@@ -203,11 +215,7 @@
     ["pestelPolitical","pestelEconomic","pestelSocial","pestelTechnological","pestelEnvironmental","pestelLegal","porterRivalry","porterRivalryNote","porterEntrants","porterEntrantsNote","porterSuppliers","porterSuppliersNote","porterCustomers","porterCustomersNote","porterSubstitutes","porterSubstitutesNote"].forEach(id=>{const el=document.getElementById(id);if(el)el.value="";});
     document.querySelectorAll("[data-swot-list]").forEach(list=>list.innerHTML="");
     try {
-      localStorage.removeItem("business-plan-builder:opportunity:v2");
-      localStorage.removeItem("business-plan-builder:environments:v1");
-      localStorage.removeItem("business-plan-builder:plan:v1");
-      localStorage.removeItem("business-plan-builder:financial:v1");
-      localStorage.removeItem("business-plan-builder:complementary:v1");
+      DRAFT_KEYS.forEach(key => localStorage.removeItem(key));
     } catch {}
     document.getElementById("financialInvestment") && (document.getElementById("financialInvestment").value="");
     document.getElementById("financialFixedCosts") && (document.getElementById("financialFixedCosts").value="");
@@ -367,7 +375,10 @@
       await syncPlanSections(plan.id);
       await syncFinancial(plan.id);
       await syncComplementary(plan.id);
-      await syncManagement(plan.id);
+      // O Módulo 7 é persistido em best-effort: uma falha aqui não invalida
+      // a sincronização dos Módulos 1 a 6 já concluída.
+      try { await syncManagement(plan.id); }
+      catch (managementError) { console.warn("Neon: persistência do Módulo 7", managementError); }
       if(reason==="manual")showToastSafe("Plano sincronizado com o banco.");
     } catch(err) {
       console.error("Neon: sincronização completa",err);
@@ -384,7 +395,7 @@
     if(swot.error||pestel.error||porter.error)throw(swot.error||pestel.error||porter.error);
     const lists={forca:"strengths",fraqueza:"weaknesses",oportunidade:"opportunities",ameaca:"threats"};
     for(const key of Object.values(lists)){const list=document.querySelector('[data-swot-list="'+key+'"]');if(list)list.innerHTML="";}
-    (swot.data||[]).forEach(row=>{ const key=lists[row.categoria]; const list=document.querySelector('[data-swot-list="'+key+'"]'); if(!list)return; const item=document.createElement("div"); item.className="swot-item"; item.draggable=true; item.innerHTML='<span class="swot-drag" aria-hidden="true">⋮⋮</span><textarea rows="2" maxlength="500" placeholder="Descreva um item específico..."></textarea><button type="button" class="swot-remove" aria-label="Remover item">×</button>'; const area=item.querySelector("textarea"); area.value=row.conteudo||""; area.addEventListener("input",debounceSync); item.querySelector(".swot-remove").addEventListener("click",()=>{item.remove();debounceSync()}); list.appendChild(item); });
+    (swot.data||[]).forEach(row=>{ const key=lists[row.categoria]; if(!key||typeof window.addSwotItem!=="function")return; window.addSwotItem(key,row.conteudo||"",false); });
     (pestel.data||[]).forEach(row=>{const id=Object.keys(FACTOR_MAP).find(k=>FACTOR_MAP[k]===row.fator);const el=document.getElementById(id);if(el)el.value=row.analise||"";});
     const porterReverse=Object.entries(PORTER_MAP);
     (porter.data||[]).forEach(row=>{
@@ -439,7 +450,7 @@
       const fields={problem:o?.problema,solution:o?.solucao,audience:o?.publico_alvo,marketLocation:o?.localizacao,differentials:o?.diferenciais,customerJobs:v?.trabalhos_clientes,customerPains:v?.dores,customerGains:v?.ganhos,products:v?.produtos_servicos,painRelievers:v?.alivios_dores,gainCreators:v?.criadores_ganhos};
       Object.entries(fields).forEach(([id,value])=>{const el=document.getElementById(id);if(el&&value!==undefined)el.value=value||"";});
       await loadEnvironment(planId); await loadPlanSections(planId); await loadFinancial(planId); await loadComplementary(planId);
-      document.querySelectorAll("#opportunityForm input,#opportunityForm textarea,#ambientes input,#ambientes textarea,#ambientes select,#plano input,#plano textarea,#financeiro input,#financeiro select,#complementares input,#complementares textarea").forEach(el=>el.dispatchEvent(new Event("input",{bubbles:true})));
+      dispatchModuleInputs();
       showToastSafe("Plano carregado do banco.");
     } catch(err) { console.error("Neon: carregamento do plano",err); showToastSafe("Não foi possível carregar o plano selecionado."); }
   }
@@ -495,10 +506,17 @@
     window.__neonSyncTimer=setTimeout(()=>syncAll("auto"),1200);
   }
 
+  function dispatchModuleInputs() {
+    document.querySelectorAll("#opportunityForm input,#opportunityForm textarea,#ambientes input,#ambientes textarea,#ambientes select,#plano input,#plano textarea,#financeiro input,#financeiro select,#complementares input,#complementares textarea").forEach(el=>el.dispatchEvent(new Event("input",{bubbles:true})));
+  }
+
   function bindSyncEvents() {
-    const selectors=["#opportunityForm input","#opportunityForm textarea","#ambientes input","#ambientes textarea","#ambientes select","#plano textarea","#plano input","#financeiro input","#financeiro select","#complementares textarea","#complementares input"];
-    document.querySelectorAll(selectors.join(",")).forEach(el=>el.addEventListener("input",debounceSync));
-    document.querySelectorAll(selectors.join(",")).forEach(el=>el.addEventListener("change",debounceSync));
+    // Delegação no document: um listener por tipo de evento cobre também campos
+    // criados dinamicamente (ex.: itens do SWOT), em vez de um listener por campo.
+    const scope="#opportunityForm, #ambientes, #plano, #financeiro, #complementares";
+    const inScope=target=>target instanceof Element && target.closest(scope);
+    document.addEventListener("input",event=>{ if(inScope(event.target)) debounceSync(); });
+    document.addEventListener("change",event=>{ if(inScope(event.target)) debounceSync(); });
     ["saveEnvironment","savePlan","saveFinancial","saveComplementary"].forEach(id=>document.getElementById(id)?.addEventListener("click",()=>syncAll("manual")));
     document.getElementById("savePlanVersion")?.addEventListener("click",()=>setTimeout(()=>persistVersion().catch(console.error),250));
     document.getElementById("createShareLink")?.addEventListener("click",()=>setTimeout(()=>persistShareLink().catch(console.error),250));
@@ -518,11 +536,14 @@
       const shareToken=new URLSearchParams(location.search).get("share");
       if(shareToken){
         await loadSharedToken();
+        await refreshPlanSelector().catch(()=>{});
         return;
       }
       const plan=await ensurePlan();
       if(plan)await refreshPlanSelector();
-      if(plan)await loadPlan(plan.id);
+      // Preservação do rascunho local: se há trabalho não sincronizado neste
+      // navegador, o carregamento automático não sobrescreve o que já foi digitado.
+      if(plan && !hasLocalDrafts()) await loadPlan(plan.id);
     } catch(err){console.error("Neon: inicialização",err);}
     window.addEventListener("hashchange",()=>{if(window.getProgress)syncAll("auto");});
   }

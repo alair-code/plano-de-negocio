@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - manutencao
+      - MANUTENCAO
   workflow_dispatch:
 
 permissions:

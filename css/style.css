@@ -464,3 +464,11 @@ body{background:radial-gradient(circle at 80% -10%,rgba(124,108,242,.08),transpa
 #gestao #finalReviewButton:disabled{opacity:.55;cursor:not-allowed;transform:none}
 #gestao #finalReviewButton:disabled:after{display:none}
 #gestao .management-status{min-height:20px}
+
+/* Polimento final — foco acessível, âncoras e feedback */
+.module-section,#dashboard,.plan-section-card{scroll-margin-top:92px}
+a:focus-visible,button:focus-visible,select:focus-visible,textarea:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px solid rgba(91,92,226,.28);outline-offset:2px}
+.nav-item:focus-visible{outline-color:rgba(255,255,255,.55)}
+.toast{pointer-events:none;line-height:1.5}
+button:disabled{cursor:not-allowed}
+@media(max-width:760px){.module-section,#dashboard,.plan-section-card{scroll-margin-top:76px}}

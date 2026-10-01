@@ -18,17 +18,8 @@
   function getProgress() {
     const opportunity = typeof getOpportunityProgress === "function" ? getOpportunityProgress() : 0;
     const environment = typeof getEnvironmentProgress === "function" ? getEnvironmentProgress() : 0;
-    const planValues = typeof getPlanSectionProgress === "function" ? getPlanSectionProgress() : [];
-    const plan = planValues.length ? Math.round(planValues.reduce((a,b) => a+b, 0) / planValues.length) : 0;
-    const financialRequired = ["financialInvestment","financialFixedCosts","financialVariableCost","financialUnitPrice","financialInitialDemand"];
-    const financial = financialRequired.length
-      ? Math.round(financialRequired.filter(id => {
-          const el = document.getElementById(id);
-          if (!el || el.value === "") return false;
-          const n = Number(el.value);
-          return Number.isFinite(n) && (["financialInvestment","financialUnitPrice","financialInitialDemand"].includes(id) ? n > 0 : n >= 0);
-        }).length / financialRequired.length * 100)
-      : 0;
+    const plan = typeof getPlanProgress === "function" ? getPlanProgress() : 0;
+    const financial = typeof getFinancialProgress === "function" ? getFinancialProgress() : 0;
     const complementary = typeof getComplementaryProgress === "function" ? getComplementaryProgress() : 0;
     const exportProgress = complementary === 100 ? 100 : 0;
     const firstSixComplete = [opportunity, environment, plan, financial, complementary, exportProgress].every(value => value === 100);
@@ -42,6 +33,7 @@
     const swot = typeof getSwotState === "function" ? getSwotState() : {strengths:[],weaknesses:[],opportunities:[],threats:[]};
     const pestelIds = ["pestelPolitical","pestelEconomic","pestelSocial","pestelTechnological","pestelEnvironmental","pestelLegal"];
     const porterIds = ["porterRivalry","porterEntrants","porterSuppliers","porterCustomers","porterSubstitutes"];
+    const planValues = typeof getPlanSectionProgress === "function" ? getPlanSectionProgress() : [];
     const checks = [
       {label:"Oportunidade: campos essenciais preenchidos", ok:modules[0]===100, target:"#oportunidade"},
       {label:"SWOT: os quatro quadrantes possuem conteúdo", ok:["strengths","weaknesses","opportunities","threats"].every(k=>swot[k]?.length), target:"#ambientes"},
@@ -60,7 +52,7 @@
         ["Anexos","appendices"]
       ].map(([label,key],index)=>({
         label:"Plano · "+String(index+1).padStart(2,"0")+" — "+label,
-        ok:(typeof getPlanSectionProgress==="function" ? getPlanSectionProgress()[index]===100 : false),
+        ok:planValues[index]===100,
         target:"#plano"
       })),
       {label:"Financeiro: premissas essenciais preenchidas", ok:modules[3]===100, target:"#financeiro"},
@@ -315,4 +307,10 @@
       if(typeof window.showToast==="function")window.showToast("Revisão final registrada. O plano foi marcado como concluído.");
     }
   });
+
+  // APIs consumidas por js/server-sync.js para persistir o Módulo 7
+  // (painel_gestao, alertas_plano e registros_atividade).
+  window.getProgress = getProgress;
+  window.getChecklist = getChecklist;
+  window.getAlerts = getAlerts;
 })();

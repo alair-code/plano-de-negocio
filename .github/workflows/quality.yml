@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - manutencao
+      - MANUTENCAO
       - main
   pull_request:
     branches:

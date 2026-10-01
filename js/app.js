@@ -34,7 +34,10 @@ const sidebar = document.getElementById("sidebar");
 const demoButton = document.getElementById("demoButton");
 const toast = document.getElementById("toast");
 
-menuButton?.addEventListener("click", () => sidebar?.classList.toggle("open"));
+menuButton?.addEventListener("click", () => {
+  const open = sidebar?.classList.toggle("open");
+  menuButton?.setAttribute("aria-expanded", String(Boolean(open)));
+});
 document.querySelectorAll(".nav-item").forEach((item) => item.addEventListener("click", () => sidebar?.classList.remove("open")));
 
 function showToast(message) {
@@ -156,9 +159,21 @@ tutorialStart?.addEventListener("click", () => { tutorialModal.hidden = true; })
 tutorialModal?.addEventListener("click", (event) => { if (event.target === tutorialModal) tutorialModal.hidden = true; });
 
 const navItems = document.querySelectorAll(".nav-item");
+const sectionLabels = {
+  "#dashboard": "Visão geral",
+  "#oportunidade": "Módulo 1 · Oportunidade",
+  "#ambientes": "Módulo 2 · Ambientes",
+  "#plano": "Módulo 3 · Plano de Negócios",
+  "#financeiro": "Módulo 4 · Viabilidade Financeira",
+  "#complementares": "Módulo 5 · Planos Complementares",
+  "#exportacao": "Módulo 6 · Exportação",
+  "#gestao": "Módulo 7 · Painel e Gestão"
+};
 function updateActiveNav() {
   const hash = window.location.hash || "#dashboard";
   navItems.forEach((item) => item.classList.toggle("active", item.getAttribute("href") === hash));
+  const breadcrumb = document.querySelector(".breadcrumb");
+  if (breadcrumb) breadcrumb.innerHTML = "Business Plan Builder <span>/</span> " + (sectionLabels[hash] || "Visão geral");
 }
 window.addEventListener("hashchange", updateActiveNav);
 updateActiveNav();
@@ -492,6 +507,27 @@ async function performLogout() {
 authLogout?.addEventListener("click", performLogout);
 profileLogout?.addEventListener("click", performLogout);
 
+// Fecha sobreposições com a tecla Esc e devolve o foco ao elemento de origem.
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "Escape") return;
+  if (tutorialModal && !tutorialModal.hidden) {
+    tutorialModal.hidden = true;
+    tutorialButton?.focus();
+    return;
+  }
+  if (profileModal && !profileModal.hidden) {
+    profileModal.hidden = true;
+    authButton?.focus();
+    return;
+  }
+  if (authModal && !authModal.hidden && getCurrentUserSync()) {
+    authModal.hidden = true;
+    authButton?.focus();
+    return;
+  }
+  sidebar?.classList.remove("open");
+});
+
 window.addEventListener("pageshow", async () => {
   const user = await getCurrentUser();
   if (user) {
@@ -543,6 +579,8 @@ function validateOpportunity() {
         error.textContent = "Preencha este campo para continuar.";
         wrapper.appendChild(error);
       }
+    } else {
+      wrapper.querySelector(".field-error")?.remove();
     }
   });
   return valid;
@@ -562,7 +600,21 @@ function updateScore() {
 }
 
 
+function readServerPlanId() {
+  try { return JSON.parse(localStorage.getItem("business-plan-builder:server-plan:v1") || "null")?.planId || null; }
+  catch { return null; }
+}
+
 async function ensureServerPlan() {
+  const storedPlanId = readServerPlanId();
+  if (storedPlanId) {
+    const { data: stored, error: storedError } = await neonClient
+      .from("planos_negocio")
+      .select("id, espaco_trabalho_id, nome")
+      .eq("id", storedPlanId)
+      .limit(1);
+    if (!storedError && stored?.[0]) return stored[0];
+  }
   const { data: plans, error: plansError } = await neonClient
     .from("planos_negocio")
     .select("id, espaco_trabalho_id, nome")
@@ -644,13 +696,25 @@ async function loadOpportunityFromServer() {
       if (saveStatus) saveStatus.textContent = "Rascunho local preservado. Salve a oportunidade para sincronizar com o banco.";
       return;
     }
-    const { data: plans, error: plansError } = await neonClient
-      .from("planos_negocio")
-      .select("id, nome")
-      .order("criado_em", { ascending: true })
-      .limit(1);
-    if (plansError) throw plansError;
-    const plan = plans?.[0];
+    let plan = null;
+    const storedPlanId = readServerPlanId();
+    if (storedPlanId) {
+      const { data: stored } = await neonClient
+        .from("planos_negocio")
+        .select("id, nome")
+        .eq("id", storedPlanId)
+        .limit(1);
+      plan = stored?.[0] || null;
+    }
+    if (!plan) {
+      const { data: plans, error: plansError } = await neonClient
+        .from("planos_negocio")
+        .select("id, nome")
+        .order("criado_em", { ascending: true })
+        .limit(1);
+      if (plansError) throw plansError;
+      plan = plans?.[0];
+    }
     if (!plan) return;
 
     const { data: opportunityRows, error: opportunityError } = await neonClient
@@ -740,6 +804,7 @@ if (form) {
     event.preventDefault();
     if (!validateOpportunity()) {
       showToast("Preencha os campos obrigatórios para continuar.");
+      form.querySelector(".field.invalid input, .field.invalid textarea")?.focus();
       return;
     }
     saveDraft();
@@ -882,10 +947,27 @@ function updatePestelReading() {
   text.textContent = answered === 6 ? "Os seis fatores foram registrados. Revise impactos, evidências e hipóteses antes de avançar." : "Faltam: " + missing.join(", ") + ".";
 }
 
+function safeModuleProgress(getter) {
+  // Durante a inicialização, alguns módulos ainda não registraram seus dados.
+  // O try/catch evita quebrar o dashboard nesse intervalo e devolve 0.
+  try { return typeof getter === "function" ? getter() : 0; } catch { return 0; }
+}
+
+function safeRun(callback) {
+  try { callback?.(); } catch {}
+}
+
 function updateDashboardState() {
-  const opportunity = getOpportunityProgress();
-  const environment = getEnvironmentProgress();
-  const modules = [opportunity, environment, 0, 0, 0, 0, 0];
+  const complementary = safeModuleProgress(getComplementaryProgress);
+  const modules = [
+    safeModuleProgress(getOpportunityProgress),
+    safeModuleProgress(getEnvironmentProgress),
+    safeModuleProgress(getPlanProgress),
+    safeModuleProgress(getFinancialProgress),
+    complementary,
+    complementary === 100 ? 100 : 0,
+    0
+  ];
   const overall = Math.round(modules.reduce((sum, value) => sum + value, 0) / modules.length);
   const progressLabel = document.querySelector(".progress-mini .progress-label strong");
   const progressFill = document.querySelector(".progress-mini .progress-track span");
@@ -922,20 +1004,23 @@ function updateDashboardState() {
       lockedEl.textContent = unlocked ? "Pronto para começar" : "Disponível após concluir o módulo " + (module - 1);
     }
 
-    if (module > 1 && module < 4) {
-      if (unlocked && !action) {
+    if (module >= 2 && module <= 6 && unlocked) {
+      if (!action) {
         action = document.createElement("a");
         action.className = "module-action";
         card.appendChild(action);
       }
-      if (action) {
-        action.href = module === 2 ? "#ambientes" : "#plano";
-        action.textContent = value === 100 ? "Revisar →" : module === 3 ? "Começar quando liberado →" : "Continuar →";
-        action.setAttribute("aria-disabled", String(!unlocked));
-        action.classList.toggle("disabled", !unlocked);
-      }
+      action.href = module === 2 ? "#ambientes" : module === 3 ? "#plano" : module === 4 ? "#financeiro" : module === 5 ? "#complementares" : "#exportacao";
+      action.textContent = value === 100 ? "Revisar →" : module === 6 ? "Começar →" : "Continuar →";
+      action.removeAttribute("aria-disabled");
+      action.classList.remove("disabled");
+    } else if (action && module >= 2 && module <= 6) {
+      action.setAttribute("aria-disabled", "true");
+      action.classList.add("disabled");
     }
   });
+
+  safeRun(updateExportProgress);
 }
 
 const swotStorageVersion = 2;
@@ -975,14 +1060,6 @@ function addSwotItem(key, value = "", persist = true) {
     updateEnvironmentProgress();
     saveEnvironmentDraft();
   });
-  list.addEventListener("dragover", (event) => {
-    event.preventDefault();
-    const dragging = list.querySelector(".dragging");
-    if (!dragging) return;
-    const after = [...list.querySelectorAll(".swot-item:not(.dragging)")].find((el) => event.clientY <= el.getBoundingClientRect().top + el.offsetHeight / 2);
-    if (after) list.insertBefore(dragging, after);
-    else list.appendChild(dragging);
-  }, {once:true});
   list.appendChild(item);
   if (persist) {
     updateEnvironmentProgress();
@@ -1007,6 +1084,16 @@ function initializeSwot() {
     }
   } catch {}
   renderSwot(state);
+  document.querySelectorAll("[data-swot-list]").forEach((list) => {
+    list.addEventListener("dragover", (event) => {
+      event.preventDefault();
+      const dragging = list.querySelector(".dragging");
+      if (!dragging) return;
+      const after = [...list.querySelectorAll(".swot-item:not(.dragging)")].find((el) => event.clientY <= el.getBoundingClientRect().top + el.offsetHeight / 2);
+      if (after) list.insertBefore(dragging, after);
+      else list.appendChild(dragging);
+    });
+  });
   document.querySelectorAll("[data-swot-add]").forEach((button) => {
     button.addEventListener("click", () => addSwotItem(button.dataset.swotAdd));
   });
@@ -1124,6 +1211,22 @@ function getPlanSectionProgress(){
     const fields=[...document.querySelectorAll('[data-plan-section="'+key+'"] [data-plan-field]')];
     return fields.length>0 && fields.every((field)=>field.value.trim().length>0) ? 100 : fields.some((field)=>field.value.trim().length>0) ? Math.round((fields.filter((field)=>field.value.trim()).length/fields.length)*100) : 0;
   });
+}
+function getPlanProgress(){
+  const values=getPlanSectionProgress();
+  return values.length?Math.round(values.reduce((a,b)=>a+b,0)/values.length):0;
+}
+const financialRequiredIds=["financialInvestment","financialFixedCosts","financialVariableCost","financialUnitPrice","financialInitialDemand"];
+function financialFilledCount(){
+  return financialRequiredIds.filter((id)=>{
+    const el=document.getElementById(id);
+    if(!el || el.value==="") return false;
+    const value=Number(el.value);
+    return Number.isFinite(value) && (["financialInvestment","financialUnitPrice","financialInitialDemand"].includes(id) ? value>0 : value>=0);
+  }).length;
+}
+function getFinancialProgress(){
+  return Math.round(financialFilledCount()/financialRequiredIds.length*100);
 }
 function updatePlanCounters(){
   getPlanFields().forEach((field)=>{
@@ -1336,17 +1439,11 @@ function calculateFinancial(scenario=activeFinancialScenario){
   return {investment,fixed,variable,price,initialDemand,growth,horizon,annualDiscount,rows,revenue,costs,profit,margin,breakEven,npv,irr,annualizedIrr,roi,payback};
 }
 function updateFinancialProgress(){
-  const required=["financialInvestment","financialFixedCosts","financialVariableCost","financialUnitPrice","financialInitialDemand"];
-  const filled=required.filter(id=>{
-    const el=document.getElementById(id);
-    if(!el || el.value==="") return false;
-    const value=Number(el.value);
-    return Number.isFinite(value) && (["financialInvestment","financialUnitPrice","financialInitialDemand"].includes(id) ? value>0 : value>=0);
-  }).length;
-  const percent=Math.round((filled/required.length)*100);
+  const total=financialRequiredIds.length,filled=financialFilledCount();
+  const percent=Math.round((filled/total)*100);
   const el=document.getElementById("financialProgressPercent"),fill=document.getElementById("financialProgressFill"),txt=document.getElementById("financialProgressText");
   if(el)el.textContent=percent+"%"; if(fill)fill.style.width=percent+"%";
-  if(txt)txt.textContent=filled===required.length?"Premissas básicas preenchidas. Revise os indicadores e cenários.":filled+" de "+required.length+" premissas obrigatórias preenchidas.";
+  if(txt)txt.textContent=filled===total?"Premissas básicas preenchidas. Revise os indicadores e cenários.":filled+" de "+total+" premissas obrigatórias preenchidas.";
 }
 function renderFinancial(){
   const data=calculateFinancial();
@@ -1534,12 +1631,40 @@ if(complementaryModule){
 const exportVersionsKey="business-plan-builder:versions:v1";
 const exportShareParam="plano";
 const exportModule=document.getElementById("exportacao");
+const exportFieldSelector="#opportunityForm input,#opportunityForm textarea,#ambientes textarea,#ambientes select,#financeiro input,#financeiro select,[data-plan-field],[data-complementary-field]";
+function exportFieldLabel(el,key){
+  const swotList=el.closest("[data-swot-list]");
+  if(swotList){
+    const names={strengths:"Forças",weaknesses:"Fraquezas",opportunities:"Oportunidades",threats:"Ameaças"};
+    const items=[...swotList.querySelectorAll(".swot-item")];
+    const position=items.indexOf(el.closest(".swot-item"))+1;
+    return "SWOT · "+(names[swotList.dataset.swotList]||"Itens")+" "+position;
+  }
+  let label=el.closest("label")?.querySelector("span")?.textContent?.trim()||key;
+  label=label.replace(/\s*obrigatório/i,"").trim();
+  return el.closest("#financeiro")?"Financeiro · "+label:label;
+}
+function getExportFields(){
+  const fields=[],seen=new Set();
+  document.querySelectorAll(exportFieldSelector).forEach(el=>{
+    if(["range","hidden","button","submit"].includes(el.type)) return;
+    const base=el.dataset.field||el.dataset.planField||el.dataset.complementaryField||el.id||"";
+    if(!base||el.value===undefined) return;
+    const key=!el.dataset.field&&!el.dataset.planField&&!el.dataset.complementaryField&&el.closest("#financeiro")?"m4_"+base:base;
+    if(seen.has(key)) return;
+    seen.add(key);
+    fields.push({key,label:exportFieldLabel(el,key),el});
+  });
+  return fields;
+}
+function resolveExportField(key){
+  const byData=document.querySelector('[data-field="'+key+'"],[data-plan-field="'+key+'"],[data-complementary-field="'+key+'"]');
+  if(byData) return byData;
+  return document.getElementById(key.startsWith("m4_")?key.slice(3):key);
+}
 function getAllPlanData(){
   const data={};
-  document.querySelectorAll("[data-field],[data-plan-field],[data-complementary-field]").forEach(el=>{
-    const key=el.dataset.field||el.dataset.planField||el.dataset.complementaryField;
-    if(key&&el.value!==undefined)data[key]=el.value;
-  });
+  getExportFields().forEach(({key,el})=>{data[key]=el.value;});
   return data;
 }
 function escapeExport(value){
@@ -1547,21 +1672,19 @@ function escapeExport(value){
 }
 function getExportRows(){
   const rows=[];
-  document.querySelectorAll("[data-field],[data-plan-field],[data-complementary-field]").forEach(el=>{
-    const key=el.dataset.field||el.dataset.planField||el.dataset.complementaryField;
-    const label=el.closest("label")?.querySelector("span")?.textContent?.trim()||key;
-    const value=el.value?.trim();
-    if(key&&value)rows.push([label,value]);
+  getExportFields().forEach(({label,el})=>{
+    const value=el.value?.trim?.()||"";
+    if(value)rows.push([label,value]);
   });
   return rows;
 }
 function updateExportProgress(){
   const modules=[
-    typeof getOpportunityProgress==="function"?getOpportunityProgress():0,
-    typeof getEnvironmentProgress==="function"?getEnvironmentProgress():0,
-    typeof getPlanProgress==="function"?getPlanProgress():0,
-    typeof getFinancialProgress==="function"?getFinancialProgress():0,
-    typeof getComplementaryProgress==="function"?getComplementaryProgress():0
+    getOpportunityProgress(),
+    getEnvironmentProgress(),
+    getPlanProgress(),
+    getFinancialProgress(),
+    getComplementaryProgress()
   ];
   const value=Math.round(modules.reduce((a,b)=>a+b,0)/modules.length);
   const percent=document.getElementById("exportProgressPercent"),fill=document.getElementById("exportProgressFill"),text=document.getElementById("exportProgressText"),summary=document.getElementById("exportSummaryText");
@@ -1602,7 +1725,7 @@ function readSharePayload(){
 function restoreSharePayload(){
   const payload=readSharePayload(); if(!payload?.data)return false;
   Object.entries(payload.data).forEach(([key,value])=>{
-    const el=document.querySelector('[data-field="'+key+'"],[data-plan-field="'+key+'"],[data-complementary-field="'+key+'"]');
+    const el=resolveExportField(key);
     if(el&&typeof value==="string")el.value=value;
   });
   [updateComplementaryProgress,updateExportProgress,updateDashboardState].forEach(fn=>typeof fn==="function"&&fn());
@@ -1628,10 +1751,10 @@ function restorePlanVersion(index){
   const version=versions[index];if(!version)return;
   if(!confirm("Restaurar a versão \""+version.name+"\"? Os dados atuais serão substituídos."))return;
   Object.entries(version.data||{}).forEach(([key,value])=>{
-    const el=document.querySelector('[data-field="'+key+'"],[data-plan-field="'+key+'"],[data-complementary-field="'+key+'"]');if(el)el.value=value;
+    const el=resolveExportField(key);if(el)el.value=value;
   });
-  localStorage.setItem("business-plan-builder:opportunity:v2",JSON.stringify(Object.fromEntries(Object.entries(version.data||{}).filter(([k])=>document.querySelector('[data-field="'+k+'"]')))));
-  saveComplementaryDraft?.(); updateExportProgress();updateDashboardState?.();setExportStatus("Versão restaurada. Revise o plano antes de exportar.");
+  [saveDraft,saveEnvironmentDraft,savePlanDraft,saveFinancialDraft,saveComplementaryDraft].forEach(fn=>{try{fn();}catch{}});
+  updateScore();updateCompletion();updateCounters();updatePlanCounters();updatePlanProgress();updatePorterReading();updateEnvironmentProgress();updateComplementaryProgress();renderFinancial();updateExportProgress();updateDashboardState();setExportStatus("Versão restaurada. Revise o plano antes de exportar.");
 }
 function deletePlanVersion(index){
   let versions=[];try{versions=JSON.parse(localStorage.getItem(exportVersionsKey)||"[]");}catch{}
@@ -1653,36 +1776,7 @@ if(exportModule){
   document.getElementById("savePlanVersion")?.addEventListener("click",savePlanVersion);
   updateExportProgress();loadPlanVersions();restoreSharePayload();updateExportPreview();updateShareControls(); exportModule.querySelectorAll("[data-field],[data-plan-field],[data-complementary-field]").forEach(el=>el.addEventListener("input",()=>{clearTimeout(exportModule._previewTimer);exportModule._previewTimer=setTimeout(updateExportPreview,250);}));
 }
-/* Integra Módulos ao dashboard e ao desbloqueio sequencial */
-const previousUpdateDashboardState=updateDashboardState;
-updateDashboardState=function(){
-  const opportunity=getOpportunityProgress();
-  const environment=getEnvironmentProgress();
-  const planValues=typeof getPlanSectionProgress==="function"?getPlanSectionProgress():[];
-  const plan=planValues.length?Math.round(planValues.reduce((a,b)=>a+b,0)/planValues.length):0;
-  const financialRequired=["financialInvestment","financialFixedCosts","financialVariableCost","financialUnitPrice","financialInitialDemand"];
-  const financialFilled=financialRequired.filter(id=>{const el=document.getElementById(id);if(!el||el.value==="")return false;const value=Number(el.value);return Number.isFinite(value)&&(["financialInvestment","financialUnitPrice","financialInitialDemand"].includes(id)?value>0:value>=0);}).length;
-  const financial=financialFilled===financialRequired.length?100:financialFilled/financialRequired.length*100;
-  const complementary=typeof getComplementaryProgress==="function"?getComplementaryProgress():0;
-  const exportProgress=complementary===100?100:0;
-  const modules=[opportunity,environment,plan,financial,complementary,exportProgress,0];
-  const overall=Math.round(modules.reduce((sum,value)=>sum+value,0)/modules.length);
-  const progressLabel=document.querySelector(".progress-mini .progress-label strong"),progressFill=document.querySelector(".progress-mini .progress-track span"),heroPercent=document.getElementById("heroProgressPercent"),heroFill=document.getElementById("heroProgressFill");
-  if(progressLabel)progressLabel.textContent=overall+"%";if(progressFill)progressFill.style.width=overall+"%";if(heroPercent)heroPercent.textContent=overall+"%";if(heroFill)heroFill.style.width=overall+"%";
-  const completed=modules.filter(v=>v===100).length,started=modules.filter(v=>v>0).length,status=document.getElementById("dashboardStatus");
-  if(status)status.textContent=completed+" de 7 módulos concluídos · "+started+" em andamento/iniciados";
-  document.querySelectorAll("[data-dashboard-module]").forEach(card=>{
-    const module=Number(card.dataset.dashboardModule),value=modules[module-1]||0,previous=module>1?modules[module-2]||0:100,unlocked=module===1||previous===100,statusEl=card.querySelector(".module-status"),lockedEl=card.querySelector(".locked");
-    let action=card.querySelector("a.module-action");
-    card.classList.toggle("completed",value===100);card.classList.toggle("current",unlocked&&value>0&&value<100);
-    if(statusEl){statusEl.classList.toggle("muted",!unlocked&&value===0);statusEl.textContent=value===100?"Concluído":value>0?"Em andamento":module===1?"Próximo":unlocked?"Disponível":"Bloqueado";}
-    if(lockedEl&&module>1)lockedEl.textContent=unlocked?"Pronto para começar":"Disponível após concluir o módulo "+(module-1);
-    if(module>=2&&module<=5&&unlocked){
-      if(!action){action=document.createElement("a");action.className="module-action";card.appendChild(action);}
-      action.href=module===2?"#ambientes":module===3?"#plano":module===4?"#financeiro":module===5?"#complementares":"#exportacao";action.textContent=value===100?"Revisar →":module===6?"Começar →":"Continuar →";action.removeAttribute("aria-disabled");action.classList.remove("disabled");
-    }else if(action&&module>=2&&module<=5){action.setAttribute("aria-disabled","true");action.classList.add("disabled");}
-  });
-};
+/* Desbloqueio sequencial ao navegar por hash */
 updateDashboardState();
 window.addEventListener("hashchange",()=>{
   if(location.hash==="#financeiro"&&getPlanSectionProgress().some(v=>v<100)){
@@ -1690,9 +1784,11 @@ window.addEventListener("hashchange",()=>{
     return;
   }
   if(location.hash==="#complementares"){
-    const financialRequired=["financialInvestment","financialFixedCosts","financialVariableCost","financialUnitPrice","financialInitialDemand"];
-    const financialComplete=financialRequired.every(id=>{const el=document.getElementById(id);if(!el||el.value==="")return false;const value=Number(el.value);return Number.isFinite(value)&&(["financialInvestment","financialUnitPrice","financialInitialDemand"].includes(id)?value>0:value>=0);});
-    if(!financialComplete){history.replaceState(null,"","#financeiro");showToast("Conclua as premissas obrigatórias do Módulo 4 antes de iniciar os Planos Complementares.");}
+    if(getFinancialProgress()<100){history.replaceState(null,"","#financeiro");showToast("Conclua as premissas obrigatórias do Módulo 4 antes de iniciar os Planos Complementares.");}
+    return;
+  }
+  if(location.hash==="#exportacao"&&getComplementaryProgress()<100){
+    history.replaceState(null,"","#complementares");showToast("Conclua o Módulo 5 antes de acessar a Exportação.");
   }
 });
 
@@ -1706,8 +1802,12 @@ Object.assign(window, {
   updateEnvironmentProgress,
   updateDashboardState,
   getPlanSectionProgress,
+  getPlanProgress,
+  getFinancialProgress,
   getComplementaryProgress,
   updateComplementaryProgress,
+  updateExportProgress,
+  addSwotItem,
   renderFinancial
 });
 

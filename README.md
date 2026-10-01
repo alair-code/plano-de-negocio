@@ -58,7 +58,9 @@ O projeto possui os Módulos 1 a 7 implementados no frontend, autenticação int
 - Compartilhamento por link persistente no banco, com autenticação, expiração/revogação verificadas e restauração do plano compartilhado
 - Versionamento local e persistente de planos (até 10 versões locais; versões também registradas em `versoes_plano`)
 - Painel de gestão do Módulo 7
-- Deploy na Vercel configurado e utilizado para hospedagem
+- Exportação (PDF/Word/CSV) consolidando os campos preenchidos dos Módulos 1 a 5
+- Deploy de produção na Vercel configurado e utilizado
+- Deploy de preview via GitHub Pages na branch `MANUTENCAO`
 - CI com validação de sintaxe, smoke test, regressão estrutural e verificação automatizada de segredos
 
 ### Em evolução
@@ -92,7 +94,6 @@ Inclui:
 - Barra de conclusão e stepper
 - Salvamento automático local e recuperação de rascunho
 - Cadastro/login pelo Neon Auth
-- Persistência local para recuperação de rascunho
 - Persistência no PostgreSQL/Neon através da Neon Data API
 
 ### Módulo 2 — Análise de Ambientes
@@ -168,6 +169,7 @@ Atualmente permite:
 - **Excel:** CSV compatível com Excel, não um arquivo `.xlsx` nativo
 - **Compartilhamento:** link persistente registrado no banco, protegido por autenticação e validado por token, expiração e revogação
 - **Versionamento:** até 10 versões armazenadas localmente no navegador, com versões persistidas também em `versoes_plano`
+- **Conteúdo:** consolida os campos preenchidos dos Módulos 1 a 5 (oportunidade, ambientes, plano, premissas financeiras e complementares)
 - Preview consolidado
 
 > O compartilhamento persistente já utiliza a tabela `links_compartilhamento` do banco e exige autenticação. O compartilhamento público sem login ainda não está habilitado por segurança.
@@ -277,7 +279,7 @@ Frontend HTML5 + CSS3 + JavaScript Vanilla
 
 A camada `js/server-sync.js` coordena persistência, recuperação, múltiplos planos, versões, compartilhamento, exportações e painel de gestão sem introduzir credenciais administrativas no navegador.
 
-O frontend é hospedado na Vercel.
+O frontend é hospedado na Vercel (produção) e publicado como preview no GitHub Pages a partir da branch de manutenção.
 
 ### O que ainda não existe
 
@@ -298,7 +300,7 @@ Uma camada de backend poderá ser introduzida quando houver necessidade real de 
 | Autenticação | Neon Auth |
 | Banco | PostgreSQL / Neon |
 | API de dados | Neon Data API |
-| Hospedagem | Vercel |
+| Hospedagem | Vercel (produção) e GitHub Pages (preview) |
 | Versionamento | Git / GitHub |
 
 A integração do Neon é carregada pelo navegador através do pacote `@neondatabase/neon-js`.
@@ -393,7 +395,12 @@ Exemplo:
 python3 -m http.server 8080
 ```
 
-Depois, acesse `http://localhost:8080`.
+Depois, acesse `http://localhost:8080`. Alternativamente, use os scripts do `package.json`:
+
+```bash
+npm run serve   # servidor local em 0.0.0.0:8080
+npm test        # executa toda a suíte de testes
+```
 
 > Configurações de autenticação e Data API usadas pelo frontend não devem conter credenciais administrativas.
 
@@ -401,23 +408,24 @@ Depois, acesse `http://localhost:8080`.
 
 ## ☁️ Deploy
 
-O projeto utiliza **Vercel** para hospedagem.
+O projeto utiliza **Vercel** para a produção e **GitHub Pages** para o preview automático da branch de manutenção.
 
 Fluxo recomendado:
 
 ```text
 GitHub
   ↓
-Branch de desenvolvimento/manutenção
-  ↓
+MANUTENCAO
+  ↓  (CI: sintaxe, smoke, regressão e segurança)
+  ↓  (preview automático no GitHub Pages)
 Validação
   ↓
 main
   ↓
-Vercel
+Vercel (produção)
 ```
 
-As branches `main` e `manutencao` fazem parte do fluxo de trabalho. `manutencao` é usada para desenvolvimento e correções antes da promoção para `main`.
+As branches `main` e `MANUTENCAO` fazem parte do fluxo de trabalho. `MANUTENCAO` é usada para desenvolvimento e correções antes da promoção para `main`. Os workflows também reconhecem a grafia `manutencao` para compatibilidade.
 
 ---
 
@@ -457,7 +465,18 @@ As branches `main` e `manutencao` fazem parte do fluxo de trabalho. `manutencao`
 - Smoke test verifica estrutura essencial do HTML e presença das integrações de persistência
 - Teste de regressão verifica M1–M7, RLS, compartilhamento, exportações, persistência local e responsividade estrutural
 - Smoke test de segurança detecta padrões de credenciais e arquivos `.env` reais no repositório
-- A qualidade é executada em pushes para `manutencao`/`main` e Pull Requests para `main`
+- A qualidade é executada em pushes para `MANUTENCAO`/`main` e Pull Requests para `main`
+
+### Como rodar localmente
+
+```bash
+node tests/syntax.mjs     # validação de sintaxe
+node tests/smoke.mjs      # estrutura essencial do HTML/JS
+node tests/regression.mjs # regressão dos módulos, RLS e exportações
+node tests/security.mjs   # varredura de segredos e arquivos .env
+```
+
+Ou, com o `package.json` do repositório: `npm test`.
 
 ### Já realizado
 
