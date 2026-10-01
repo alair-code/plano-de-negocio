@@ -191,15 +191,15 @@
           <div class="form-card">
             <div class="form-card-title"><span class="section-number">SW</span><div><h3>Matriz SWOT</h3><p>Separe o que está dentro do negócio do que vem do ambiente externo.</p></div></div>
             <div class="swot-grid">
-              <label class="swot-card strength"><span>Forças <small>Interno · positivo</small></span><textarea id="swotStrengths" rows="7" placeholder="Ex.: experiência, localização, equipe, tecnologia..."></textarea></label>
-              <label class="swot-card weakness"><span>Fraquezas <small>Interno · negativo</small></span><textarea id="swotWeaknesses" rows="7" placeholder="Ex.: poucos recursos, marca nova, dependência de fornecedor..."></textarea></label>
-              <label class="swot-card opportunity"><span>Oportunidades <small>Externo · positivo</small></span><textarea id="swotOpportunities" rows="7" placeholder="Ex.: demanda crescente, novo canal, mudança de hábito..."></textarea></label>
-              <label class="swot-card threat"><span>Ameaças <small>Externo · negativo</small></span><textarea id="swotThreats" rows="7" placeholder="Ex.: concorrência, custos, legislação, sazonalidade..."></textarea></label>
+              <section class="swot-card strength" data-swot-card="strengths"><span>Forças <small>Interno · positivo</small></span><div class="swot-items" id="swotStrengthsList" data-swot-list="strengths"></div><button type="button" class="swot-add" data-swot-add="strengths">+ Adicionar força</button></section>
+              <section class="swot-card weakness" data-swot-card="weaknesses"><span>Fraquezas <small>Interno · negativo</small></span><div class="swot-items" id="swotWeaknessesList" data-swot-list="weaknesses"></div><button type="button" class="swot-add" data-swot-add="weaknesses">+ Adicionar fraqueza</button></section>
+              <section class="swot-card opportunity" data-swot-card="opportunities"><span>Oportunidades <small>Externo · positivo</small></span><div class="swot-items" id="swotOpportunitiesList" data-swot-list="opportunities"></div><button type="button" class="swot-add" data-swot-add="opportunities">+ Adicionar oportunidade</button></section>
+              <section class="swot-card threat" data-swot-card="threats"><span>Ameaças <small>Externo · negativo</small></span><div class="swot-items" id="swotThreatsList" data-swot-list="threats"></div><button type="button" class="swot-add" data-swot-add="threats">+ Adicionar ameaça</button></section>
             </div>
             <div class="environment-tip"><strong>Como usar</strong><span>Seja específico. Registre fatos e hipóteses que possam ser verificados depois.</span></div>
             <div class="swot-reading" aria-live="polite"><strong id="swotReading">Matriz ainda sem dados</strong><span id="swotReadingText">Preencha os quatro quadrantes para gerar um resumo da análise.</span></div>
             <div class="swot-actions">
-              <button type="button" class="button secondary-light" id="suggestSwot">Adicionar exemplo</button>
+              <button type="button" class="button secondary-light" id="suggestSwot">Adicionar exemplos</button>
               <small>Você pode editar, apagar ou reorganizar os itens depois.</small>
             </div>
           </div>
