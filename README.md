@@ -19,7 +19,7 @@ Empreendedores, especialmente iniciantes, enfrentam dificuldades para:
 
 ### 💡 Solução
 
-Uma ferramenta **guiada**, com **templates prontos**, **cálculos automáticos** e **exportação profissional**, que reduz o tempo de elaboração de um plano de negócios em até 70%.
+Uma ferramenta **guiada**, com **templates prontos**, **cálculos automáticos** e **recursos de exportação**, criada para reduzir o tempo e a complexidade da elaboração de um plano de negócios.
 
 ### 👥 Público-Alvo
 
@@ -95,9 +95,11 @@ Seções guiadas com templates e exemplos:
 - Plano de TI (quando aplicável)
 
 ### Módulo 6 — Exportação e Compartilhamento
-- Exportação em PDF, Word e Excel
-- Link público para compartilhamento
-- Versionamento de planos
+- Exportação em PDF pelo navegador
+- Exportação compatível com Word (.doc)
+- Exportação tabular em CSV para uso no Excel
+- Compartilhamento por link
+- Versionamento local
 
 ### Módulo 7 — Painel e Gestão
 - Dashboard com status de cada seção
@@ -125,7 +127,8 @@ Seções guiadas com templates e exemplos:
 ## ⚙️ Requisitos Não Funcionais
 
 - **Performance:** carregar dashboard em < 2s
-- **Segurança:** autenticação JWT, criptografia em repouso (LGPD)
+- **Segurança:** autenticação via Neon Auth e isolamento de dados por RLS nas tabelas já integradas
+- **Privacidade:** evolução da arquitetura considerando requisitos aplicáveis da LGPD
 - **Disponibilidade:** 99,5%
 - **Usabilidade:** responsivo, acessível (WCAG 2.1 AA)
 - **Escalabilidade:** arquitetura em nuvem (AWS/GCP/Azure)
@@ -161,8 +164,8 @@ A aplicação já iniciou a transição para persistência centralizada e autent
 |---|---|
 | Frontend escalável | React/TypeScript ou evolução do frontend atual |
 | Backend/API | Node.js (NestJS) ou Python (FastAPI) |
-| Banco de Dados | PostgreSQL |
-| Autenticação | Serviço de autenticação ou autenticação própria |
+| Banco de Dados | PostgreSQL / Neon |
+| Autenticação | Neon Auth |
 | Colaboração multiusuário | Backend + banco de dados + controle de acesso |
 | Infraestrutura | Docker + AWS / GCP / Azure ou serviço equivalente |
 
