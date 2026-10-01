@@ -98,8 +98,72 @@
         </div>
       </section>
 
-      <section class="placeholder-section" id="oportunidade">
-        <div class="placeholder-card"><span>FASE 0</span><h2>Módulo 1 — Identificação da Oportunidade</h2><p>Esta área será construída na próxima etapa.</p><a class="button primary" href="#dashboard">← Voltar ao dashboard</a></div>
+      <section class="module-section" id="oportunidade">
+        <div class="module-header">
+          <div>
+            <p class="eyebrow">MÓDULO 01 · IDENTIFICAÇÃO DA OPORTUNIDADE</p>
+            <h2>Vamos transformar sua ideia em uma oportunidade clara.</h2>
+            <p>Responda às perguntas abaixo. O preenchimento é salvo automaticamente neste navegador.</p>
+          </div>
+          <a class="button secondary-light" href="#dashboard">← Dashboard</a>
+        </div>
+
+        <div class="stepper" aria-label="Etapas do módulo 1">
+          <div class="step active"><b>01</b><span>Ideia</span></div>
+          <div class="step-line"></div>
+          <div class="step"><b>02</b><span>Valor</span></div>
+          <div class="step-line"></div>
+          <div class="step"><b>03</b><span>Atratividade</span></div>
+        </div>
+
+        <form id="opportunityForm" class="opportunity-form" novalidate>
+          <section class="form-card">
+            <div class="form-card-title"><span class="section-number">01</span><div><h3>Defina a oportunidade</h3><p>Comece pelo problema que você pretende resolver.</p></div></div>
+            <div class="field-grid">
+              <label class="field full"><span>Nome provisório do negócio <em>obrigatório</em></span><input id="businessName" name="businessName" type="text" placeholder="Ex.: Studio Nova Forma" maxlength="100" required><small class="field-help" data-count-for="businessName">0/100</small></label>
+              <label class="field full"><span>Qual problema ou necessidade você identificou? <em>obrigatório</em></span><textarea id="problem" name="problem" rows="4" maxlength="1000" placeholder="Descreva a situação que hoje gera dificuldade, custo, demora ou frustração para alguém." required></textarea><small class="field-help" data-count-for="problem">0/1000</small></label>
+              <label class="field full"><span>Qual solução você pretende oferecer? <em>obrigatório</em></span><textarea id="solution" name="solution" rows="4" maxlength="1000" placeholder="Explique de forma simples o produto, serviço ou experiência que resolverá o problema." required></textarea><small class="field-help" data-count-for="solution">0/1000</small></label>
+              <label class="field"><span>Quem é o público principal? <em>obrigatório</em></span><input id="audience" name="audience" type="text" maxlength="180" placeholder="Ex.: Pequenas empresas locais" required><small class="field-help" data-count-for="audience">0/180</small></label>
+              <label class="field"><span>Onde esse público está?</span><input id="marketLocation" name="marketLocation" type="text" placeholder="Ex.: Manhumirim e região"></label>
+              <label class="field full"><span>Quais são seus principais diferenciais?</span><textarea id="differentials" name="differentials" rows="3" maxlength="800" placeholder="Preço, experiência, localização, atendimento, tecnologia, especialização..."></textarea><small class="field-help" data-count-for="differentials">0/800</small></label>
+            </div>
+          </section>
+
+          <section class="form-card">
+            <div class="form-card-title"><span class="section-number">02</span><div><h3>Proposta de valor</h3><p>Conecte o que o cliente precisa com o que você pretende entregar.</p></div></div>
+            <div class="canvas-grid">
+              <div class="canvas-column">
+                <span class="canvas-label">CLIENTE</span>
+                <label class="field"><span>Necessidades / tarefas</span><textarea id="customerJobs" name="customerJobs" rows="4" placeholder="O que o cliente precisa realizar?"></textarea></label>
+                <label class="field"><span>Dores</span><textarea id="customerPains" name="customerPains" rows="4" placeholder="O que incomoda, atrasa ou custa caro?"></textarea></label>
+                <label class="field"><span>Ganhos esperados</span><textarea id="customerGains" name="customerGains" rows="4" placeholder="O que faria a experiência ser melhor?"></textarea></label>
+              </div>
+              <div class="canvas-column accent-column">
+                <span class="canvas-label">SUA PROPOSTA</span>
+                <label class="field"><span>Produtos / serviços</span><textarea id="products" name="products" rows="4" placeholder="O que será vendido ou entregue?"></textarea></label>
+                <label class="field"><span>Como reduz as dores?</span><textarea id="painRelievers" name="painRelievers" rows="4" placeholder="Como sua solução resolve ou reduz os problemas?"></textarea></label>
+                <label class="field"><span>Como gera ganhos?</span><textarea id="gainCreators" name="gainCreators" rows="4" placeholder="Quais benefícios concretos você entrega?"></textarea></label>
+              </div>
+            </div>
+          </section>
+
+          <section class="form-card">
+            <div class="form-card-title"><span class="section-number">03</span><div><h3>Atratividade inicial</h3><p>Faça uma primeira avaliação. Ela poderá ser refinada depois.</p></div></div>
+            <div class="score-grid">
+              <label class="score-field"><span>Necessidade do mercado</span><input type="range" id="scoreNeed" name="scoreNeed" min="1" max="5" value="3"><output id="scoreNeedValue">3/5</output></label>
+              <label class="score-field"><span>Clareza da solução</span><input type="range" id="scoreSolution" name="scoreSolution" min="1" max="5" value="3"><output id="scoreSolutionValue">3/5</output></label>
+              <label class="score-field"><span>Diferenciação</span><input type="range" id="scoreDifferentiation" name="scoreDifferentiation" min="1" max="5" value="3"><output id="scoreDifferentiationValue">3/5</output></label>
+              <label class="score-field"><span>Potencial comercial</span><input type="range" id="scoreCommercial" name="scoreCommercial" min="1" max="5" value="3"><output id="scoreCommercialValue">3/5</output></label>
+            </div>
+            <div class="score-summary"><div><span>Pontuação inicial</span><strong id="totalScore">12/20</strong></div><div><span>Leitura</span><strong id="scoreLabel">Em construção</strong></div></div>
+          </section>
+
+          <div class="form-actions">
+            <span id="saveStatus" class="save-status">Rascunho salvo automaticamente.</span>
+            <button type="button" class="button secondary-light" id="clearOpportunity">Limpar módulo</button>
+            <button type="submit" class="button primary">Salvar oportunidade →</button>
+          </div>
+        </form>
       </section>
     </main>
   </div>
