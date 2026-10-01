@@ -43,7 +43,22 @@
       {label:"SWOT: os quatro quadrantes possuem conteúdo", ok:["strengths","weaknesses","opportunities","threats"].every(k=>swot[k]?.length), target:"#ambientes"},
       {label:"PESTEL: os seis fatores foram registrados", ok:pestelIds.every(filled), target:"#ambientes"},
       {label:"Porter: as cinco forças foram avaliadas", ok:porterIds.every(filled), target:"#ambientes"},
-      {label:"Plano de negócios: 10 seções preenchidas", ok:modules[2]===100, target:"#plano"},
+      ...[
+        ["Resumo Executivo","executiveSummary"],
+        ["Descrição da Empresa","companyDescription"],
+        ["Produtos e Serviços","productsServices"],
+        ["Mercado e Concorrência","marketCompetition"],
+        ["Marketing e Vendas","marketingSales"],
+        ["Plano Operacional","operationalPlan"],
+        ["Gestão de Pessoas","peopleManagement"],
+        ["Plano Financeiro","financialPlan"],
+        ["Análise Estratégica","strategicAnalysis"],
+        ["Anexos","appendices"]
+      ].map(([label,key],index)=>({
+        label:"Plano · "+String(index+1).padStart(2,"0")+" — "+label,
+        ok:(typeof getPlanSectionProgress==="function" ? getPlanSectionProgress()[index]===100 : false),
+        target:"#plano"
+      })),
       {label:"Financeiro: premissas essenciais preenchidas", ok:modules[3]===100, target:"#financeiro"},
       {label:"Planos complementares: campos preenchidos", ok:modules[4]===100, target:"#complementares"},
       {label:"Exportação: plano consolidado disponível", ok:modules[5]===100, target:"#exportacao"}
