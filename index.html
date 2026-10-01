@@ -73,6 +73,31 @@
         </div>
       </div>
 
+      <div class="profile-modal" id="profileModal" hidden>
+        <div class="profile-card" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
+          <button class="auth-close" id="profileClose" type="button" aria-label="Fechar">×</button>
+          <p class="eyebrow">MINHA CONTA</p>
+          <div class="profile-heading">
+            <div class="profile-avatar" id="profileAvatar">A</div>
+            <div>
+              <h2 id="profileTitle">Minha conta</h2>
+              <p id="profileEmailSummary">Conta conectada ao Neon Auth.</p>
+            </div>
+          </div>
+          <form id="profileForm" class="profile-form" novalidate>
+            <label class="field"><span>Nome</span><input id="profileName" type="text" autocomplete="name" maxlength="120" required></label>
+            <label class="field"><span>E-mail</span><input id="profileEmail" type="email" autocomplete="email" readonly></label>
+            <p class="auth-feedback" id="profileFeedback" role="status"></p>
+            <button class="button primary" id="profileSave" type="submit">Salvar alterações</button>
+          </form>
+          <div class="profile-section">
+            <p class="profile-section-title">SEGURANÇA</p>
+            <p class="profile-muted">Sua autenticação e sua sessão são gerenciadas pelo Neon Auth.</p>
+          </div>
+          <button class="auth-logout profile-logout" id="profileLogout" type="button">Sair da conta</button>
+        </div>
+      </div>
+
       <section class="content" id="dashboard">
         <div class="hero">
           <div>
