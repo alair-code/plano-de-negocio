@@ -1,7 +1,8 @@
-import { createClient } from "https://esm.sh/@neondatabase/neon-js@0.7.0-beta";
+import { createClient, BetterAuthVanillaAdapter } from "https://esm.sh/@neondatabase/neon-js@0.7.0-beta";
 
 const neonClient = createClient({
   auth: {
+    adapter: BetterAuthVanillaAdapter(),
     url: "https://ep-late-violet-b6sxri3o.neonauth.c-2.sa-east-1.aws.neon.tech/neondb/auth"
   },
   dataApi: {
@@ -66,7 +67,12 @@ const authFeedback = document.getElementById("authFeedback");
 let authMode = "signin";
 
 function getAuthErrorMessage(error) {
-  return error?.message || error?.error?.message || "Não foi possível concluir a autenticação.";
+  const details = error?.error || error?.data?.error || error;
+  const message = details?.message || details?.error_description || details?.statusText;
+  const code = details?.code || details?.status;
+  if (message) return code ? `${message} (${code})` : message;
+  if (typeof error === "string") return error;
+  return "Não foi possível concluir a autenticação. Verifique o e-mail, a senha e tente novamente.";
 }
 
 function setAuthMode(mode) {
@@ -144,7 +150,11 @@ async function signInOrSignUp(event) {
       ? await neonClient.auth.signUp.email({ email: authEmail.value.trim(), password: authPassword.value, name: authName.value.trim() })
       : await neonClient.auth.signIn.email({ email: authEmail.value.trim(), password: authPassword.value });
     if (result?.error) throw result.error;
-    const user = await getCurrentUser();
+
+    // O Better Auth pode retornar a sessão diretamente no resultado do cadastro/login.
+    // Use-a primeiro para evitar uma segunda requisição desnecessária.
+    const resultSession = extractSession(result);
+    const user = resultSession?.user || await getCurrentUser();
     await updateAuthUI(user);
     if (user) {
       closeAuthModal();
