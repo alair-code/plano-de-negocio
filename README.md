@@ -47,27 +47,26 @@ O projeto já possui uma base funcional completa no frontend e iniciou a transi�
 - Validações e indicadores de progresso
 - Neon Auth integrado ao Módulo 1
 - PostgreSQL/Neon configurado
-- Neon Data API integrada ao Módulo 1
-- Persistência de oportunidade e proposta de valor
-- Preservação do rascunho local durante a autenticação
-- RLS inicial nas tabelas atualmente integradas
+- Neon Data API integrada ao frontend
+- Persistência centralizada dos Módulos 1 a 7 através da camada de sincronização
+- Gerenciamento de múltiplos planos com seleção, criação e arquivamento
+- Preservação do rascunho local durante a autenticação e sincronização
+- RLS habilitado em todo o schema funcional, com autorização por usuário/espaço/plano
 - Exportação para PDF via impressão do navegador
 - Exportação compatível com Word em `.doc`
 - Exportação tabular em CSV compatível com Excel
 - Compartilhamento por link contendo uma cópia dos dados no próprio link
 - Versionamento local de planos
 - Painel de gestão do Módulo 7
-- Deploy preparado na Vercel
+- Deploy na Vercel configurado e utilizado para hospedagem
+- CI com validação de sintaxe JavaScript e smoke test
 
 ### Em evolução
 
-- Persistência dos Módulos 2 a 7 no banco
-- Ampliação das políticas RLS para todo o schema utilizado
-- Gerenciamento completo de múltiplos planos
-- Compartilhamento persistente no banco
-- Versionamento centralizado
-- Colaboração entre usuários
-- Testes automatizados e cobertura de fluxos críticos
+- Compartilhamento persistente com regras adicionais de acesso/expiração
+- Colaboração entre usuários com permissões de membro mais granulares
+- Testes de integração reais no navegador e cenários completos de RLS
+- Evolução da experiência de gestão de múltiplos planos
 
 ### Planejado
 
@@ -106,7 +105,7 @@ Inclui:
 - Salvamento local
 - Recursos de navegação e interação acessíveis por teclado
 
-> A interface do Módulo 2 está implementada, mas sua persistência centralizada no Neon ainda está em evolução.
+> A interface e a persistência centralizada no Neon estão integradas pela camada de sincronização.
 
 ### Módulo 3 — Estrutura do Plano de Negócios
 
@@ -125,7 +124,7 @@ Possui 10 seções:
 
 Inclui templates orientados, progresso por seção, navegação lateral, salvamento automático e assistência baseada em informações dos módulos anteriores sem sobrescrever conteúdo existente.
 
-> A persistência no Neon ainda está em evolução.
+ > A persistência centralizada está integrada; o navegador mantém LocalStorage como camada de recuperação offline.
 
 ### Módulo 4 — Viabilidade Financeira
 
@@ -142,7 +141,7 @@ Entradas principais:
 
 Calcula e apresenta receita, custos, lucro operacional, margem, ponto de equilíbrio, VPL, TIR, Payback, ROI, fluxo de caixa, gráficos e cenários pessimista, realista e otimista.
 
-> Os cálculos estão implementados no frontend e ainda precisam de testes automatizados específicos antes de serem tratados como financeiramente validados para uso profissional.
+> Os cálculos continuam sendo executados no frontend e também têm suas entradas, cenários e projeções persistidos no Neon. A validação financeira profissional ainda depende de revisão e testes específicos.
 
 ### Módulo 5 — Planos Complementares
 
@@ -156,7 +155,7 @@ Possui cinco áreas:
 
 Inclui campos estruturados, progresso por área, progresso geral, abas acessíveis por teclado, reaproveitamento de dados de módulos anteriores e salvamento local.
 
-> A persistência no Neon ainda está em evolução.
+ > A persistência centralizada está integrada; o navegador mantém LocalStorage como camada de recuperação offline.
 
 ### Módulo 6 — Exportação e Compartilhamento
 
@@ -183,7 +182,7 @@ O painel atual apresenta:
 - Próxima ação pelo fluxo
 - Revisão dos principais dados
 
-O Módulo 7 ainda não é o painel completo de gerenciamento de múltiplos planos. Essa evolução depende da integração da camada de persistência e dos espaços de trabalho.
+O Módulo 7 já é persistido no banco junto com progresso e alertas. A gestão de múltiplos planos agora possui seleção, criação e arquivamento; permissões avançadas de colaboração continuam em evolução.
 
 ---
 
@@ -240,7 +239,7 @@ Existe também uma tabela de teste previamente existente chamada `playing_with_n
 
 ### Estado da persistência
 
-A persistência atualmente utilizada pelo frontend está concentrada no Módulo 1. As demais tabelas já fazem parte da estrutura do banco, mas serão integradas gradualmente conforme cada módulo passar da persistência local para a persistência centralizada.
+A persistência centralizada já cobre os dados dos Módulos 1 a 7 por meio de `js/server-sync.js`. O LocalStorage continua sendo usado como camada de rascunho/recuperação local. A tabela `playing_with_neon` permanece isolada da arquitetura funcional.
 
 ---
 
@@ -250,18 +249,9 @@ A autenticação utiliza **Neon Auth**.
 
 O banco utiliza **Row-Level Security (RLS)** para controlar o acesso aos dados atualmente integrados.
 
-As políticas RLS já configuradas inicialmente abrangem:
+As políticas RLS estão habilitadas nas 21 tabelas funcionais públicas. A autorização considera identidade autenticada e relacionamento com espaço de trabalho/plano, usando funções `SECURITY DEFINER` para evitar recursão entre políticas.
 
-- `usuarios_perfis`
-- `espacos_trabalho`
-- `membros_espaco_trabalho`
-- `planos_negocio`
-- `analises_oportunidade`
-- `propostas_valor`
-
-As políticas utilizam a identidade autenticada e verificações de propriedade/relacionamento entre usuário, espaço de trabalho e plano.
-
-> A segurança do schema ainda não é considerada concluída. As tabelas restantes precisarão receber políticas adequadas quando forem expostas e integradas ao frontend.
+A tabela de teste `playing_with_neon` permanece fora da arquitetura funcional e não recebe acesso da aplicação.
 
 ### Segredos
 
@@ -277,13 +267,13 @@ A arquitetura atual é deliberadamente simples:
 Usuário
    ↓
 Frontend HTML5 + CSS3 + JavaScript Vanilla
-   ↓
-Neon Auth
-   ↓
-Neon Data API
-   ↓
-PostgreSQL / Neon
+   ├── Neon Auth
+   └── Neon Data API + RLS
+              ↓
+       PostgreSQL / Neon
 ```
+
+A camada `js/server-sync.js` coordena persistência, recuperação, múltiplos planos, versões, compartilhamento, exportações e painel de gestão sem introduzir credenciais administrativas no navegador.
 
 O frontend é hospedado na Vercel.
 
@@ -395,6 +385,14 @@ cd plano-de-negocio
 
 Como o projeto utiliza módulos JavaScript ES e serviços externos, recomenda-se servir os arquivos por um servidor HTTP local em vez de abrir o `index.html` diretamente via `file://`.
 
+Exemplo:
+
+```bash
+python3 -m http.server 8080
+```
+
+Depois, acesse `http://localhost:8080`.
+
 > Configurações de autenticação e Data API usadas pelo frontend não devem conter credenciais administrativas.
 
 ---
@@ -456,12 +454,20 @@ As branches `main` e `manutencao` fazem parte do fluxo de trabalho. `manutencao`
 
 ## 🧪 Testes e Qualidade
 
+### Automação adicionada
+
+- `.github/workflows/quality.yml` valida a sintaxe dos arquivos JavaScript
+- Smoke test verifica estrutura essencial do HTML e presença das integrações de persistência
+- A qualidade é executada em pushes para `manutencao`/`main` e Pull Requests para `main`
+
 ### Já realizado
 
 - Validação de sintaxe do JavaScript principal
 - Verificação do build/deploy na Vercel
 - Validação da integração inicial do Neon no Módulo 1
+- Persistência centralizada dos módulos por camada de sincronização
 - Preservação do rascunho local durante a conexão com o banco
+- RLS validado em branch temporária antes da aplicação no branch principal do Neon
 - Revisão estrutural da integração entre frontend, Neon Auth e Neon Data API
 
 ### Próximos testes
@@ -469,8 +475,9 @@ As branches `main` e `manutencao` fazem parte do fluxo de trabalho. `manutencao`
 - Testes automatizados dos cálculos financeiros
 - Testes de integração dos fluxos críticos
 - Testes completos de cadastro, login e logout
-- Testes de persistência e recuperação do Módulo 1
-- Testes de segurança das políticas RLS
+- Testes de persistência e recuperação de todos os módulos no navegador
+- Testes de segurança das políticas RLS com usuários distintos
+- Testes de múltiplos planos e isolamento de dados
 - Testes de responsividade
 - Testes de acessibilidade
 - Testes de compartilhamento e restauração de versões
