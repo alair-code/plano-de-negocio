@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 const app=readFileSync("js/app.js","utf8");
 const management=readFileSync("js/management.js","utf8");
 const rls=readFileSync("database/migrations/2026-10-01-rls-completo.sql","utf8");
+const sync=readFileSync("js/server-sync.js","utf8");
 
 const sections=[
   "executiveSummary","companyDescription","productsServices","marketCompetition",
@@ -28,5 +29,12 @@ for (const table of protectedTables) {
     "RLS ausente na migração: "+table);
 }
 assert.doesNotMatch(rls,/playing_with_neon/i,"A migração funcional não deve alterar playing_with_neon");
+assert.match(sync,/async function persistShareLink\(\)/,"Criação de compartilhamento ausente");
+assert.match(sync,/if\(!user\).*Entre para criar um compartilhamento persistente/s,"Compartilhamento deve exigir autenticação");
+assert.match(sync,/async function loadSharedToken\(\)/,"Leitura de compartilhamento ausente");
+assert.match(sync,/if\(!user\).*Entre na conta para abrir o compartilhamento/s,"Abertura do compartilhamento deve exigir autenticação");
+for (const format of ["pdf","word","csv"]) {
+  assert.match(sync,new RegExp("formato:"+format+"|format.*"+format),"Registro/exportação do formato ausente: "+format);
+}
 
 console.log("Regression test do Business Plan Builder: OK");
