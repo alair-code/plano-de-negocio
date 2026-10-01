@@ -236,3 +236,13 @@ button { font: inherit; }
 .plan-editor-actions .save-status{margin-right:auto}
 @media(max-width:900px){.plan-layout{grid-template-columns:1fr}.plan-outline{position:static}.plan-outline nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}.plan-nav-item{padding:9px}}
 @media(max-width:560px){.plan-outline nav{grid-template-columns:1fr}.plan-section-card{padding:18px}.plan-editor-actions{align-items:stretch;flex-direction:column}.plan-editor-actions .save-status{margin-right:0}.plan-editor-actions .button{width:100%}}
+
+/* Refinamento do Módulo 3 */
+.plan-smart-tools{display:flex;justify-content:space-between;align-items:center;gap:18px;margin:18px 0;padding:18px 20px;border:1px solid #ddd6fe;border-radius:18px;background:#faf9ff}
+.plan-smart-copy{display:grid;gap:4px}.plan-smart-copy p{margin:0;color:#64748b;line-height:1.5;font-size:14px}.smart-badge{font-size:10px;font-weight:800;letter-spacing:.08em;color:#6366f1}
+.plan-source-panel{display:flex;justify-content:space-between;gap:16px;align-items:center;margin:-8px 0 18px;padding:12px 16px;border-radius:12px;background:#f8fafc;color:#475569;font-size:13px}
+.plan-source-panel>div{display:grid;gap:3px}.plan-source-panel span{color:#64748b}.plan-section-actions{display:flex;justify-content:flex-end;margin:-10px 0 14px}
+.text-button{border:0;background:transparent;color:#4f46e5;font-weight:700;cursor:pointer;padding:6px 0}.text-button:hover{text-decoration:underline}
+.plan-section-card textarea:focus{box-shadow:0 0 0 3px rgba(99,102,241,.1)}
+.plan-nav-item:focus-visible,.text-button:focus-visible{outline:3px solid rgba(99,102,241,.25);outline-offset:2px}
+@media(max-width:600px){.plan-smart-tools{align-items:stretch;flex-direction:column}.plan-smart-tools .button{width:100%}.plan-source-panel{align-items:flex-start;flex-direction:column}}
