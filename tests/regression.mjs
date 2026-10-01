@@ -36,5 +36,13 @@ assert.match(sync,/if\(!user\).*Entre na conta para abrir o compartilhamento/s,"
 assert.match(sync,/logExport\("pdf"\)/,"Registro de exportação PDF ausente");
 assert.match(sync,/logExport\("doc"\)/,"Registro de exportação Word ausente");
 assert.match(sync,/logExport\("csv"\)/,"Registro de exportação CSV ausente");
+assert.match(app,/localStorage\.setItem\(/,"Persistência local de rascunho ausente");
+assert.match(app,/localStorage\.getItem\(/,"Recuperação local de rascunho ausente");
+assert.match(sync,/localStorage\.getItem\(PLAN_KEY\)/,"Recuperação do plano persistido ausente");
+const css=readFileSync("css/style.css","utf8");
+assert.match(css,/@media\(max-width:980px\)/,"Responsividade tablet ausente");
+assert.match(css,/@media\(max-width:800px\)/,"Responsividade intermediária ausente");
+assert.match(css,/@media\(max-width:700px\)/,"Responsividade mobile ausente");
+assert.match(css,/@media\(max-width:560px\)/,"Responsividade mobile estreita ausente");
 
 console.log("Regression test do Business Plan Builder: OK");
