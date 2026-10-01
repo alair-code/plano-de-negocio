@@ -124,7 +124,7 @@ Possui 10 seções:
 
 Inclui templates orientados, progresso por seção, navegação lateral, salvamento automático e assistência baseada em informações dos módulos anteriores sem sobrescrever conteúdo existente.
 
- > A persistência centralizada está integrada; o navegador mantém LocalStorage como camada de recuperação offline.
+> A persistência centralizada está integrada; o navegador mantém LocalStorage como camada de recuperação offline.
 
 ### Módulo 4 — Viabilidade Financeira
 
@@ -155,7 +155,7 @@ Possui cinco áreas:
 
 Inclui campos estruturados, progresso por área, progresso geral, abas acessíveis por teclado, reaproveitamento de dados de módulos anteriores e salvamento local.
 
- > A persistência centralizada está integrada; o navegador mantém LocalStorage como camada de recuperação offline.
+> A persistência centralizada está integrada; o navegador mantém LocalStorage como camada de recuperação offline.
 
 ### Módulo 6 — Exportação e Compartilhamento
 
