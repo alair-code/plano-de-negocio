@@ -310,6 +310,85 @@
         </div>
       </section>
 
+      <section class="module-section financial-section" id="financeiro">
+        <div class="module-header">
+          <div>
+            <p class="eyebrow">MÓDULO 04 · VIABILIDADE FINANCEIRA</p>
+            <h2>Descubra se os números sustentam a ideia.</h2>
+            <p>Informe premissas básicas, projete o caixa e compare cenários. Os cálculos são feitos localmente neste navegador.</p>
+          </div>
+          <a class="button secondary-light" href="#plano">← Módulo 3</a>
+        </div>
+
+        <div class="financial-progress">
+          <div><span>Progresso da análise</span><strong id="financialProgressPercent">0%</strong></div>
+          <div class="completion-track"><i id="financialProgressFill"></i></div>
+          <small id="financialProgressText">Preencha as premissas para iniciar a análise.</small>
+        </div>
+
+        <div class="financial-grid">
+          <section class="form-card financial-assumptions">
+            <div class="form-card-title"><span class="section-number">01</span><div><h3>Premissas do negócio</h3><p>Use valores mensais médios para começar. Você poderá ajustar depois.</p></div></div>
+            <div class="field-grid">
+              <label class="field"><span>Investimento inicial <em>obrigatório</em></span><input id="financialInvestment" type="number" min="0" step="0.01" placeholder="Ex.: 50000"></label>
+              <label class="field"><span>Custos fixos mensais <em>obrigatório</em></span><input id="financialFixedCosts" type="number" min="0" step="0.01" placeholder="Ex.: 8000"></label>
+              <label class="field"><span>Custo variável por unidade <em>obrigatório</em></span><input id="financialVariableCost" type="number" min="0" step="0.01" placeholder="Ex.: 35"></label>
+              <label class="field"><span>Preço médio por unidade <em>obrigatório</em></span><input id="financialUnitPrice" type="number" min="0" step="0.01" placeholder="Ex.: 100"></label>
+              <label class="field"><span>Demanda inicial (unidades/mês) <em>obrigatório</em></span><input id="financialInitialDemand" type="number" min="0" step="1" placeholder="Ex.: 150"></label>
+              <label class="field"><span>Crescimento mensal da demanda (%)</span><input id="financialGrowthRate" type="number" min="-100" max="100" step="0.1" value="2" placeholder="Ex.: 2"></label>
+              <label class="field"><span>Horizonte da projeção (meses)</span><select id="financialHorizon"><option value="12">12 meses</option><option value="24">24 meses</option><option value="36">36 meses</option><option value="48">48 meses</option><option value="60">60 meses</option></select></label>
+              <label class="field"><span>Taxa de desconto anual (%)</span><input id="financialDiscountRate" type="number" min="0" max="100" step="0.1" value="12" placeholder="Ex.: 12"></label>
+            </div>
+          </section>
+
+          <section class="form-card scenario-card">
+            <div class="form-card-title"><span class="section-number">02</span><div><h3>Cenários</h3><p>Compare uma leitura pessimista, realista e otimista sem alterar suas premissas-base.</p></div></div>
+            <div class="scenario-selector" role="tablist" aria-label="Cenário financeiro">
+              <button type="button" class="scenario-button active" data-financial-scenario="realistic" aria-selected="true">Realista</button>
+              <button type="button" class="scenario-button" data-financial-scenario="pessimistic" aria-selected="false">Pessimista</button>
+              <button type="button" class="scenario-button" data-financial-scenario="optimistic" aria-selected="false">Otimista</button>
+            </div>
+            <div class="scenario-cards">
+              <div class="scenario-mini"><span>Pessimista</span><strong>−20% demanda</strong><small>+10% custos variáveis</small></div>
+              <div class="scenario-mini selected"><span>Realista</span><strong>Base</strong><small>Premissas informadas</small></div>
+              <div class="scenario-mini"><span>Otimista</span><strong>+20% demanda</strong><small>−10% custos variáveis</small></div>
+            </div>
+            <div class="financial-note"><strong>Boa prática</strong><span>Altere as premissas conforme pesquisas reais de preço, demanda e custos. Os indicadores são estimativas, não garantias.</span></div>
+          </section>
+        </div>
+
+        <section class="form-card financial-results">
+          <div class="form-card-title"><span class="section-number">03</span><div><h3>Indicadores de viabilidade</h3><p>Os principais indicadores são recalculados automaticamente a cada alteração.</p></div></div>
+          <div class="metric-grid financial-metrics">
+            <article class="financial-metric"><span>Receita acumulada</span><strong id="financialRevenue">R$ 0,00</strong><small>no horizonte selecionado</small></article>
+            <article class="financial-metric"><span>Lucro acumulado</span><strong id="financialProfit">R$ 0,00</strong><small>após custos e investimento</small></article>
+            <article class="financial-metric"><span>Ponto de equilíbrio</span><strong id="financialBreakEven">—</strong><small>unidades/mês</small></article>
+            <article class="financial-metric"><span>Margem líquida</span><strong id="financialMargin">—</strong><small>sobre a receita</small></article>
+            <article class="financial-metric"><span>VPL</span><strong id="financialNpv">—</strong><small>valor presente líquido</small></article>
+            <article class="financial-metric"><span>TIR</span><strong id="financialIrr">—</strong><small>taxa interna de retorno</small></article>
+            <article class="financial-metric"><span>Payback simples</span><strong id="financialPayback">—</strong><small>tempo estimado</small></article>
+            <article class="financial-metric"><span>ROI</span><strong id="financialRoi">—</strong><small>retorno sobre investimento</small></article>
+          </div>
+          <div class="financial-reading" aria-live="polite"><strong id="financialReading">Preencha as premissas.</strong><span id="financialReadingText">Quando houver dados suficientes, esta área apresentará uma leitura objetiva dos resultados.</span></div>
+        </section>
+
+        <section class="form-card cashflow-card">
+          <div class="form-card-title"><span class="section-number">04</span><div><h3>Fluxo de caixa projetado</h3><p>Veja receita, custos e caixa líquido mês a mês para o cenário selecionado.</p></div></div>
+          <div class="cashflow-wrap">
+            <table class="cashflow-table">
+              <thead><tr><th>Mês</th><th>Demanda</th><th>Receita</th><th>Custos</th><th>Caixa líquido</th><th>Caixa acumulado</th></tr></thead>
+              <tbody id="financialCashflowBody"><tr><td colspan="6">Preencha as premissas para gerar a projeção.</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="form-actions financial-actions" aria-live="polite">
+          <span id="financialSaveStatus" class="save-status">Rascunho salvo automaticamente.</span>
+          <button type="button" class="button secondary-light" id="clearFinancial">Limpar módulo</button>
+          <button type="button" class="button primary" id="saveFinancial">Salvar análise →</button>
+        </div>
+      </section>
+
       <section class="module-section environment-section" id="ambientes">
         <div class="module-header">
           <div>
