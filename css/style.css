@@ -206,3 +206,33 @@ button { font: inherit; }
   .swot-item{grid-template-columns:18px 1fr 28px}
   .swot-item textarea{min-height:54px}
 }
+
+/* Módulo 3 — estrutura do plano de negócios */
+.plan-progress-card{margin:22px 0;padding:18px 20px;border:1px solid var(--border,#e5e7eb);border-radius:18px;background:#fff;box-shadow:0 8px 24px rgba(15,23,42,.05)}
+.plan-progress-card>div:first-child{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:10px}
+.plan-progress-card strong{font-size:20px}
+.plan-progress-card small{display:block;margin-top:9px;color:#64748b}
+.plan-layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:22px;align-items:start}
+.plan-outline{position:sticky;top:18px;border:1px solid var(--border,#e5e7eb);border-radius:18px;background:#fff;padding:12px;box-shadow:0 8px 24px rgba(15,23,42,.04)}
+.plan-outline-head{display:flex;justify-content:space-between;padding:8px 10px 12px;color:#334155}
+.plan-outline-head span{font-size:12px;color:#64748b}
+.plan-nav-item{width:100%;display:grid;grid-template-columns:30px 1fr 8px;gap:8px;align-items:center;text-align:left;border:0;background:transparent;border-radius:12px;padding:10px;color:#475569;cursor:pointer}
+.plan-nav-item:hover,.plan-nav-item.active{background:#f5f3ff;color:#4f46e5}
+.plan-nav-item b{font-size:11px}
+.plan-nav-item span{font-size:13px}
+.plan-nav-item i{width:7px;height:7px;border-radius:50%;background:#cbd5e1}
+.plan-nav-item.complete i{background:#22c55e}
+.plan-nav-item.active i{background:#6366f1}
+.plan-editor{min-width:0}
+.plan-section-card{display:none;padding:24px;border:1px solid var(--border,#e5e7eb);border-radius:20px;background:#fff;box-shadow:0 8px 24px rgba(15,23,42,.04)}
+.plan-section-card.active{display:block}
+.plan-section-head{display:flex;gap:14px;align-items:flex-start;margin-bottom:22px}
+.plan-section-head>span{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:#eef2ff;color:#4f46e5;font-weight:800;flex:0 0 auto}
+.plan-section-head h3{margin:0 0 5px}
+.plan-section-head p{margin:0;color:#64748b;line-height:1.55}
+.plan-guidance{display:flex;gap:10px;margin-top:16px;padding:13px 15px;border-radius:12px;background:#f8fafc;color:#475569}
+.plan-guidance strong{color:#334155}
+.plan-editor-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:16px;flex-wrap:wrap}
+.plan-editor-actions .save-status{margin-right:auto}
+@media(max-width:900px){.plan-layout{grid-template-columns:1fr}.plan-outline{position:static}.plan-outline nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}.plan-nav-item{padding:9px}}
+@media(max-width:560px){.plan-outline nav{grid-template-columns:1fr}.plan-section-card{padding:18px}.plan-editor-actions{align-items:stretch;flex-direction:column}.plan-editor-actions .save-status{margin-right:0}.plan-editor-actions .button{width:100%}}
