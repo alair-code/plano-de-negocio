@@ -130,3 +130,76 @@ if (form) {
   loadDraft();
   updateScore();
 }
+
+
+const environmentForm = document.getElementById("ambientes");
+const environmentStorageKey = "business-plan-builder:environments:v1";
+const environmentFieldIds = [
+  "swotStrengths","swotWeaknesses","swotOpportunities","swotThreats",
+  "pestelPolitical","pestelEconomic","pestelSocial","pestelTechnological","pestelEnvironmental","pestelLegal",
+  "porterRivalry","porterRivalryNote","porterEntrants","porterEntrantsNote","porterSuppliers","porterSuppliersNote",
+  "porterCustomers","porterCustomersNote","porterSubstitutes","porterSubstitutesNote"
+];
+
+function environmentFields() {
+  return environmentFieldIds.map((id) => document.getElementById(id)).filter(Boolean);
+}
+function updateEnvironmentProgress() {
+  const fields = environmentFields();
+  if (!fields.length) return;
+  const filled = fields.filter((field) => String(field.value || "").trim()).length;
+  const percent = Math.round((filled / fields.length) * 100);
+  const label = document.getElementById("environmentProgressPercent");
+  const fill = document.getElementById("environmentProgressFill");
+  if (label) label.textContent = percent + "%";
+  if (fill) fill.style.width = percent + "%";
+}
+function saveEnvironmentDraft() {
+  if (!environmentForm) return;
+  const data = {};
+  environmentFields().forEach((field) => { data[field.id] = field.value; });
+  localStorage.setItem(environmentStorageKey, JSON.stringify(data));
+  const status = document.getElementById("environmentSaveStatus");
+  if (status) status.textContent = "Rascunho salvo automaticamente.";
+}
+function loadEnvironmentDraft() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(environmentStorageKey) || "null");
+    if (!saved) return;
+    environmentFields().forEach((field) => { if (saved[field.id] !== undefined) field.value = saved[field.id]; });
+    const status = document.getElementById("environmentSaveStatus");
+    if (status) status.textContent = "Rascunho recuperado deste navegador.";
+  } catch {
+    localStorage.removeItem(environmentStorageKey);
+  }
+}
+if (environmentForm) {
+  document.querySelectorAll("[data-environment-tab]").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      const target = tab.dataset.environmentTab;
+      document.querySelectorAll("[data-environment-tab]").forEach((item) => item.classList.toggle("active", item === tab));
+      document.querySelectorAll("[data-environment-panel]").forEach((panel) => panel.classList.toggle("active", panel.dataset.environmentPanel === target));
+    });
+  });
+  environmentFields().forEach((field) => {
+    field.addEventListener("input", () => {
+      updateEnvironmentProgress();
+      window.clearTimeout(environmentForm._saveTimer);
+      environmentForm._saveTimer = window.setTimeout(saveEnvironmentDraft, 250);
+    });
+  });
+  document.getElementById("saveEnvironment")?.addEventListener("click", () => {
+    saveEnvironmentDraft();
+    showToast("Análise de ambientes salva com sucesso.");
+  });
+  document.getElementById("clearEnvironment")?.addEventListener("click", () => {
+    if (!window.confirm("Limpar todo o preenchimento da análise de ambientes?")) return;
+    environmentFields().forEach((field) => { field.value = ""; });
+    localStorage.removeItem(environmentStorageKey);
+    updateEnvironmentProgress();
+    const status = document.getElementById("environmentSaveStatus");
+    if (status) status.textContent = "Módulo limpo. Nenhum dado foi enviado para servidor.";
+  });
+  loadEnvironmentDraft();
+  updateEnvironmentProgress();
+}
