@@ -362,3 +362,6 @@ button { font: inherit; }
 .auth-logout{color:#b54747}
 .auth-logged-in .auth-card h2{font-size:20px}
 @media(max-width:560px){.topbar-actions{gap:6px}.auth-button{padding:7px 9px}.auth-card{padding:22px}.auth-card h2{font-size:20px}}
+
+body.auth-required .sidebar,body.auth-required .topbar,body.auth-required .content{visibility:hidden;pointer-events:none}
+body.auth-required .auth-modal{visibility:visible;pointer-events:auto}
