@@ -147,3 +147,11 @@ button { font: inherit; }
 .score-summary{margin-top:16px;padding:17px 18px;border-radius:13px;background:#171d35;color:white;display:flex;justify-content:space-between;gap:20px}.score-summary span{display:block;color:#aeb5cb;font-size:9px;margin-bottom:5px}.score-summary strong{font-size:17px}
 .form-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap}.save-status{margin-right:auto;color:#7b8495;font-size:10px}
 @media(max-width:760px){.module-section{padding:25px 15px 50px}.module-header{align-items:flex-start;flex-direction:column}.stepper{overflow:auto}.step-line{min-width:35px}.field-grid,.canvas-grid,.score-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.form-card{padding:19px}.form-actions{align-items:stretch}.save-status{width:100%;margin:0}.form-actions .button{flex:1;justify-content:center}.score-summary{flex-direction:column}}
+
+.field em{font-style:normal;color:var(--primary);font-size:9px;font-weight:800;text-transform:uppercase;margin-left:4px}
+.field-help{color:#98a1b1;font-size:9px;text-align:right;margin-top:-2px}
+.field.invalid input,.field.invalid textarea{border-color:#d66b6b;background:#fff9f9}
+.field-error{display:none;color:#c34f4f;font-size:9px}.field.invalid .field-error{display:block}
+.completion-bar{padding:15px 18px;border:1px solid var(--line);border-radius:14px;background:#fff}
+.completion-bar>div:first-child{display:flex;justify-content:space-between;margin-bottom:8px;font-size:10px;color:var(--muted)}
+.completion-bar strong{color:var(--primary)}.completion-track{height:6px;border-radius:20px;background:#eceef4;overflow:hidden}.completion-track i{display:block;width:0;height:100%;background:var(--primary);transition:.25s ease}
