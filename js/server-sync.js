@@ -99,12 +99,12 @@
     if (plans?.[0]) { storePlanId(plans[0].id); return plans[0]; }
 
     const name = val("businessName") || "Meu Plano de Negócio";
-    const {data:spaces,error:spaceError} = await client.from("espacos_trabalho").insert({nome:name}).select("id").limit(1);
+    const {data:spaces,error:spaceError} = await client.from("espacos_trabalho").insert({nome:name}).select("id");
     if (spaceError) throw spaceError;
     const space = spaces?.[0];
     if (!space?.id) throw new Error("Não foi possível criar o espaço de trabalho.");
     const {data:created,error:planError} = await client.from("planos_negocio")
-      .insert({espaco_trabalho_id:space.id,nome:name}).select("id,espaco_trabalho_id,nome,status").limit(1);
+      .insert({espaco_trabalho_id:space.id,nome:name}).select("id,espaco_trabalho_id,nome,status");
     if (planError) throw planError;
     if (!created?.[0]) throw new Error("Não foi possível criar o plano.");
     storePlanId(created[0].id);
@@ -173,10 +173,10 @@
     const name = prompt("Nome do novo plano de negócio:", "Novo Plano de Negócio");
     if (!name?.trim()) return;
     try {
-      const {data:spaces,error:spaceError} = await client.from("espacos_trabalho").insert({nome:name.trim()}).select("id").limit(1);
+      const {data:spaces,error:spaceError} = await client.from("espacos_trabalho").insert({nome:name.trim()}).select("id");
       if (spaceError) throw spaceError;
       const {data:plans,error:planError} = await client.from("planos_negocio")
-        .insert({espaco_trabalho_id:spaces[0].id,nome:name.trim()}).select("id").limit(1);
+        .insert({espaco_trabalho_id:spaces[0].id,nome:name.trim()}).select("id");
       if (planError) throw planError;
       storePlanId(plans[0].id);
       clearUI();
@@ -228,7 +228,8 @@
   }
 
   async function syncEnvironment(planId) {
-    await client.from("analises_ambientais").upsert({plano_negocio_id:planId},{onConflict:"plano_negocio_id"});
+    const environment=await client.from("analises_ambientais").upsert({plano_negocio_id:planId},{onConflict:"plano_negocio_id"});
+    if(environment.error)throw environment.error;
     const swot=getSwot();
     await client.from("itens_swot").delete().eq("plano_negocio_id",planId);
     const swotRows=[];
@@ -288,7 +289,7 @@
 
   async function syncFinancial(planId) {
     const p=financialInputs();
-    const r=await client.from("planos_financeiros").upsert({plano_negocio_id:planId,...p},{onConflict:"plano_negocio_id"}).select("id").limit(1);
+    const r=await client.from("planos_financeiros").upsert({plano_negocio_id:planId,...p},{onConflict:"plano_negocio_id"}).select("id");
     if(r.error)throw r.error;
     const pf=r.data?.[0]; if(!pf?.id)throw new Error("Plano financeiro não retornou ID.");
     const labels={pessimistic:"pessimista",realistic:"realista",optimistic:"otimista"};
@@ -300,11 +301,12 @@
         receita:d.revenue,lucro_operacional:d.profit,ponto_equilibrio:d.breakEven,
         margem:d.margin,valor_presente_liquido:d.npv,taxa_interna_retorno:null,
         payback_meses:d.payback,roi:d.roi
-      },{onConflict:"plano_financeiro_id,tipo_cenario"}).select("id").limit(1);
+      },{onConflict:"plano_financeiro_id,tipo_cenario"}).select("id");
       if(sr.error)throw sr.error;
       const scenarioId=sr.data?.[0]?.id;
       if(!scenarioId)continue;
-      await client.from("projecoes_financeiras").delete().eq("cenario_financeiro_id",scenarioId);
+      const deleted=await client.from("projecoes_financeiras").delete().eq("cenario_financeiro_id",scenarioId);
+      if(deleted.error)throw deleted.error;
       if(d.rows.length){
         const rows=d.rows.map(row=>({cenario_financeiro_id:scenarioId,periodo:row.month,demanda:row.demand,receita:row.revenue,custos_fixos:row.custos_fixos,custos_variaveis:row.custos_variaveis,lucro_operacional:row.lucro_operacional,fluxo_caixa:row.fluxo_caixa}));
         const pr=await client.from("projecoes_financeiras").insert(rows); if(pr.error)throw pr.error;
@@ -342,14 +344,17 @@
     const alerts=typeof window.getAlerts==="function"?window.getAlerts():[];
     const p=await client.from("painel_gestao").upsert({plano_negocio_id:planId,ultima_revisao_em:new Date().toISOString(),pontuacao_geral:overall},{onConflict:"plano_negocio_id"});
     if(p.error)throw p.error;
-    await client.from("alertas_plano").delete().eq("plano_negocio_id",planId);
+    const clearedAlerts=await client.from("alertas_plano").delete().eq("plano_negocio_id",planId);
+    if(clearedAlerts.error)throw clearedAlerts.error;
     if(alerts.length){
       const rows=alerts.map(a=>({plano_negocio_id:planId,tipo_alerta:a[0]==="critical"?"inconsistencia":"revisao",severidade:a[0]==="critical"?"critico":"aviso",mensagem:a[1],resolvido:false}));
       const ar=await client.from("alertas_plano").insert(rows);if(ar.error)throw ar.error;
     }
     const checks=typeof window.getChecklist==="function"?window.getChecklist(modules):[];
-    await client.from("planos_negocio").update({percentual_conclusao:overall,modulo_atual:Math.min(7,modules.findIndex(v=>v<100)+1||7)}).eq("id",planId);
-    await client.from("registros_atividade").insert({plano_negocio_id:planId,usuario_id:(await currentUser())?.id||null,acao:"sincronizar_plano",tipo_entidade:"plano_negocio",entidade_id:planId,metadados:{overall,alerts:alerts.length,pending:checks.filter(c=>!c.ok).length}});
+    const updatedPlan=await client.from("planos_negocio").update({percentual_conclusao:overall,modulo_atual:Math.min(7,modules.findIndex(v=>v<100)+1||7)}).eq("id",planId);
+    if(updatedPlan.error)throw updatedPlan.error;
+    const activity=await client.from("registros_atividade").insert({plano_negocio_id:planId,usuario_id:(await currentUser())?.id||null,acao:"sincronizar_plano",tipo_entidade:"plano_negocio",entidade_id:planId,metadados:{overall,alerts:alerts.length,pending:checks.filter(c=>!c.ok).length}});
+    if(activity.error)throw activity.error;
   }
 
   async function syncAll(reason="manual") {
@@ -510,10 +515,14 @@
     const user=await currentUser();
     if(!user){refreshPlanSelector().catch(()=>{});return;}
     try {
+      const shareToken=new URLSearchParams(location.search).get("share");
+      if(shareToken){
+        await loadSharedToken();
+        return;
+      }
       const plan=await ensurePlan();
       if(plan)await refreshPlanSelector();
       if(plan)await loadPlan(plan.id);
-      await loadSharedToken();
     } catch(err){console.error("Neon: inicialização",err);}
     window.addEventListener("hashchange",()=>{if(window.getProgress)syncAll("auto");});
   }
