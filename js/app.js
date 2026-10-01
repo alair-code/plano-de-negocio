@@ -157,7 +157,6 @@ if (form) {
 const environmentForm = document.getElementById("ambientes");
 const environmentStorageKey = "business-plan-builder:environments:v1";
 const environmentFieldIds = [
-  "swotStrengths","swotWeaknesses","swotOpportunities","swotThreats",
   "pestelPolitical","pestelEconomic","pestelSocial","pestelTechnological","pestelEnvironmental","pestelLegal",
   "porterRivalry","porterRivalryNote","porterEntrants","porterEntrantsNote","porterSuppliers","porterSuppliersNote",
   "porterCustomers","porterCustomersNote","porterSubstitutes","porterSubstitutesNote"
@@ -190,14 +189,21 @@ function getOpportunityProgress() {
   return Math.round((required.filter((name) => String(form.elements.namedItem(name)?.value || "").trim()).length / required.length) * 100);
 }
 
+function getSwotState() {
+  return {
+    strengths: [...document.querySelectorAll('[data-swot-list="strengths"] .swot-item')].map((item) => item.querySelector("textarea")?.value.trim()).filter(Boolean),
+    weaknesses: [...document.querySelectorAll('[data-swot-list="weaknesses"] .swot-item')].map((item) => item.querySelector("textarea")?.value.trim()).filter(Boolean),
+    opportunities: [...document.querySelectorAll('[data-swot-list="opportunities"] .swot-item')].map((item) => item.querySelector("textarea")?.value.trim()).filter(Boolean),
+    threats: [...document.querySelectorAll('[data-swot-list="threats"] .swot-item')].map((item) => item.querySelector("textarea")?.value.trim()).filter(Boolean)
+  };
+}
+
 function getEnvironmentProgress() {
-  const coreIds = [
-    "swotStrengths","swotWeaknesses","swotOpportunities","swotThreats",
-    "pestelPolitical","pestelEconomic","pestelSocial","pestelTechnological","pestelEnvironmental","pestelLegal",
-    "porterRivalry","porterEntrants","porterSuppliers","porterCustomers","porterSubstitutes"
-  ];
-  const filled = coreIds.filter((id) => String(document.getElementById(id)?.value || "").trim()).length;
-  return Math.round((filled / coreIds.length) * 100);
+  const swot = getSwotState();
+  const swotComplete = ["strengths","weaknesses","opportunities","threats"].filter((key) => swot[key].length > 0).length;
+  const otherIds = ["pestelPolitical","pestelEconomic","pestelSocial","pestelTechnological","pestelEnvironmental","pestelLegal","porterRivalry","porterEntrants","porterSuppliers","porterCustomers","porterSubstitutes"];
+  const otherFilled = otherIds.filter((id) => String(document.getElementById(id)?.value || "").trim()).length;
+  return Math.round(((swotComplete / 4) * 40) + ((otherFilled / otherIds.length) * 60));
 }
 
 function updateEnvironmentProgress() {
@@ -303,9 +309,83 @@ function updateDashboardState() {
   });
 }
 
+const swotStorageVersion = 2;
+const swotLabels = {strengths:"força", weaknesses:"fraqueza", opportunities:"oportunidade", threats:"ameaça"};
+
+function renderSwot(state) {
+  Object.entries(state).forEach(([key, values]) => {
+    const list = document.querySelector('[data-swot-list="' + key + '"]');
+    if (!list) return;
+    list.innerHTML = "";
+    values.forEach((value) => addSwotItem(key, value, false));
+  });
+}
+
+function addSwotItem(key, value = "", persist = true) {
+  const list = document.querySelector('[data-swot-list="' + key + '"]');
+  if (!list) return;
+  const item = document.createElement("div");
+  item.className = "swot-item";
+  item.draggable = true;
+  item.innerHTML = '<span class="swot-drag" title="Arrastar para reordenar" aria-hidden="true">⋮⋮</span><textarea rows="2" maxlength="500" placeholder="Descreva um item específico..."></textarea><button type="button" class="swot-remove" aria-label="Remover ' + swotLabels[key] + '">×</button>';
+  const textarea = item.querySelector("textarea");
+  textarea.value = value;
+  textarea.addEventListener("input", () => {
+    updateEnvironmentProgress();
+    window.clearTimeout(environmentForm._saveTimer);
+    environmentForm._saveTimer = window.setTimeout(saveEnvironmentDraft, 250);
+  });
+  item.querySelector(".swot-remove").addEventListener("click", () => {
+    item.remove();
+    updateEnvironmentProgress();
+    saveEnvironmentDraft();
+  });
+  item.addEventListener("dragstart", () => item.classList.add("dragging"));
+  item.addEventListener("dragend", () => {
+    item.classList.remove("dragging");
+    updateEnvironmentProgress();
+    saveEnvironmentDraft();
+  });
+  list.addEventListener("dragover", (event) => {
+    event.preventDefault();
+    const dragging = list.querySelector(".dragging");
+    if (!dragging) return;
+    const after = [...list.querySelectorAll(".swot-item:not(.dragging)")].find((el) => event.clientY <= el.getBoundingClientRect().top + el.offsetHeight / 2);
+    if (after) list.insertBefore(dragging, after);
+    else list.appendChild(dragging);
+  }, {once:true});
+  list.appendChild(item);
+  if (persist) {
+    updateEnvironmentProgress();
+    saveEnvironmentDraft();
+  }
+}
+
+function initializeSwot() {
+  const empty = {strengths:[], weaknesses:[], opportunities:[], threats:[]};
+  let state = {...empty};
+  try {
+    const saved = JSON.parse(localStorage.getItem(environmentStorageKey) || "null");
+    if (saved?.swot && typeof saved.swot === "object") {
+      state = {...empty, ...saved.swot};
+    } else if (saved) {
+      state = {
+        strengths: saved.swotStrengths ? [saved.swotStrengths] : [],
+        weaknesses: saved.swotWeaknesses ? [saved.swotWeaknesses] : [],
+        opportunities: saved.swotOpportunities ? [saved.swotOpportunities] : [],
+        threats: saved.swotThreats ? [saved.swotThreats] : []
+      };
+    }
+  } catch {}
+  renderSwot(state);
+  document.querySelectorAll("[data-swot-add]").forEach((button) => {
+    button.addEventListener("click", () => addSwotItem(button.dataset.swotAdd));
+  });
+}
+
 function saveEnvironmentDraft() {
   if (!environmentForm) return;
-  const data = {};
+  const data = {version: swotStorageVersion, swot: getSwotState()};
   environmentFields().forEach((field) => { data[field.id] = field.value; });
   localStorage.setItem(environmentStorageKey, JSON.stringify(data));
   const status = document.getElementById("environmentSaveStatus");
@@ -361,12 +441,14 @@ if (environmentForm) {
   document.getElementById("clearEnvironment")?.addEventListener("click", () => {
     if (!window.confirm("Limpar todo o preenchimento da análise de ambientes?")) return;
     environmentFields().forEach((field) => { field.value = ""; });
+    document.querySelectorAll(".swot-items").forEach((list) => { list.innerHTML = ""; });
     localStorage.removeItem(environmentStorageKey);
     updatePorterReading();
     updateEnvironmentProgress();
     const status = document.getElementById("environmentSaveStatus");
     if (status) status.textContent = "Módulo limpo. Nenhum dado foi enviado para servidor.";
   });
+  initializeSwot();
   loadEnvironmentDraft();
   updatePorterReading();
   updateSwotReading();
@@ -381,22 +463,17 @@ if (environmentForm) {
 
   document.getElementById("suggestSwot")?.addEventListener("click", () => {
     const examples = {
-      swotStrengths: "Atendimento próximo e conhecimento do mercado local.",
-      swotWeaknesses: "Marca ainda pouco conhecida e recursos iniciais limitados.",
-      swotOpportunities: "Crescimento da demanda e novos canais digitais.",
-      swotThreats: "Entrada de concorrentes e aumento de custos."
+      strengths: "Atendimento próximo e conhecimento do mercado local.",
+      weaknesses: "Marca ainda pouco conhecida e recursos iniciais limitados.",
+      opportunities: "Crescimento da demanda e novos canais digitais.",
+      threats: "Entrada de concorrentes e aumento de custos."
     };
-    const firstEmpty = environmentFieldIds.slice(0, 4).find((id) => {
-      const field = document.getElementById(id);
-      return field && !String(field.value || "").trim();
-    });
-    if (!firstEmpty) {
-      showToast("Os quatro campos da SWOT já possuem conteúdo.");
+    const key = Object.keys(examples).find((name) => getSwotState()[name].length === 0);
+    if (!key) {
+      showToast("Os quatro quadrantes já possuem itens. Você pode adicionar mais manualmente.");
       return;
     }
-    document.getElementById(firstEmpty).value = examples[firstEmpty];
-    updateEnvironmentProgress();
-    saveEnvironmentDraft();
-    showToast("Exemplo adicionado. Edite o conteúdo para refletir seu negócio.");
+    addSwotItem(key, examples[key]);
+    showToast("Exemplo adicionado em " + swotLabels[key] + ". Edite para refletir seu negócio.");
   });
 }
