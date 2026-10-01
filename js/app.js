@@ -62,6 +62,8 @@ const authEmail = document.getElementById("authEmail");
 const authPassword = document.getElementById("authPassword");
 const authSubmit = document.getElementById("authSubmit");
 const authSwitch = document.getElementById("authSwitch");
+const authSignInTab = document.getElementById("authSignInTab");
+const authSignUpTab = document.getElementById("authSignUpTab");
 const authLogout = document.getElementById("authLogout");
 const authFeedback = document.getElementById("authFeedback");
 let authMode = "signin";
@@ -107,6 +109,16 @@ function validateAuthInput(mode) {
 function setAuthMode(mode) {
   authMode = mode;
   const signup = mode === "signup";
+
+  if (authSignInTab) {
+    authSignInTab.classList.toggle("active", !signup);
+    authSignInTab.setAttribute("aria-selected", String(!signup));
+  }
+  if (authSignUpTab) {
+    authSignUpTab.classList.toggle("active", signup);
+    authSignUpTab.setAttribute("aria-selected", String(signup));
+  }
+
   if (authTitle) authTitle.textContent = signup ? "Criar minha conta" : "Entrar no Plano de Negócio";
   if (authDescription) authDescription.textContent = signup
     ? "Crie sua conta para salvar os planos no banco e continuar de qualquer dispositivo."
@@ -118,10 +130,10 @@ function setAuthMode(mode) {
   if (authFeedback) authFeedback.textContent = "";
 }
 
-function openAuthModal() {
+function openAuthModal(mode = "signin") {
   if (!authModal) return;
   authModal.hidden = false;
-  setAuthMode("signin");
+  setAuthMode(mode);
   authEmail?.focus();
 }
 
@@ -241,6 +253,8 @@ authButton?.addEventListener("click", async () => {
   }
 });
 authClose?.addEventListener("click", closeAuthModal);
+authSignInTab?.addEventListener("click", () => setAuthMode("signin"));
+authSignUpTab?.addEventListener("click", () => setAuthMode("signup"));
 authModal?.addEventListener("click", (event) => { if (event.target === authModal) closeAuthModal(); });
 authForm?.addEventListener("submit", signInOrSignUp);
 authSwitch?.addEventListener("click", () => setAuthMode(authMode === "signin" ? "signup" : "signin"));
