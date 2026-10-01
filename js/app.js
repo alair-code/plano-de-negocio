@@ -1070,7 +1070,8 @@ updateDashboardState=function(){
   const financialFilled=financialRequired.filter(id=>{const el=document.getElementById(id);if(!el||el.value==="")return false;const value=Number(el.value);return Number.isFinite(value)&&(["financialInvestment","financialUnitPrice","financialInitialDemand"].includes(id)?value>0:value>=0);}).length;
   const financial=financialFilled===financialRequired.length?100:financialFilled/financialRequired.length*100;
   const complementary=typeof getComplementaryProgress==="function"?getComplementaryProgress():0;
-  const modules=[opportunity,environment,plan,financial,complementary,0,0];
+  const exportProgress=typeof updateExportProgress==='function'?0:0;
+  const modules=[opportunity,environment,plan,financial,complementary,exportProgress,0];
   const overall=Math.round(modules.reduce((sum,value)=>sum+value,0)/modules.length);
   const progressLabel=document.querySelector(".progress-mini .progress-label strong"),progressFill=document.querySelector(".progress-mini .progress-track span"),heroPercent=document.getElementById("heroProgressPercent"),heroFill=document.getElementById("heroProgressFill");
   if(progressLabel)progressLabel.textContent=overall+"%";if(progressFill)progressFill.style.width=overall+"%";if(heroPercent)heroPercent.textContent=overall+"%";if(heroFill)heroFill.style.width=overall+"%";
@@ -1084,7 +1085,7 @@ updateDashboardState=function(){
     if(lockedEl&&module>1)lockedEl.textContent=unlocked?"Pronto para começar":"Disponível após concluir o módulo "+(module-1);
     if(module>=2&&module<=5&&unlocked){
       if(!action){action=document.createElement("a");action.className="module-action";card.appendChild(action);}
-      action.href=module===2?"#ambientes":module===3?"#plano":module===4?"#financeiro":"#complementares";action.textContent=value===100?"Revisar →":module===5?"Começar →":"Continuar →";action.removeAttribute("aria-disabled");action.classList.remove("disabled");
+      action.href=module===2?"#ambientes":module===3?"#plano":module===4?"#financeiro":module===5?"#complementares":"#exportacao";action.textContent=value===100?"Revisar →":module===6?"Começar →":"Continuar →";action.removeAttribute("aria-disabled");action.classList.remove("disabled");
     }else if(action&&module>=2&&module<=5){action.setAttribute("aria-disabled","true");action.classList.add("disabled");}
   });
 };
