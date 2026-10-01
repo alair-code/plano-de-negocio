@@ -31,7 +31,11 @@
       : 0;
     const complementary = typeof getComplementaryProgress === "function" ? getComplementaryProgress() : 0;
     const exportProgress = complementary === 100 ? 100 : 0;
-    return [opportunity, environment, plan, financial, complementary, exportProgress, 0];
+    const firstSixComplete = [opportunity, environment, plan, financial, complementary, exportProgress].every(value => value === 100);
+    const criticalAlerts = getAlerts().filter(alert => alert[0] === "critical").length;
+    const reviewed = localStorage.getItem("business-plan-builder:management:final-review") === "true";
+    const managementComplete = firstSixComplete && criticalAlerts === 0 && reviewed;
+    return [opportunity, environment, plan, financial, complementary, exportProgress, managementComplete ? 100 : 0];
   }
 
   function getChecklist(modules) {
@@ -130,7 +134,7 @@
         <div>
           <p class="eyebrow">MÓDULO 07 · PAINEL E GESTÃO</p>
           <h2>Veja o que está pronto, o que falta e o que precisa de revisão.</h2>
-          <p>Este painel funciona no frontend e usa os dados já preenchidos nos módulos anteriores. Nenhum dado é enviado para servidor nesta fase.</p>
+          <p>Este painel consolida os dados já preenchidos, aponta pendências e ajuda a fazer a revisão final antes de considerar o plano concluído.</p>
         </div>
         <a class="button secondary-light" href="#exportacao">← Módulo 6</a>
       </div>
@@ -159,7 +163,7 @@
           <span id="managementStatus" class="management-status">Painel atualizado.</span>
           <div>
             <button type="button" class="button secondary-light" id="refreshManagement">Atualizar painel</button>
-            <button type="button" class="button primary" id="clearManagement">Limpar estado do painel</button>
+            <button type="button" class="button primary" id="finalReviewButton">Marcar revisão final</button>
           </div>
         </div>
       </div>`;
@@ -195,9 +199,28 @@
     alertList.querySelectorAll("[data-management-target]").forEach(btn=>btn.addEventListener("click",()=>location.hash=btn.dataset.managementTarget));
 
     const nextIndex=modules.findIndex(v=>v<100);
+    const finalReviewButton=document.getElementById("finalReviewButton");
+    const firstSixComplete=modules.slice(0,6).every(value=>value===100);
+    const criticalAlerts=alerts.filter(alert=>alert[0]==="critical").length;
+    const reviewed=localStorage.getItem("business-plan-builder:management:final-review")==="true";
+    if(finalReviewButton){
+      finalReviewButton.textContent=reviewed ? "Revisão final registrada" : "Marcar revisão final";
+      finalReviewButton.disabled=!firstSixComplete || criticalAlerts>0;
+      finalReviewButton.title=!firstSixComplete
+        ?"Conclua os módulos 1 a 6 antes da revisão final."
+        :criticalAlerts>0
+          ?"Resolva os alertas críticos antes da revisão final."
+          :"Registre que você revisou o plano.";
+    }
     document.getElementById("managementNextStep").textContent=nextIndex===-1
-      ?"Todos os módulos estão concluídos. Faça uma última revisão dos alertas antes de considerar o plano finalizado."
-      :"Próximo passo: concluir o Módulo "+(nextIndex+1)+" — "+moduleNames[nextIndex]+".";
+      ?"Plano concluído. A revisão final foi registrada e não há alertas críticos."
+      :firstSixComplete
+        ?criticalAlerts>0
+          ?"Resolva os alertas críticos antes de registrar a revisão final."
+          :reviewed
+            ?"A revisão final foi registrada. Você pode continuar refinando o plano."
+            :"Faça a revisão final para concluir o plano."
+        :"Próximo passo: concluir o Módulo "+(nextIndex+1)+" — "+moduleNames[nextIndex]+".";
     document.getElementById("managementStatus").textContent="Painel atualizado às "+new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
     saveState();
 
@@ -217,12 +240,25 @@
         const status=card.querySelector(".module-status");
         const locked=card.querySelector(".locked");
         if(status){status.classList.toggle("muted",!unlocked);status.textContent=values[6]===100?"Concluído":unlocked?"Disponível":"Bloqueado";}
-        if(locked)locked.textContent=unlocked?"Pronto para começar":"Disponível após concluir o módulo 6";
+        if(locked)locked.textContent=unlocked?"Pronto para a revisão final":"Disponível após concluir o módulo 6";
         let action=card.querySelector(".module-action");
         if(unlocked){
           if(!action){action=document.createElement("a");action.className="module-action";card.appendChild(action);}
-          action.href="#gestao";action.textContent=values[6]===100?"Revisar →":"Começar →";action.classList.remove("disabled");action.removeAttribute("aria-disabled");
+          action.href="#gestao";action.textContent=values[6]===100?"Revisar →":"Fazer revisão →";action.classList.remove("disabled");action.removeAttribute("aria-disabled");
         } else if(action){action.classList.add("disabled");action.setAttribute("aria-disabled","true");}
+        const overall=Math.round(values.reduce((sum,value)=>sum+value,0)/values.length);
+        const progressLabel=document.querySelector(".progress-mini .progress-label strong");
+        const progressFill=document.querySelector(".progress-mini .progress-track span");
+        const heroPercent=document.getElementById("heroProgressPercent");
+        const heroFill=document.getElementById("heroProgressFill");
+        if(progressLabel)progressLabel.textContent=overall+"%";
+        if(progressFill)progressFill.style.width=overall+"%";
+        if(heroPercent)heroPercent.textContent=overall+"%";
+        if(heroFill)heroFill.style.width=overall+"%";
+        const completed=values.filter(value=>value===100).length;
+        const started=values.filter(value=>value>0).length;
+        const dashboardStatus=document.getElementById("dashboardStatus");
+        if(dashboardStatus)dashboardStatus.textContent=completed+" de 7 módulos concluídos · "+started+" em andamento/iniciados";
       };
       window.__managementWrapped=true;
     }
@@ -230,6 +266,10 @@
   }
 
   document.addEventListener("DOMContentLoaded",render);
+  function showToastSafe(message){
+    if(typeof window.showToast==="function")window.showToast(message);
+  }
+
   window.addEventListener("hashchange",()=>{
     if(location.hash!=="#gestao")return;
     const values=getProgress();
@@ -245,10 +285,21 @@
   document.addEventListener("click",(event)=>{
     const target=event.target.closest?.("#refreshManagement");
     if(target)render();
-    if(event.target.closest?.("#clearManagement")){
-      localStorage.removeItem(STORAGE_KEY);
-      const status=document.getElementById("managementStatus");
-      if(status)status.textContent="Estado local do painel limpo.";
+    if(event.target.closest?.("#finalReviewButton")){
+      const modules=getProgress();
+      const alerts=getAlerts();
+      if(!modules.slice(0,6).every(value=>value===100)){
+        showToastSafe("Conclua os módulos 1 a 6 antes da revisão final.");
+        return;
+      }
+      if(alerts.some(alert=>alert[0]==="critical")){
+        showToastSafe("Resolva os alertas críticos antes da revisão final.");
+        return;
+      }
+      localStorage.setItem("business-plan-builder:management:final-review","true");
+      render();
+      if(typeof window.updateDashboardState==="function")window.updateDashboardState();
+      if(typeof window.showToast==="function")window.showToast("Revisão final registrada. O plano foi marcado como concluído.");
     }
   });
 })();
