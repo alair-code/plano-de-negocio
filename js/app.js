@@ -66,13 +66,42 @@ const authLogout = document.getElementById("authLogout");
 const authFeedback = document.getElementById("authFeedback");
 let authMode = "signin";
 
-function getAuthErrorMessage(error) {
+function getAuthErrorMessage(error, mode = authMode) {
   const details = error?.error || error?.data?.error || error;
   const message = details?.message || details?.error_description || details?.statusText;
-  const code = details?.code || details?.status;
-  if (message) return code ? `${message} (${code})` : message;
+  const code = String(details?.code || details?.status || "").toLowerCase();
+
+  if (code.includes("invalid_credentials") || code.includes("invalid email or password")) {
+    return mode === "signup"
+      ? "O cadastro foi rejeitado pelo Neon Auth. Se este e-mail já possui uma conta, use \"Já tenho uma conta\" para entrar."
+      : "E-mail ou senha incorretos.";
+  }
+
+  if (code.includes("user_already_exists") || code.includes("email_already_exists")) {
+    return "Este e-mail já possui uma conta. Use \"Já tenho uma conta\" para entrar.";
+  }
+
+  if (message) return details?.code ? message + " (" + details.code + ")" : message;
   if (typeof error === "string") return error;
-  return "Não foi possível concluir a autenticação. Verifique o e-mail, a senha e tente novamente.";
+  return "Não foi possível concluir a autenticação. Verifique os dados e tente novamente.";
+}
+
+function normalizeAuthEmail(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function validateAuthInput(mode) {
+  const email = normalizeAuthEmail(authEmail?.value);
+  const password = String(authPassword?.value || "");
+
+  if (!email) return "Informe seu e-mail.";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Informe um e-mail válido.";
+  if (!password) return "Informe sua senha.";
+  if (mode === "signup" && password.length < 8) return "A senha deve ter pelo menos 8 caracteres.";
+  if (mode === "signup" && !authName?.value.trim()) return "Informe seu nome.";
+
+  if (authEmail) authEmail.value = email;
+  return "";
 }
 
 function setAuthMode(mode) {
@@ -107,6 +136,7 @@ function extractSession(result) {
 async function getCurrentUser() {
   try {
     const result = await neonClient.auth.getSession();
+    if (result?.error) return null;
     const session = extractSession(result);
     return session?.user || null;
   } catch {
@@ -133,38 +163,69 @@ async function updateAuthUI(user = null) {
   return user;
 }
 
+async function signUpAccount() {
+  const email = normalizeAuthEmail(authEmail?.value);
+  const password = String(authPassword?.value || "");
+  const name = String(authName?.value || "").trim();
+
+  // Cadastro usa exclusivamente signUp.email().
+  // Não há tentativa automática de login quando o cadastro retorna erro.
+  const result = await neonClient.auth.signUp.email({ email, password, name });
+  if (result?.error) throw result.error;
+
+  const resultSession = extractSession(result);
+  const user = resultSession?.user || await getCurrentUser();
+
+  if (!user) {
+    throw new Error("A conta foi criada, mas o Neon Auth não devolveu uma sessão.");
+  }
+
+  return user;
+}
+
+async function signInAccount() {
+  const email = normalizeAuthEmail(authEmail?.value);
+  const password = String(authPassword?.value || "");
+
+  // Login usa exclusivamente signIn.email().
+  const result = await neonClient.auth.signIn.email({ email, password });
+  if (result?.error) throw result.error;
+
+  const resultSession = extractSession(result);
+  const user = resultSession?.user || await getCurrentUser();
+
+  if (!user) {
+    throw new Error("Login concluído, mas a sessão não foi recuperada.");
+  }
+
+  return user;
+}
+
 async function signInOrSignUp(event) {
   event.preventDefault();
-  if (!authEmail?.value.trim() || !authPassword?.value) {
-    if (authFeedback) authFeedback.textContent = "Informe e-mail e senha.";
-    return;
-  }
-  if (authMode === "signup" && !authName?.value.trim()) {
-    if (authFeedback) authFeedback.textContent = "Informe seu nome.";
-    return;
-  }
-  authSubmit.disabled = true;
-  if (authFeedback) authFeedback.textContent = "Conectando...";
-  try {
-    const result = authMode === "signup"
-      ? await neonClient.auth.signUp.email({ email: authEmail.value.trim(), password: authPassword.value, name: authName.value.trim() })
-      : await neonClient.auth.signIn.email({ email: authEmail.value.trim(), password: authPassword.value });
-    if (result?.error) throw result.error;
 
-    // O Better Auth pode retornar a sessão diretamente no resultado do cadastro/login.
-    // Use-a primeiro para evitar uma segunda requisição desnecessária.
-    const resultSession = extractSession(result);
-    const user = resultSession?.user || await getCurrentUser();
+  const mode = authMode;
+  const validationError = validateAuthInput(mode);
+  if (validationError) {
+    if (authFeedback) authFeedback.textContent = validationError;
+    return;
+  }
+
+  authSubmit.disabled = true;
+  if (authFeedback) authFeedback.textContent = mode === "signup" ? "Criando sua conta..." : "Entrando...";
+
+  try {
+    const user = mode === "signup"
+      ? await signUpAccount()
+      : await signInAccount();
+
     await updateAuthUI(user);
-    if (user) {
-      closeAuthModal();
-      showToast(authMode === "signup" ? "Conta criada e conectada ao banco." : "Login realizado com sucesso.");
-      await loadOpportunityFromServer();
-    } else {
-      if (authFeedback) authFeedback.textContent = "A autenticação foi concluída, mas a sessão não foi recuperada. Tente entrar novamente.";
-    }
+    closeAuthModal();
+    showToast(mode === "signup" ? "Conta criada e conectada ao banco." : "Login realizado com sucesso.");
+    await loadOpportunityFromServer();
   } catch (error) {
-    if (authFeedback) authFeedback.textContent = getAuthErrorMessage(error);
+    console.error("Neon Auth:", error);
+    if (authFeedback) authFeedback.textContent = getAuthErrorMessage(error, mode);
   } finally {
     authSubmit.disabled = false;
   }
