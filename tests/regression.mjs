@@ -33,8 +33,8 @@ assert.match(sync,/async function persistShareLink\(\)/,"Criação de compartilh
 assert.match(sync,/if\(!user\).*Entre para criar um compartilhamento persistente/s,"Compartilhamento deve exigir autenticação");
 assert.match(sync,/async function loadSharedToken\(\)/,"Leitura de compartilhamento ausente");
 assert.match(sync,/if\(!user\).*Entre na conta para abrir o compartilhamento/s,"Abertura do compartilhamento deve exigir autenticação");
-for (const format of ["pdf","word","csv"]) {
-  assert.match(sync,new RegExp("formato:"+format+"|format.*"+format),"Registro/exportação do formato ausente: "+format);
-}
+assert.match(sync,/logExport\("pdf"\)/,"Registro de exportação PDF ausente");
+assert.match(sync,/logExport\("doc"\)/,"Registro de exportação Word ausente");
+assert.match(sync,/logExport\("csv"\)/,"Registro de exportação CSV ausente");
 
 console.log("Regression test do Business Plan Builder: OK");
