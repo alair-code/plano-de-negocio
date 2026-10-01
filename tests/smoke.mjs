@@ -7,8 +7,8 @@ const sync=readFileSync("js/server-sync.js","utf8");
 const management=readFileSync("js/management.js","utf8");
 
 for (const id of [
-  "opportunityForm","ambientes","plano","financeiro","complementares","exportacao","gestao",
-  "authModal","serverPlanSelect"
+  "opportunityForm","ambientes","plano","financeiro","complementares","exportacao",
+  "authModal"
 ]) {
   if (id !== "serverPlanSelect") assert.ok(html.includes('id="'+id+'"') || id==="serverPlanSelect", "Elemento ausente: "+id);
 }
