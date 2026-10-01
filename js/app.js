@@ -112,6 +112,8 @@ function loadDraft() {
 if (form) {
   form.addEventListener("input", () => {
     updateScore();
+    updateCompletion();
+    updateDashboardState();
     window.clearTimeout(form._saveTimer);
     form._saveTimer = window.setTimeout(saveDraft, 250);
   });
@@ -129,10 +131,14 @@ if (form) {
     form.reset();
     localStorage.removeItem(storageKey);
     updateScore();
+    updateCompletion();
+    updateDashboardState();
     if (saveStatus) saveStatus.textContent = "Módulo limpo. Nenhum dado foi enviado para servidor.";
   });
   loadDraft();
   updateScore();
+  updateCompletion();
+  updateDashboardState();
 }
 
 
@@ -145,18 +151,93 @@ const environmentFieldIds = [
   "porterCustomers","porterCustomersNote","porterSubstitutes","porterSubstitutesNote"
 ];
 
+function updatePorterReading() {
+  const ids = ["porterRivalry", "porterEntrants", "porterSuppliers", "porterCustomers", "porterSubstitutes"];
+  const values = ids.map((id) => document.getElementById(id)?.value || "");
+  const numeric = values.map((value) => value === "Alta" || value === "Alto" ? 3 : value === "Média" || value === "Médio" ? 2 : value === "Baixa" || value === "Baixo" ? 1 : 0);
+  const answered = numeric.filter(Boolean);
+  const title = document.getElementById("porterReading");
+  const text = document.getElementById("porterReadingText");
+  if (!title || !text) return;
+  if (!answered.length) {
+    title.textContent = "Aguardando avaliação";
+    text.textContent = "Preencha as cinco forças para receber uma leitura consolidada.";
+    return;
+  }
+  const average = answered.reduce((a, b) => a + b, 0) / answered.length;
+  title.textContent = average >= 2.35 ? "Pressão competitiva alta" : average >= 1.55 ? "Pressão competitiva moderada" : "Pressão competitiva baixa";
+  text.textContent = answered.length + " de 5 forças avaliadas. Use as evidências registradas ao lado para justificar a análise.";
+}
+
 function environmentFields() {
   return environmentFieldIds.map((id) => document.getElementById(id)).filter(Boolean);
 }
-function updateEnvironmentProgress() {
+function getOpportunityProgress() {
+  const required = ["businessName", "problem", "solution", "audience"];
+  if (!form) return 0;
+  return Math.round((required.filter((name) => String(form.elements.namedItem(name)?.value || "").trim()).length / required.length) * 100);
+}
+
+function getEnvironmentProgress() {
   const fields = environmentFields();
-  if (!fields.length) return;
-  const filled = fields.filter((field) => String(field.value || "").trim()).length;
-  const percent = Math.round((filled / fields.length) * 100);
+  if (!fields.length) return 0;
+  return Math.round((fields.filter((field) => String(field.value || "").trim()).length / fields.length) * 100);
+}
+
+function updateEnvironmentProgress() {
+  const percent = getEnvironmentProgress();
   const label = document.getElementById("environmentProgressPercent");
   const fill = document.getElementById("environmentProgressFill");
   if (label) label.textContent = percent + "%";
   if (fill) fill.style.width = percent + "%";
+  updateDashboardState();
+}
+
+function updateDashboardState() {
+  const opportunity = getOpportunityProgress();
+  const environment = getEnvironmentProgress();
+  const modules = [opportunity, environment, 0, 0, 0, 0, 0];
+  const overall = Math.round(modules.reduce((sum, value) => sum + value, 0) / modules.length);
+  const progressLabel = document.querySelector(".progress-mini .progress-label strong");
+  const progressFill = document.querySelector(".progress-mini .progress-track span");
+  if (progressLabel) progressLabel.textContent = overall + "%";
+  if (progressFill) progressFill.style.width = overall + "%";
+
+  const status = document.getElementById("dashboardStatus");
+  if (status) status.textContent = modules.filter((value) => value > 0).length + " de 7 módulos iniciados";
+
+  document.querySelectorAll("[data-dashboard-module]").forEach((card) => {
+    const module = Number(card.dataset.dashboardModule);
+    const value = modules[module - 1] || 0;
+    const previous = module > 1 ? modules[module - 2] || 0 : 100;
+    const statusEl = card.querySelector(".module-status");
+    const lockedEl = card.querySelector(".locked");
+    const action = card.querySelector("a");
+
+    card.classList.toggle("completed", value === 100);
+    card.classList.toggle("current", value > 0 && value < 100);
+
+    if (statusEl) {
+      statusEl.classList.toggle("muted", value === 0 && module > 1 && previous < 100);
+      statusEl.textContent = value === 100 ? "Concluído" : value > 0 ? "Em andamento" : module === 1 ? "Próximo" : "Bloqueado";
+    }
+
+    if (lockedEl && module > 1) {
+      lockedEl.textContent = previous === 100 ? "Pronto para começar" : "Disponível após concluir o módulo " + (module - 1);
+    }
+
+    if (module === 2) {
+      if (opportunity === 100 && !action) {
+        const link = document.createElement("a");
+        link.href = "#ambientes";
+        link.className = "module-action";
+        link.textContent = value === 100 ? "Revisar →" : "Começar →";
+        card.appendChild(link);
+      } else if (opportunity < 100 && action) {
+        action.remove();
+      }
+    }
+  });
 }
 function saveEnvironmentDraft() {
   if (!environmentForm) return;
@@ -193,6 +274,7 @@ if (environmentForm) {
   });
   environmentFields().forEach((field) => {
     field.addEventListener("input", () => {
+      updatePorterReading();
       updateEnvironmentProgress();
       window.clearTimeout(environmentForm._saveTimer);
       environmentForm._saveTimer = window.setTimeout(saveEnvironmentDraft, 250);
@@ -206,11 +288,13 @@ if (environmentForm) {
     if (!window.confirm("Limpar todo o preenchimento da análise de ambientes?")) return;
     environmentFields().forEach((field) => { field.value = ""; });
     localStorage.removeItem(environmentStorageKey);
+    updatePorterReading();
     updateEnvironmentProgress();
     const status = document.getElementById("environmentSaveStatus");
     if (status) status.textContent = "Módulo limpo. Nenhum dado foi enviado para servidor.";
   });
   loadEnvironmentDraft();
+  updatePorterReading();
   updateEnvironmentProgress();
 
   document.querySelectorAll("#opportunityForm .field input, #opportunityForm .field textarea").forEach((field) => {
