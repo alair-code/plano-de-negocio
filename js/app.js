@@ -945,6 +945,120 @@ if(complementaryModule){
   updateComplementaryProgress();
 }
 
+// Módulo 6 — Exportação e Compartilhamento
+const exportVersionsKey="business-plan-builder:versions:v1";
+const exportShareParam="plano";
+const exportModule=document.getElementById("exportacao");
+function getAllPlanData(){
+  const data={};
+  document.querySelectorAll("[data-field],[data-plan-field],[data-complementary-field]").forEach(el=>{
+    const key=el.dataset.field||el.dataset.planField||el.dataset.complementaryField;
+    if(key&&el.value!==undefined)data[key]=el.value;
+  });
+  return data;
+}
+function escapeExport(value){
+  return String(value??"").replace(/[&<>"]/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[char]));
+}
+function getExportRows(){
+  const rows=[];
+  document.querySelectorAll("[data-field],[data-plan-field],[data-complementary-field]").forEach(el=>{
+    const key=el.dataset.field||el.dataset.planField||el.dataset.complementaryField;
+    const label=el.closest("label")?.querySelector("span")?.textContent?.trim()||key;
+    const value=el.value?.trim();
+    if(key&&value)rows.push([label,value]);
+  });
+  return rows;
+}
+function updateExportProgress(){
+  const modules=[
+    typeof getOpportunityProgress==="function"?getOpportunityProgress():0,
+    typeof getEnvironmentProgress==="function"?getEnvironmentProgress():0,
+    typeof getPlanProgress==="function"?getPlanProgress():0,
+    typeof getFinancialProgress==="function"?getFinancialProgress():0,
+    typeof getComplementaryProgress==="function"?getComplementaryProgress():0
+  ];
+  const value=Math.round(modules.reduce((a,b)=>a+b,0)/modules.length);
+  const percent=document.getElementById("exportProgressPercent"),fill=document.getElementById("exportProgressFill"),text=document.getElementById("exportProgressText"),summary=document.getElementById("exportSummaryText");
+  if(percent)percent.textContent=value+"%"; if(fill)fill.style.width=value+"%";
+  if(text)text.textContent=value===100?"Plano pronto para exportação e compartilhamento.":"Complete os módulos 1 a 5 para consolidar o plano.";
+  if(summary)summary.textContent=getExportRows().length+" campos preenchidos · "+modules.filter(v=>v===100).length+" de 5 módulos concluídos.";
+}
+function setExportStatus(message){const el=document.getElementById("exportStatus");if(el)el.textContent=message;}
+function downloadBlob(content,type,filename){
+  const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function buildExportHtml(){
+  const name=document.getElementById("businessName")?.value?.trim()||"Plano de Negócio";
+  const rows=getExportRows();
+  return "<!doctype html><html lang='pt-BR'><head><meta charset='utf-8'><title>"+escapeExport(name)+"</title><style>body{font-family:Arial,sans-serif;max-width:900px;margin:40px auto;color:#202532}h1{margin-bottom:6px}p{color:#626a78}table{width:100%;border-collapse:collapse;margin-top:24px}td{border:1px solid #ddd;padding:10px;vertical-align:top}td:first-child{width:30%;font-weight:700;background:#f5f5f5}</style></head><body><h1>"+escapeExport(name)+"</h1><p>Plano de negócio — exportado em "+new Date().toLocaleString("pt-BR")+"</p><table>"+rows.map(row=>"<tr><td>"+escapeExport(row[0])+"</td><td>"+escapeExport(row[1]).replace(/\n/g,"<br>")+"</td></tr>").join("")+"</table></body></html>";
+}
+function createSharePayload(){
+  return btoa(unescape(encodeURIComponent(JSON.stringify({v:1,createdAt:new Date().toISOString(),data:getAllPlanData()}))));
+}
+function readSharePayload(){
+  try{
+    const raw=new URLSearchParams(location.search).get(exportShareParam); if(!raw)return null;
+    return JSON.parse(decodeURIComponent(escape(atob(raw))));
+  }catch{return null;}
+}
+function restoreSharePayload(){
+  const payload=readSharePayload(); if(!payload?.data)return false;
+  Object.entries(payload.data).forEach(([key,value])=>{
+    const el=document.querySelector('[data-field="'+key+'"],[data-plan-field="'+key+'"],[data-complementary-field="'+key+'"]');
+    if(el&&typeof value==="string")el.value=value;
+  });
+  [updateComplementaryProgress,updateExportProgress,updateDashboardState].forEach(fn=>typeof fn==="function"&&fn());
+  setExportStatus("Cópia compartilhada carregada neste navegador. Revise os dados antes de continuar.");
+  return true;
+}
+function loadPlanVersions(){
+  const list=document.getElementById("planVersions");if(!list)return;
+  let versions=[];try{versions=JSON.parse(localStorage.getItem(exportVersionsKey)||"[]");}catch{versions=[];}
+  if(!versions.length){list.innerHTML="<p class='empty-state'>Nenhuma versão salva ainda.</p>";return;}
+  list.innerHTML=versions.map((v,i)=>"<article class='plan-version'><div><strong>"+escapeExport(v.name)+"</strong><small>"+new Date(v.createdAt).toLocaleString("pt-BR")+"</small></div><div><button type='button' class='text-button' data-version-restore='"+i+"'>Restaurar</button><button type='button' class='text-button danger' data-version-delete='"+i+"'>Excluir</button></div></article>").join("");
+  list.querySelectorAll("[data-version-restore]").forEach(btn=>btn.addEventListener("click",()=>restorePlanVersion(Number(btn.dataset.versionRestore))));
+  list.querySelectorAll("[data-version-delete]").forEach(btn=>btn.addEventListener("click",()=>deletePlanVersion(Number(btn.dataset.versionDelete))));
+}
+function savePlanVersion(){
+  const input=document.getElementById("versionName");const name=input?.value.trim()||"Versão "+new Date().toLocaleDateString("pt-BR");
+  let versions=[];try{versions=JSON.parse(localStorage.getItem(exportVersionsKey)||"[]");}catch{}
+  versions.unshift({name,createdAt:new Date().toISOString(),data:getAllPlanData()});versions=versions.slice(0,10);
+  localStorage.setItem(exportVersionsKey,JSON.stringify(versions));if(input)input.value="";loadPlanVersions();setExportStatus("Versão salva com sucesso.");
+}
+function restorePlanVersion(index){
+  let versions=[];try{versions=JSON.parse(localStorage.getItem(exportVersionsKey)||"[]");}catch{}
+  const version=versions[index];if(!version)return;
+  if(!confirm("Restaurar a versão ""+version.name+""? Os dados atuais serão substituídos."))return;
+  Object.entries(version.data||{}).forEach(([key,value])=>{
+    const el=document.querySelector('[data-field="'+key+'"],[data-plan-field="'+key+'"],[data-complementary-field="'+key+'"]');if(el)el.value=value;
+  });
+  localStorage.setItem("business-plan-builder:opportunity:v2",JSON.stringify(Object.fromEntries(Object.entries(version.data||{}).filter(([k])=>document.querySelector('[data-field="'+k+'"]')))));
+  saveComplementaryDraft?.(); updateExportProgress();updateDashboardState?.();setExportStatus("Versão restaurada. Revise o plano antes de exportar.");
+}
+function deletePlanVersion(index){
+  let versions=[];try{versions=JSON.parse(localStorage.getItem(exportVersionsKey)||"[]");}catch{}
+  if(!confirm("Excluir esta versão salva?"))return;versions.splice(index,1);localStorage.setItem(exportVersionsKey,JSON.stringify(versions));loadPlanVersions();
+}
+if(exportModule){
+  document.getElementById("exportPdf")?.addEventListener("click",()=>{setExportStatus("Abrindo impressão. Escolha "Salvar como PDF" no navegador.");window.print();});
+  document.getElementById("exportWord")?.addEventListener("click",()=>{downloadBlob(buildExportHtml(),"application/msword","plano-de-negocio.doc");setExportStatus("Arquivo Word gerado.");});
+  document.getElementById("exportExcel")?.addEventListener("click",()=>{
+    const rows=getExportRows(),csv="\ufeff"+[["Campo","Conteúdo"],...rows].map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(";")).join("\r\n");
+    downloadBlob(csv,"text/csv;charset=utf-8","plano-de-negocio.csv");setExportStatus("Arquivo CSV gerado e compatível com Excel.");
+  });
+  document.getElementById("createShareLink")?.addEventListener("click",()=>{
+    const url=new URL(location.href);url.searchParams.set(exportShareParam,createSharePayload());url.hash="exportacao";
+    const output=document.getElementById("shareLinkOutput");if(output)output.value=url.toString();
+    const copy=document.getElementById("copyShareLink");if(copy)copy.disabled=false;setExportStatus("Link criado. Ele contém uma cópia dos dados do plano.");
+  });
+  document.getElementById("copyShareLink")?.addEventListener("click",async()=>{
+    const output=document.getElementById("shareLinkOutput");if(!output?.value)return;
+    try{await navigator.clipboard.writeText(output.value);setExportStatus("Link copiado para a área de transferência.");}catch{output.select();document.execCommand("copy");setExportStatus("Link copiado.");}
+  });
+  document.getElementById("savePlanVersion")?.addEventListener("click",savePlanVersion);
+  updateExportProgress();loadPlanVersions();restoreSharePayload();
+}
 /* Integra Módulos ao dashboard e ao desbloqueio sequencial */
 const previousUpdateDashboardState=updateDashboardState;
 updateDashboardState=function(){
