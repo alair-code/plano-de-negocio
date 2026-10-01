@@ -694,3 +694,160 @@ if(planModule){
   document.getElementById("closePlanSource")?.addEventListener("click",()=>document.getElementById("planSourcePanel")?.setAttribute("hidden",""));
   updatePlanSourceSummary();
 }
+
+
+/* Módulo 4 — cálculos e persistência */
+const financialStorageKey="business-plan-builder:financial:v1";
+const financialFieldIds=["financialInvestment","financialFixedCosts","financialVariableCost","financialUnitPrice","financialInitialDemand","financialGrowthRate","financialHorizon","financialDiscountRate"];
+let activeFinancialScenario="realistic";
+
+function financialNumber(id,fallback=0){const el=document.getElementById(id);const value=Number(el?.value);return Number.isFinite(value)?value:fallback;}
+function financialMoney(value){return Number.isFinite(value)?"R$ "+value.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2}):"—";}
+function financialPercent(value){return Number.isFinite(value)?value.toLocaleString("pt-BR",{minimumFractionDigits:1,maximumFractionDigits:1})+"%":"—";}
+function financialScenarioParams(){
+  return activeFinancialScenario==="pessimistic"?{demand:.8,variable:1.1}:activeFinancialScenario==="optimistic"?{demand:1.2,variable:.9}:{demand:1,variable:1};
+}
+function calculateFinancial(){
+  const investment=financialNumber("financialInvestment");
+  const fixed=financialNumber("financialFixedCosts");
+  const variable=financialNumber("financialVariableCost");
+  const price=financialNumber("financialUnitPrice");
+  const initialDemand=financialNumber("financialInitialDemand");
+  const growth=financialNumber("financialGrowthRate")/100;
+  const horizon=Math.max(1,Math.min(60,financialNumber("financialHorizon",12)));
+  const annualDiscount=financialNumber("financialDiscountRate")/100;
+  const params=financialScenarioParams();
+  const demandBase=initialDemand*params.demand;
+  const variableBase=variable*params.variable;
+  const rows=[]; let cumulative=-investment, revenue=0, costs=0, profit=0, payback=null;
+  for(let month=1;month<=horizon;month++){
+    const demand=Math.max(0,demandBase*Math.pow(1+growth,month-1));
+    const monthlyRevenue=demand*price;
+    const monthlyCosts=fixed+demand*variableBase;
+    const net=monthlyRevenue-monthlyCosts;
+    cumulative+=net;
+    revenue+=monthlyRevenue; costs+=monthlyCosts; profit+=net;
+    if(payback===null && cumulative>=0) payback=month-1+(net>0?(Math.abs(cumulative-net)/net):0);
+    rows.push({month,demand,revenue:monthlyRevenue,costs:monthlyCosts,net,cumulative});
+  }
+  const margin=revenue>0?((profit-costs*0+revenue-costs)/revenue):null;
+  const contribution=price-variableBase;
+  const breakEven=contribution>0?fixed/contribution:null;
+  const monthlyDiscount=annualDiscount>0?Math.pow(1+annualDiscount,1/12)-1:0;
+  let npv=-investment;
+  rows.forEach(r=>{npv+=r.net/Math.pow(1+monthlyDiscount,r.month);});
+  function npvAt(rate){
+    let value=-investment;
+    rows.forEach(r=>{value+=r.net/Math.pow(1+rate,r.month);});
+    return value;
+  }
+  let irr=null, low=-0.99, high=10;
+  if(npvAt(low)*npvAt(high)<=0){
+    for(let i=0;i<100;i++){const mid=(low+high)/2;if(npvAt(mid)>0)low=mid;else high=mid;}
+    irr=(low+high)/2;
+  }
+  const roi=investment>0?((profit-investment)/investment)*100:null;
+  return {investment,fixed,variable,price,initialDemand,growth,horizon,annualDiscount,rows,revenue,costs,profit,margin,breakEven,npv,irr,roi};
+}
+function updateFinancialProgress(){
+  const required=["financialInvestment","financialFixedCosts","financialVariableCost","financialUnitPrice","financialInitialDemand"];
+  const filled=required.filter(id=>financialNumber(id)>0).length;
+  const percent=Math.round((filled/required.length)*100);
+  const el=document.getElementById("financialProgressPercent"),fill=document.getElementById("financialProgressFill"),txt=document.getElementById("financialProgressText");
+  if(el)el.textContent=percent+"%"; if(fill)fill.style.width=percent+"%";
+  if(txt)txt.textContent=filled===required.length?"Premissas básicas preenchidas. Revise os indicadores e cenários.":filled+" de "+required.length+" premissas obrigatórias preenchidas.";
+}
+function renderFinancial(){
+  const data=calculateFinancial();
+  const hasCore=data.investment>0&&data.fixed>=0&&data.variable>=0&&data.price>0&&data.initialDemand>0;
+  updateFinancialProgress();
+  const set=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value;};
+  if(!hasCore){
+    ["financialRevenue","financialProfit","financialBreakEven","financialMargin","financialNpv","financialIrr","financialPayback","financialRoi"].forEach(id=>set(id,"—"));
+    set("financialReading","Preencha as premissas.");
+    set("financialReadingText","Informe investimento, custos, preço e demanda para gerar os indicadores.");
+    const body=document.getElementById("financialCashflowBody");if(body)body.innerHTML='<tr><td colspan="6">Preencha as premissas para gerar a projeção.</td></tr>';
+    return;
+  }
+  set("financialRevenue",financialMoney(data.revenue));
+  set("financialProfit",financialMoney(data.profit-data.investment));
+  set("financialBreakEven",Number.isFinite(data.breakEven)?Math.ceil(data.breakEven).toLocaleString("pt-BR"):"—");
+  set("financialMargin",financialPercent(data.margin*100));
+  set("financialNpv",financialMoney(data.npv));
+  set("financialIrr",data.irr===null?"—":financialPercent(data.irr*100*12));
+  set("financialPayback",data.rows[data.rows.length-1].cumulative<0?"Não atingido":data.rows.length?data.rows[Math.min(Math.ceil(data.rows.findIndex(r=>r.cumulative>=0)+1,data.rows.length)-1, data.rows.length-1)].month+" meses":"—");
+  set("financialRoi",financialPercent(data.roi));
+  const positive=data.npv>=0&&data.profit>data.investment;
+  set("financialReading",positive?"Cenário com resultado positivo":"Cenário exige atenção");
+  set("financialReadingText",positive?"As premissas atuais indicam recuperação do investimento no horizonte projetado. Compare também os cenários antes de tomar decisões.":"Com estas premissas, o retorno projetado não cobre o investimento no horizonte selecionado. Revise preço, demanda, custos ou prazo.");
+  const body=document.getElementById("financialCashflowBody");
+  if(body)body.innerHTML=data.rows.map(r=>'<tr><td>'+r.month+'</td><td>'+Math.round(r.demand).toLocaleString("pt-BR")+'</td><td>'+financialMoney(r.revenue)+'</td><td>'+financialMoney(r.costs)+'</td><td>'+financialMoney(r.net)+'</td><td>'+financialMoney(r.cumulative)+'</td></tr>').join("");
+}
+function saveFinancialDraft(){
+  const data={scenario:activeFinancialScenario};
+  financialFieldIds.forEach(id=>{const el=document.getElementById(id);if(el)data[id]=el.value;});
+  localStorage.setItem(financialStorageKey,JSON.stringify(data));
+  const status=document.getElementById("financialSaveStatus");if(status)status.textContent="Rascunho salvo automaticamente.";
+}
+function loadFinancialDraft(){
+  try{
+    const saved=JSON.parse(localStorage.getItem(financialStorageKey)||"null");if(!saved)return;
+    financialFieldIds.forEach(id=>{const el=document.getElementById(id);if(el&&saved[id]!==undefined)el.value=saved[id];});
+    if(["realistic","pessimistic","optimistic"].includes(saved.scenario))activeFinancialScenario=saved.scenario;
+    const status=document.getElementById("financialSaveStatus");if(status)status.textContent="Rascunho recuperado deste navegador.";
+  }catch{localStorage.removeItem(financialStorageKey);}
+}
+const financialModule=document.getElementById("financeiro");
+if(financialModule){
+  loadFinancialDraft();
+  document.querySelectorAll("[data-financial-scenario]").forEach(button=>button.addEventListener("click",()=>{
+    activeFinancialScenario=button.dataset.financialScenario;
+    document.querySelectorAll("[data-financial-scenario]").forEach(item=>{const active=item===button;item.classList.toggle("active",active);item.setAttribute("aria-selected",String(active));});
+    renderFinancial();saveFinancialDraft();
+  }));
+  financialFieldIds.forEach(id=>document.getElementById(id)?.addEventListener("input",()=>{renderFinancial();clearTimeout(financialModule._saveTimer);financialModule._saveTimer=setTimeout(saveFinancialDraft,250);}));
+  document.getElementById("saveFinancial")?.addEventListener("click",()=>{saveFinancialDraft();showToast("Análise financeira salva com sucesso.");});
+  document.getElementById("clearFinancial")?.addEventListener("click",()=>{
+    if(!confirm("Limpar todo o preenchimento do Módulo 4?"))return;
+    financialFieldIds.forEach(id=>{const el=document.getElementById(id);if(el)el.value=id==="financialGrowthRate"?"2":id==="financialHorizon"?"12":id==="financialDiscountRate"?"12":"";});
+    activeFinancialScenario="realistic";
+    document.querySelectorAll("[data-financial-scenario]").forEach((item,index)=>{item.classList.toggle("active",index===0);item.setAttribute("aria-selected",String(index===0));});
+    localStorage.removeItem(financialStorageKey);renderFinancial();
+    const status=document.getElementById("financialSaveStatus");if(status)status.textContent="Módulo limpo. Nenhum dado foi enviado para servidor.";
+  });
+  renderFinancial();
+}
+
+/* Integra Módulo 4 ao dashboard e ao desbloqueio sequencial */
+const previousUpdateDashboardState=updateDashboardState;
+updateDashboardState=function(){
+  const opportunity=getOpportunityProgress();
+  const environment=getEnvironmentProgress();
+  const planValues=typeof getPlanSectionProgress==="function"?getPlanSectionProgress():[];
+  const plan=planValues.length?Math.round(planValues.reduce((a,b)=>a+b,0)/planValues.length):0;
+  const financialRequired=["financialInvestment","financialFixedCosts","financialVariableCost","financialUnitPrice","financialInitialDemand"];
+  const financial=financialRequired.length&&financialRequired.every(id=>financialNumber(id)>0)?100:financialRequired.filter(id=>financialNumber(id)>0).length/financialRequired.length*100;
+  const modules=[opportunity,environment,plan,financial,0,0,0];
+  const overall=Math.round(modules.reduce((sum,value)=>sum+value,0)/modules.length);
+  const progressLabel=document.querySelector(".progress-mini .progress-label strong"),progressFill=document.querySelector(".progress-mini .progress-track span"),heroPercent=document.getElementById("heroProgressPercent"),heroFill=document.getElementById("heroProgressFill");
+  if(progressLabel)progressLabel.textContent=overall+"%";if(progressFill)progressFill.style.width=overall+"%";if(heroPercent)heroPercent.textContent=overall+"%";if(heroFill)heroFill.style.width=overall+"%";
+  const completed=modules.filter(v=>v===100).length,started=modules.filter(v=>v>0).length,status=document.getElementById("dashboardStatus");
+  if(status)status.textContent=completed+" de 7 módulos concluídos · "+started+" em andamento/iniciados";
+  document.querySelectorAll("[data-dashboard-module]").forEach(card=>{
+    const module=Number(card.dataset.dashboardModule),value=modules[module-1]||0,previous=module>1?modules[module-2]||0:100,unlocked=module===1||previous===100,statusEl=card.querySelector(".module-status"),lockedEl=card.querySelector(".locked");
+    let action=card.querySelector("a.module-action");
+    card.classList.toggle("completed",value===100);card.classList.toggle("current",unlocked&&value>0&&value<100);
+    if(statusEl){statusEl.classList.toggle("muted",!unlocked&&value===0);statusEl.textContent=value===100?"Concluído":value>0?"Em andamento":module===1?"Próximo":unlocked?"Disponível":"Bloqueado";}
+    if(lockedEl&&module>1)lockedEl.textContent=unlocked?"Pronto para começar":"Disponível após concluir o módulo "+(module-1);
+    if(module>=2&&module<=4&&unlocked){
+      if(!action){action=document.createElement("a");action.className="module-action";card.appendChild(action);}
+      action.href=module===2?"#ambientes":module===3?"#plano":"#financeiro";action.textContent=value===100?"Revisar →":module===4?"Começar →":"Continuar →";action.removeAttribute("aria-disabled");action.classList.remove("disabled");
+    }else if(action&&module>=2&&module<=4){action.setAttribute("aria-disabled","true");action.classList.add("disabled");}
+  });
+};
+updateDashboardState();
+window.addEventListener("hashchange",()=>{
+  if(location.hash==="#financeiro"&&getPlanSectionProgress().some(v=>v<100)){
+    history.replaceState(null,"","#plano");showToast("Conclua as 10 seções do Módulo 3 antes de iniciar a Viabilidade Financeira.");
+  }
+});
