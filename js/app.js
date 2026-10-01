@@ -1070,7 +1070,7 @@ updateDashboardState=function(){
   const financialFilled=financialRequired.filter(id=>{const el=document.getElementById(id);if(!el||el.value==="")return false;const value=Number(el.value);return Number.isFinite(value)&&(["financialInvestment","financialUnitPrice","financialInitialDemand"].includes(id)?value>0:value>=0);}).length;
   const financial=financialFilled===financialRequired.length?100:financialFilled/financialRequired.length*100;
   const complementary=typeof getComplementaryProgress==="function"?getComplementaryProgress():0;
-  const exportProgress=typeof updateExportProgress==='function'?0:0;
+  const exportProgress=complementary===100?100:0;
   const modules=[opportunity,environment,plan,financial,complementary,exportProgress,0];
   const overall=Math.round(modules.reduce((sum,value)=>sum+value,0)/modules.length);
   const progressLabel=document.querySelector(".progress-mini .progress-label strong"),progressFill=document.querySelector(".progress-mini .progress-track span"),heroPercent=document.getElementById("heroProgressPercent"),heroFill=document.getElementById("heroProgressFill");
