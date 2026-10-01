@@ -178,3 +178,13 @@ button { font: inherit; }
 .porter-insight{display:grid;gap:5px;margin-top:15px;padding:15px 16px;border-radius:13px;border:1px solid #e2e4ff;background:#f8f8ff}
 .porter-insight strong{font-size:11px;color:var(--primary)}
 .porter-insight span{font-size:10px;color:var(--muted);line-height:1.5}
+
+.swot-reading,.pestel-reading{display:grid;gap:5px;margin-top:15px;padding:15px 16px;border:1px solid #e2e4ff;border-radius:13px;background:#f8f8ff}
+.swot-reading strong,.pestel-reading strong{font-size:11px;color:var(--primary)}
+.swot-reading span,.pestel-reading span{font-size:10px;color:var(--muted);line-height:1.5}
+.module-action.disabled{color:#a0a7b5;pointer-events:none;cursor:not-allowed}
+.module-action[aria-disabled="true"]{opacity:.65}
+.nav-item[aria-disabled="true"]{cursor:not-allowed;opacity:.55}
+@media(max-width:760px){
+  .swot-reading,.pestel-reading{padding:13px}
+}
