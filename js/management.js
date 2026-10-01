@@ -280,8 +280,21 @@
     }
     render();
   });
-  document.addEventListener("input",()=>{window.clearTimeout(window.__managementTimer);window.__managementTimer=window.setTimeout(render,250);});
-  document.addEventListener("change",()=>window.setTimeout(render,0));
+  function invalidateFinalReview(){
+    if(localStorage.getItem("business-plan-builder:management:final-review")==="true"){
+      localStorage.removeItem("business-plan-builder:management:final-review");
+    }
+  }
+
+  document.addEventListener("input",()=>{
+    invalidateFinalReview();
+    window.clearTimeout(window.__managementTimer);
+    window.__managementTimer=window.setTimeout(render,250);
+  });
+  document.addEventListener("change",()=>{
+    invalidateFinalReview();
+    window.setTimeout(render,0);
+  });
   document.addEventListener("click",(event)=>{
     const target=event.target.closest?.("#refreshManagement");
     if(target)render();
