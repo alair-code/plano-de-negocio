@@ -1030,7 +1030,7 @@ function savePlanVersion(){
 function restorePlanVersion(index){
   let versions=[];try{versions=JSON.parse(localStorage.getItem(exportVersionsKey)||"[]");}catch{}
   const version=versions[index];if(!version)return;
-  if(!confirm("Restaurar a versão ""+version.name+""? Os dados atuais serão substituídos."))return;
+  if(!confirm("Restaurar a versão \""+version.name+"\"? Os dados atuais serão substituídos."))return;
   Object.entries(version.data||{}).forEach(([key,value])=>{
     const el=document.querySelector('[data-field="'+key+'"],[data-plan-field="'+key+'"],[data-complementary-field="'+key+'"]');if(el)el.value=value;
   });
@@ -1042,7 +1042,7 @@ function deletePlanVersion(index){
   if(!confirm("Excluir esta versão salva?"))return;versions.splice(index,1);localStorage.setItem(exportVersionsKey,JSON.stringify(versions));loadPlanVersions();
 }
 if(exportModule){
-  document.getElementById("exportPdf")?.addEventListener("click",()=>{setExportStatus("Abrindo impressão. Escolha "Salvar como PDF" no navegador.");window.print();});
+  document.getElementById("exportPdf")?.addEventListener("click",()=>{setExportStatus("Abrindo impressão. Escolha \"Salvar como PDF\" no navegador.");window.print();});
   document.getElementById("exportWord")?.addEventListener("click",()=>{downloadBlob(buildExportHtml(),"application/msword","plano-de-negocio.doc");setExportStatus("Arquivo Word gerado.");});
   document.getElementById("exportExcel")?.addEventListener("click",()=>{
     const rows=getExportRows(),csv="\ufeff"+[["Campo","Conteúdo"],...rows].map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(";")).join("\r\n");
