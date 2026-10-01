@@ -23,9 +23,6 @@ jobs:
         with:
           node-version: "24"
       - name: Validate JavaScript syntax
-        run: |
-          node --check js/app.js
-          node --check js/management.js
-          node --check js/server-sync.js
+        run: node tests/syntax.mjs
       - name: Run smoke test
         run: node tests/smoke.mjs
