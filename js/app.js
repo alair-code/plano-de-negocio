@@ -883,51 +883,7 @@ if(planModule){
 }
 
 /* Atualiza o dashboard incluindo o novo módulo */
-function updateDashboardState(){
-  const opportunity=getOpportunityProgress();
-  const environment=getEnvironmentProgress();
-  const planValues=typeof getPlanSectionProgress==="function" ? getPlanSectionProgress() : [];
-  const plan=planValues.length ? Math.round(planValues.reduce((a,b)=>a+b,0)/planValues.length) : 0;
-  const modules=[opportunity,environment,plan,0,0,0,0];
-  const overall=Math.round(modules.reduce((sum,value)=>sum+value,0)/modules.length);
-  const progressLabel=document.querySelector(".progress-mini .progress-label strong");
-  const progressFill=document.querySelector(".progress-mini .progress-track span");
-  const heroPercent=document.getElementById("heroProgressPercent");
-  const heroFill=document.getElementById("heroProgressFill");
-  if(progressLabel) progressLabel.textContent=overall+"%";
-  if(progressFill) progressFill.style.width=overall+"%";
-  if(heroPercent) heroPercent.textContent=overall+"%";
-  if(heroFill) heroFill.style.width=overall+"%";
-  const completed=modules.filter((value)=>value===100).length;
-  const started=modules.filter((value)=>value>0).length;
-  const status=document.getElementById("dashboardStatus");
-  if(status) status.textContent=completed+" de 7 módulos concluídos · "+started+" em andamento/iniciados";
-  document.querySelectorAll("[data-dashboard-module]").forEach((card)=>{
-    const module=Number(card.dataset.dashboardModule);
-    const value=modules[module-1]||0;
-    const previous=module>1 ? modules[module-2]||0 : 100;
-    const unlocked=module===1 || previous===100;
-    const statusEl=card.querySelector(".module-status");
-    const lockedEl=card.querySelector(".locked");
-    let action=card.querySelector("a.module-action");
-    card.classList.toggle("completed",value===100);
-    card.classList.toggle("current",unlocked && value>0 && value<100);
-    if(statusEl){
-      statusEl.classList.toggle("muted",!unlocked && value===0);
-      statusEl.textContent=value===100?"Concluído":value>0?"Em andamento":module===1?"Próximo":unlocked?"Disponível":"Bloqueado";
-    }
-    if(lockedEl && module>1) lockedEl.textContent=unlocked?"Pronto para começar":"Disponível após concluir o módulo "+(module-1);
-    if(module>1 && module<5){
-      if(unlocked && !action){action=document.createElement("a");action.className="module-action";card.appendChild(action);}
-      if(action){
-        action.href=module===2?"#ambientes":"#plano";
-        action.textContent=value===100?"Revisar →":module===3?"Começar →":"Continuar →";
-        action.setAttribute("aria-disabled",String(!unlocked));
-        action.classList.toggle("disabled",!unlocked);
-      }
-    }
-  });
-}
+
 
 /* Proteção e desbloqueio sequencial do Módulo 3 */
 window.addEventListener("hashchange",()=>{
