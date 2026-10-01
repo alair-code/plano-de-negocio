@@ -188,9 +188,8 @@ authGoogle?.addEventListener("click", async () => {
     if (authFeedback) authFeedback.textContent = getAuthErrorMessage(error);
   }
 });
-neonClient.auth.onAuthStateChange?.((_event, session) => {
-  updateAuthUI(session?.user || null);
-});
+// Neon Auth Better Auth não expõe o listener Supabase-compatível neste cliente.
+// A sessão é consultada diretamente após cada operação de autenticação.
 
 const form = document.getElementById("opportunityForm");
 const saveStatus = document.getElementById("saveStatus");
