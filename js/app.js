@@ -478,3 +478,147 @@ if (environmentForm) {
     showToast("Exemplo adicionado em " + swotLabels[key] + ". Edite para refletir seu negócio.");
   });
 }
+
+/* Módulo 3 — persistência, navegação e progresso */
+const planFormKey = "business-plan-builder:plan:v1";
+const planSectionOrder = ["executiveSummary","companyDescription","productsServices","marketCompetition","marketingSales","operationalPlan","peopleManagement","financialPlan","strategicAnalysis","appendices"];
+
+function getPlanFields(){
+  return [...document.querySelectorAll("[data-plan-field]")];
+}
+function getPlanState(){
+  const state={};
+  getPlanFields().forEach((field)=>{ state[field.dataset.planField]=field.value; });
+  return state;
+}
+function getPlanSectionProgress(){
+  return planSectionOrder.map((key)=>{
+    const fields=[...document.querySelectorAll('[data-plan-section="'+key+'"] [data-plan-field]')];
+    return fields.length>0 && fields.every((field)=>field.value.trim().length>0) ? 100 : fields.some((field)=>field.value.trim().length>0) ? Math.round((fields.filter((field)=>field.value.trim()).length/fields.length)*100) : 0;
+  });
+}
+function updatePlanCounters(){
+  getPlanFields().forEach((field)=>{
+    const counter=document.querySelector('[data-plan-count="'+field.dataset.planField+'"]');
+    if(counter && field.maxLength) counter.textContent=field.value.length+"/"+field.maxLength;
+  });
+}
+function updatePlanProgress(){
+  const values=getPlanSectionProgress();
+  const completed=values.filter((value)=>value===100).length;
+  const average=Math.round(values.reduce((a,b)=>a+b,0)/values.length);
+  const percent=document.getElementById("planProgressPercent");
+  const fill=document.getElementById("planProgressFill");
+  const text=document.getElementById("planProgressText");
+  const count=document.getElementById("planSectionCount");
+  if(percent) percent.textContent=average+"%";
+  if(fill) fill.style.width=average+"%";
+  if(text) text.textContent=completed+" de 10 seções preenchidas";
+  if(count) count.textContent=completed+"/10";
+  document.querySelectorAll("[data-plan-target]").forEach((button,index)=>{
+    button.classList.toggle("complete",values[index]===100);
+    const dot=button.querySelector("i");
+    if(dot) dot.title=values[index]===100 ? "Concluída" : values[index]>0 ? "Em andamento" : "Não preenchida";
+  });
+}
+function savePlanDraft(){
+  const state=getPlanState();
+  localStorage.setItem(planFormKey,JSON.stringify(state));
+  const status=document.getElementById("planSaveStatus");
+  if(status) status.textContent="Rascunho salvo automaticamente.";
+}
+function loadPlanDraft(){
+  try{
+    const saved=JSON.parse(localStorage.getItem(planFormKey)||"null");
+    if(!saved) return;
+    getPlanFields().forEach((field)=>{if(saved[field.dataset.planField]!==undefined) field.value=saved[field.dataset.planField];});
+    const status=document.getElementById("planSaveStatus");
+    if(status) status.textContent="Rascunho recuperado deste navegador.";
+  }catch{localStorage.removeItem(planFormKey);}
+}
+function activatePlanSection(key){
+  if(!planSectionOrder.includes(key)) return;
+  document.querySelectorAll("[data-plan-section]").forEach((section)=>section.classList.toggle("active",section.dataset.planSection===key));
+  document.querySelectorAll("[data-plan-target]").forEach((button)=>button.classList.toggle("active",button.dataset.planTarget===key));
+  const target=document.querySelector('[data-plan-section="'+key+'"]');
+  if(target) target.scrollIntoView({behavior:"smooth",block:"start"});
+}
+const planModule=document.getElementById("plano");
+if(planModule){
+  document.querySelectorAll("[data-plan-target]").forEach((button)=>button.addEventListener("click",()=>activatePlanSection(button.dataset.planTarget)));
+  getPlanFields().forEach((field)=>{
+    field.addEventListener("input",()=>{
+      updatePlanCounters();
+      updatePlanProgress();
+      updateDashboardState();
+      clearTimeout(planModule._saveTimer);
+      planModule._saveTimer=setTimeout(savePlanDraft,250);
+    });
+  });
+  document.getElementById("savePlan")?.addEventListener("click",()=>{savePlanDraft();showToast("Plano de negócios salvo com sucesso.");});
+  document.getElementById("clearPlan")?.addEventListener("click",()=>{
+    if(!confirm("Limpar todo o preenchimento do Módulo 3?")) return;
+    getPlanFields().forEach((field)=>field.value="");
+    localStorage.removeItem(planFormKey);
+    updatePlanCounters();updatePlanProgress();updateDashboardState();
+    const status=document.getElementById("planSaveStatus");
+    if(status) status.textContent="Módulo limpo. Nenhum dado foi enviado para servidor.";
+  });
+  loadPlanDraft();updatePlanCounters();updatePlanProgress();
+}
+
+/* Atualiza o dashboard incluindo o novo módulo */
+function updateDashboardState(){
+  const opportunity=getOpportunityProgress();
+  const environment=getEnvironmentProgress();
+  const planValues=typeof getPlanSectionProgress==="function" ? getPlanSectionProgress() : [];
+  const plan=planValues.length ? Math.round(planValues.reduce((a,b)=>a+b,0)/planValues.length) : 0;
+  const modules=[opportunity,environment,plan,0,0,0,0];
+  const overall=Math.round(modules.reduce((sum,value)=>sum+value,0)/modules.length);
+  const progressLabel=document.querySelector(".progress-mini .progress-label strong");
+  const progressFill=document.querySelector(".progress-mini .progress-track span");
+  const heroPercent=document.getElementById("heroProgressPercent");
+  const heroFill=document.getElementById("heroProgressFill");
+  if(progressLabel) progressLabel.textContent=overall+"%";
+  if(progressFill) progressFill.style.width=overall+"%";
+  if(heroPercent) heroPercent.textContent=overall+"%";
+  if(heroFill) heroFill.style.width=overall+"%";
+  const completed=modules.filter((value)=>value===100).length;
+  const started=modules.filter((value)=>value>0).length;
+  const status=document.getElementById("dashboardStatus");
+  if(status) status.textContent=completed+" de 7 módulos concluídos · "+started+" em andamento/iniciados";
+  document.querySelectorAll("[data-dashboard-module]").forEach((card)=>{
+    const module=Number(card.dataset.dashboardModule);
+    const value=modules[module-1]||0;
+    const previous=module>1 ? modules[module-2]||0 : 100;
+    const unlocked=module===1 || previous===100;
+    const statusEl=card.querySelector(".module-status");
+    const lockedEl=card.querySelector(".locked");
+    let action=card.querySelector("a.module-action");
+    card.classList.toggle("completed",value===100);
+    card.classList.toggle("current",unlocked && value>0 && value<100);
+    if(statusEl){
+      statusEl.classList.toggle("muted",!unlocked && value===0);
+      statusEl.textContent=value===100?"Concluído":value>0?"Em andamento":module===1?"Próximo":unlocked?"Disponível":"Bloqueado";
+    }
+    if(lockedEl && module>1) lockedEl.textContent=unlocked?"Pronto para começar":"Disponível após concluir o módulo "+(module-1);
+    if(module>1 && module<5){
+      if(unlocked && !action){action=document.createElement("a");action.className="module-action";card.appendChild(action);}
+      if(action){
+        action.href=module===2?"#ambientes":"#plano";
+        action.textContent=value===100?"Revisar →":module===3?"Começar →":"Continuar →";
+        action.setAttribute("aria-disabled",String(!unlocked));
+        action.classList.toggle("disabled",!unlocked);
+      }
+    }
+  });
+}
+
+/* Proteção e desbloqueio sequencial do Módulo 3 */
+window.addEventListener("hashchange",()=>{
+  if(location.hash==="#plano" && getEnvironmentProgress()<100){
+    history.replaceState(null,"","#ambientes");
+    showToast("Conclua o Módulo 2 antes de iniciar o Plano de Negócios.");
+  }
+});
+updateDashboardState();
