@@ -65,8 +65,8 @@
             <div class="visual-card">
               <span class="visual-label">PLANO EM CONSTRUÇÃO</span>
               <strong>Nova oportunidade</strong>
-              <div class="visual-metric"><b>0%</b><span>progresso</span></div>
-              <div class="visual-bar"><i></i></div>
+              <div class="visual-metric"><b id="heroProgressPercent">0%</b><span>progresso</span></div>
+              <div class="visual-bar"><i id="heroProgressFill"></i></div>
               <div class="visual-list"><span>01 Oportunidade</span><span>02 Ambientes</span><span>03 Plano</span></div>
             </div>
           </div>
@@ -74,7 +74,7 @@
 
         <div class="section-heading">
           <div><p class="eyebrow">VISÃO GERAL</p><h2>Sua jornada</h2></div>
-          <span class="status-pill" id="dashboardStatus">0 de 7 módulos iniciados</span>
+          <span class="status-pill" id="dashboardStatus">0 de 7 módulos concluídos</span>
         </div>
 
         <div class="module-grid">
@@ -197,6 +197,7 @@
               <label class="swot-card threat"><span>Ameaças <small>Externo · negativo</small></span><textarea id="swotThreats" rows="7" placeholder="Ex.: concorrência, custos, legislação, sazonalidade..."></textarea></label>
             </div>
             <div class="environment-tip"><strong>Como usar</strong><span>Seja específico. Registre fatos e hipóteses que possam ser verificados depois.</span></div>
+            <div class="swot-reading" aria-live="polite"><strong id="swotReading">Matriz ainda sem dados</strong><span id="swotReadingText">Preencha os quatro quadrantes para gerar um resumo da análise.</span></div>
             <div class="swot-actions">
               <button type="button" class="button secondary-light" id="suggestSwot">Adicionar exemplo</button>
               <small>Você pode editar, apagar ou reorganizar os itens depois.</small>
@@ -207,6 +208,7 @@
         <div class="environment-panel" id="panel-pestel" role="tabpanel" data-environment-panel="pestel">
           <div class="form-card">
             <div class="form-card-title"><span class="section-number">PE</span><div><h3>Análise PESTEL</h3><p>Registre fatores externos que podem afetar seu negócio.</p></div></div>
+            <div class="pestel-reading" aria-live="polite"><strong id="pestelReading">PESTEL em aberto</strong><span id="pestelReadingText">Registre os seis fatores para concluir esta análise.</span></div>
             <div class="strategy-grid">
               <label class="strategy-card"><span>Político</span><textarea id="pestelPolitical" rows="4" placeholder="Governo, políticas públicas, estabilidade..."></textarea></label>
               <label class="strategy-card"><span>Econômico</span><textarea id="pestelEconomic" rows="4" placeholder="Inflação, juros, renda, câmbio..."></textarea></label>
