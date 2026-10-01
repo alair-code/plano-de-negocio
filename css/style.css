@@ -290,3 +290,12 @@ button { font: inherit; }
 .cashflow-bar i{display:block;width:100%;min-height:2px;border-radius:4px 4px 2px 2px;background:#4f46e5}
 .cashflow-bar.negative i{background:#d97706}
 .cashflow-bar span{position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);font-size:9px;color:#98a2b3}
+
+/* Refinamento final — Módulo 4 */
+.scenario-mini{transition:border-color .18s ease,background .18s ease,box-shadow .18s ease}
+.scenario-mini.selected{box-shadow:0 0 0 2px rgba(79,70,229,.08)}
+.financial-comparison{overflow:hidden}
+.financial-scenario-table th:first-child,.financial-scenario-table td:first-child{text-align:left}
+.financial-scenario-table tbody tr.selected{background:#f7f6ff}
+.financial-scenario-table tbody th{font-size:.9rem;border-bottom:1px solid #eceef2;white-space:nowrap}
+@media(max-width:900px){.financial-scenario-table{min-width:980px}}
