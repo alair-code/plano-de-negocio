@@ -1,15 +1,33 @@
-import { createClient } from "https://esm.sh/@neondatabase/neon-js@0.7.0-beta";
+import { createClient, BetterAuthVanillaAdapter } from "https://esm.sh/@neondatabase/neon-js@0.7.0-beta";
+
+const NEON_AUTH_URL = "https://ep-late-violet-b6sxri3o.neonauth.c-2.sa-east-1.aws.neon.tech/neondb/auth";
+const NEON_DATA_API_URL = "https://ep-late-violet-b6sxri3o.apirest.c-2.sa-east-1.aws.neon.tech/neondb/rest/v1";
 
 const neonClient = createClient({
   auth: {
-    url: "https://ep-late-violet-b6sxri3o.neonauth.c-2.sa-east-1.aws.neon.tech/neondb/auth"
+    adapter: BetterAuthVanillaAdapter(),
+    url: NEON_AUTH_URL
   },
   dataApi: {
-    url: "https://ep-late-violet-b6sxri3o.apirest.c-2.sa-east-1.aws.neon.tech/neondb/rest/v1"
+    url: NEON_DATA_API_URL
   }
 });
 window.neonClient = neonClient;
 
+
+
+// Microinterações: feedback visual de navegação sem duplicar a lógica de estado ativo.
+document.querySelectorAll(".module-card a").forEach((link) => {
+  link.addEventListener("click", () => {
+    const card = link.closest(".module-card");
+    if (card) {
+      card.animate(
+        [{ transform: "translateY(0)" }, { transform: "translateY(-3px)" }, { transform: "translateY(0)" }],
+        { duration: 260, easing: "ease-out" }
+      );
+    }
+  });
+});
 
 const menuButton = document.getElementById("menuButton");
 const sidebar = document.getElementById("sidebar");
@@ -25,7 +43,117 @@ function showToast(message) {
   toast.classList.add("show");
   window.setTimeout(() => toast.classList.remove("show"), 3200);
 }
-demoButton?.addEventListener("click", () => showToast("A demonstração será ampliada conforme os módulos forem construídos."));
+demoButton?.addEventListener("click", () => openTutorial("#dashboard"));
+
+const tutorialButton = document.getElementById("tutorialButton");
+const tutorialModal = document.getElementById("tutorialModal");
+const tutorialClose = document.getElementById("tutorialClose");
+const tutorialTitle = document.getElementById("tutorialTitle");
+const tutorialIntro = document.getElementById("tutorialIntro");
+const tutorialSteps = document.getElementById("tutorialSteps");
+const tutorialTip = document.getElementById("tutorialTip");
+const tutorialStart = document.getElementById("tutorialStart");
+
+const tutorials = {
+  "#dashboard": {
+    title: "Como usar o Dashboard",
+    intro: "O Dashboard é o ponto de partida. Ele mostra sua jornada, o progresso e quais módulos estão disponíveis.",
+    steps: [
+      ["1","Comece pelo módulo 01","Clique em Oportunidade e responda as perguntas sobre sua ideia, problema, solução e público."],
+      ["2","Avance na ordem","Os próximos módulos são liberados conforme você conclui as etapas anteriores."],
+      ["3","Acompanhe o progresso","Use os indicadores do Dashboard para saber o que já foi preenchido e o que falta."]
+    ],
+    tip: "<strong>Dica:</strong> não tente preencher tudo de uma vez. O sistema foi pensado para construir o plano passo a passo."
+  },
+  "#oportunidade": {
+    title: "Como usar Oportunidade",
+    intro: "Aqui você transforma uma ideia inicial em uma oportunidade de negócio clara e estruturada.",
+    steps: [
+      ["1","Descreva a ideia","Informe o nome provisório, o problema identificado, a solução e o público principal."],
+      ["2","Explique o valor","Use os campos seguintes para mostrar por que sua solução é relevante e quais são seus diferenciais."],
+      ["3","Conclua o módulo","Revise as respostas e complete os campos obrigatórios para liberar o próximo módulo."]
+    ],
+    tip: "<strong>Dica:</strong> escreva com exemplos reais e evite respostas genéricas. Quanto mais concreta a informação, melhor será a análise."
+  },
+  "#ambientes": {
+    title: "Como usar Ambientes",
+    intro: "Este módulo ajuda você a analisar o contexto interno e externo do negócio antes de montar o plano.",
+    steps: [
+      ["1","Analise o ambiente","Preencha os fatores relevantes do ambiente e observe como eles podem afetar o negócio."],
+      ["2","Use PESTEL e Porter","Avalie fatores políticos, econômicos, sociais, tecnológicos, ambientais e legais, além das forças competitivas."],
+      ["3","Monte a SWOT","Registre forças, fraquezas, oportunidades e ameaças para transformar a análise em decisões práticas."]
+    ],
+    tip: "<strong>Dica:</strong> diferencie fatos de suposições. Quando possível, use dados ou evidências para justificar suas análises."
+  },
+  "#plano": {
+    title: "Como usar Plano de Negócios",
+    intro: "Aqui você transforma as análises anteriores em um plano estruturado para o negócio.",
+    steps: [
+      ["1","Preencha cada seção","Avance pelas seções do plano e responda aos campos com base no que você já analisou."],
+      ["2","Use as sugestões","Quando houver sugestões ou exemplos, use-os como orientação e adapte ao seu negócio."],
+      ["3","Revise a coerência","Confira se estratégia, público, operação, marketing e demais partes estão alinhados."]
+    ],
+    tip: "<strong>Dica:</strong> não copie exemplos literalmente. O objetivo é construir um plano específico para o seu negócio."
+  },
+  "#financeiro": {
+    title: "Como usar Viabilidade Financeira",
+    intro: "Este módulo ajuda a transformar as hipóteses do negócio em números para avaliar sua sustentabilidade.",
+    steps: [
+      ["1","Informe as premissas","Preencha preços, volumes, receitas, custos e demais dados solicitados."],
+      ["2","Compare cenários","Use os cenários disponíveis para entender como mudanças nas premissas afetam os resultados."],
+      ["3","Leia os indicadores","Observe fluxo de caixa, resultados e indicadores antes de tirar conclusões sobre a viabilidade."]
+    ],
+    tip: "<strong>Dica:</strong> teste cenários conservadores e realistas. Pequenas mudanças nas premissas podem alterar bastante os resultados."
+  },
+  "#complementares": {
+    title: "Como usar Planos Complementares",
+    intro: "Aqui você detalha áreas que ajudam a transformar o plano em execução.",
+    steps: [
+      ["1","Escolha uma área","Navegue pelas abas de marketing, operações, pessoas, jurídico, tecnologia e outras disponíveis."],
+      ["2","Detalhe a execução","Descreva ações, responsáveis, recursos e decisões necessárias para cada área."],
+      ["3","Conecte com o plano","Mantenha as informações complementares coerentes com estratégia, público e capacidade financeira."]
+    ],
+    tip: "<strong>Dica:</strong> use esta etapa para transformar ideias estratégicas em ações concretas."
+  },
+  "#exportacao": {
+    title: "Como usar Exportação",
+    intro: "Use este menu para revisar, preparar e compartilhar o conteúdo do seu plano.",
+    steps: [
+      ["1","Revise o conteúdo","Confira a prévia e verifique se as informações importantes estão preenchidas."],
+      ["2","Prepare a versão final","Faça os últimos ajustes antes de apresentar ou compartilhar o plano."],
+      ["3","Compartilhe com segurança","Use os recursos de compartilhamento disponíveis e confira o que será enviado."]
+    ],
+    tip: "<strong>Dica:</strong> faça uma revisão final antes de exportar. A versão compartilhada deve representar o estado atual do seu plano."
+  },
+  "#gestao": {
+    title: "Como usar Gestão",
+    intro: "O menu Gestão serve para acompanhar a evolução do plano e manter suas informações organizadas.",
+    steps: [
+      ["1","Acompanhe pendências","Identifique o que ainda precisa ser preenchido ou revisado."],
+      ["2","Revise versões","Quando houver histórico, use-o para comparar ou recuperar versões anteriores do plano."],
+      ["3","Mantenha o plano atualizado","Volte a esta área durante a execução para acompanhar mudanças e próximos passos."]
+    ],
+    tip: "<strong>Dica:</strong> trate o plano como um documento vivo. Atualize as informações quando as condições do negócio mudarem."
+  }
+};
+
+function getCurrentTutorialKey() {
+  const hash = window.location.hash || "#dashboard";
+  return tutorials[hash] ? hash : "#dashboard";
+}
+function openTutorial(key = getCurrentTutorialKey()) {
+  const tutorial = tutorials[key] || tutorials["#dashboard"];
+  if (!tutorialModal) return;
+  if (tutorialTitle) tutorialTitle.textContent = tutorial.title;
+  if (tutorialIntro) tutorialIntro.textContent = tutorial.intro;
+  if (tutorialSteps) tutorialSteps.innerHTML = tutorial.steps.map(([n,title,text]) => `<div class="tutorial-step"><div class="tutorial-step-number">${n}</div><div><strong>${title}</strong><span>${text}</span></div></div>`).join("");
+  if (tutorialTip) tutorialTip.innerHTML = tutorial.tip;
+  tutorialModal.hidden = false;
+}
+tutorialButton?.addEventListener("click", () => openTutorial());
+tutorialClose?.addEventListener("click", () => { tutorialModal.hidden = true; });
+tutorialStart?.addEventListener("click", () => { tutorialModal.hidden = true; });
+tutorialModal?.addEventListener("click", (event) => { if (event.target === tutorialModal) tutorialModal.hidden = true; });
 
 const navItems = document.querySelectorAll(".nav-item");
 function updateActiveNav() {
@@ -50,6 +178,16 @@ document.querySelectorAll(".nav-item[href^='#']").forEach((item) => {
 
 /* Integração com Neon Auth e Neon Data API — Módulo 1 */
 const authModal = document.getElementById("authModal");
+const profileModal = document.getElementById("profileModal");
+const profileClose = document.getElementById("profileClose");
+const profileForm = document.getElementById("profileForm");
+const profileName = document.getElementById("profileName");
+const profileEmail = document.getElementById("profileEmail");
+const profileEmailSummary = document.getElementById("profileEmailSummary");
+const profileAvatar = document.getElementById("profileAvatar");
+const profileFeedback = document.getElementById("profileFeedback");
+const profileSave = document.getElementById("profileSave");
+const profileLogout = document.getElementById("profileLogout");
 const authButton = document.getElementById("authButton");
 const authClose = document.getElementById("authClose");
 const authForm = document.getElementById("authForm");
@@ -61,17 +199,63 @@ const authEmail = document.getElementById("authEmail");
 const authPassword = document.getElementById("authPassword");
 const authSubmit = document.getElementById("authSubmit");
 const authSwitch = document.getElementById("authSwitch");
+const authSignInTab = document.getElementById("authSignInTab");
+const authSignUpTab = document.getElementById("authSignUpTab");
 const authLogout = document.getElementById("authLogout");
 const authFeedback = document.getElementById("authFeedback");
 let authMode = "signin";
 
-function getAuthErrorMessage(error) {
-  return error?.message || error?.error?.message || "Não foi possível concluir a autenticação.";
+function getAuthErrorMessage(error, mode = authMode) {
+  const details = error?.error || error?.data?.error || error;
+  const message = details?.message || details?.error_description || details?.statusText;
+  const code = String(details?.code || details?.status || "").toLowerCase();
+
+  if (code.includes("invalid_credentials") || code.includes("invalid email or password")) {
+    return mode === "signup"
+      ? "O cadastro foi rejeitado pelo Neon Auth. Se este e-mail já possui uma conta, use \"Já tenho uma conta\" para entrar."
+      : "E-mail ou senha incorretos.";
+  }
+
+  if (code.includes("user_already_exists") || code.includes("email_already_exists")) {
+    return "Este e-mail já possui uma conta. Use \"Já tenho uma conta\" para entrar.";
+  }
+
+  if (message) return details?.code ? message + " (" + details.code + ")" : message;
+  if (typeof error === "string") return error;
+  return "Não foi possível concluir a autenticação. Verifique os dados e tente novamente.";
+}
+
+function normalizeAuthEmail(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function validateAuthInput(mode) {
+  const email = normalizeAuthEmail(authEmail?.value);
+  const password = String(authPassword?.value || "");
+
+  if (!email) return "Informe seu e-mail.";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Informe um e-mail válido.";
+  if (!password) return "Informe sua senha.";
+  if (mode === "signup" && password.length < 8) return "A senha deve ter pelo menos 8 caracteres.";
+  if (mode === "signup" && !authName?.value.trim()) return "Informe seu nome.";
+
+  if (authEmail) authEmail.value = email;
+  return "";
 }
 
 function setAuthMode(mode) {
   authMode = mode;
   const signup = mode === "signup";
+
+  if (authSignInTab) {
+    authSignInTab.classList.toggle("active", !signup);
+    authSignInTab.setAttribute("aria-selected", String(!signup));
+  }
+  if (authSignUpTab) {
+    authSignUpTab.classList.toggle("active", signup);
+    authSignUpTab.setAttribute("aria-selected", String(signup));
+  }
+
   if (authTitle) authTitle.textContent = signup ? "Criar minha conta" : "Entrar no Plano de Negócio";
   if (authDescription) authDescription.textContent = signup
     ? "Crie sua conta para salvar os planos no banco e continuar de qualquer dispositivo."
@@ -83,15 +267,30 @@ function setAuthMode(mode) {
   if (authFeedback) authFeedback.textContent = "";
 }
 
-function openAuthModal() {
+function openAuthModal(mode = "signin") {
   if (!authModal) return;
   authModal.hidden = false;
-  setAuthMode("signin");
+  setAuthMode(mode);
   authEmail?.focus();
 }
 
+function setApplicationAccess(user) {
+  const locked = !user;
+  document.body.classList.toggle("auth-required", locked);
+  if (authModal) authModal.hidden = !locked && authModal.hidden;
+  if (locked) {
+    openAuthModal("signin");
+    if (authFeedback) authFeedback.textContent = "Faça login ou crie uma conta para acessar o sistema.";
+  }
+}
+
 function closeAuthModal() {
+  if (!getCurrentUserSync()) return;
   if (authModal) authModal.hidden = true;
+}
+
+function getCurrentUserSync() {
+  return window.__currentAuthUser || null;
 }
 
 function extractSession(result) {
@@ -99,17 +298,45 @@ function extractSession(result) {
 }
 
 async function getCurrentUser() {
-  try {
-    const result = await neonClient.auth.getSession();
-    const session = extractSession(result);
-    return session?.user || null;
-  } catch {
-    return null;
+  // O Neon Auth mantém a sessão em cookie httpOnly no domínio do Auth.
+  // Em um frontend estático hospedado em outro domínio, a primeira leitura
+  // após um reload pode sofrer uma corrida de inicialização. Tentamos o SDK
+  // algumas vezes e, se necessário, consultamos diretamente o endpoint de
+  // sessão com credenciais explícitas.
+  const attempts = 4;
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    try {
+      const result = await neonClient.auth.getSession();
+      if (!result?.error) {
+        const session = extractSession(result);
+        if (session?.user) return session.user;
+      }
+    } catch {}
+
+    try {
+      const response = await fetch(`${NEON_AUTH_URL}/get-session`, {
+        method: "GET",
+        credentials: "include",
+        cache: "no-store",
+        headers: { Accept: "application/json" }
+      });
+      if (response.ok) {
+        const payload = await response.json();
+        const user = payload?.user || payload?.data?.user || payload?.session?.user || payload?.data?.session?.user || null;
+        if (user) return user;
+      }
+    } catch {}
+
+    if (attempt < attempts - 1) {
+      await new Promise(resolve => setTimeout(resolve, 250 * (attempt + 1)));
+    }
   }
+  return null;
 }
 
 async function updateAuthUI(user = null) {
   if (!user) user = await getCurrentUser();
+  window.__currentAuthUser = user || null;
   if (authButton) authButton.textContent = user ? "Minha conta" : "Entrar";
   const avatar = document.getElementById("userAvatar");
   if (avatar) {
@@ -124,37 +351,77 @@ async function updateAuthUI(user = null) {
   if (authPassword) authPassword.disabled = Boolean(user);
   if (user && authTitle) authTitle.textContent = "Conta conectada";
   if (user && authDescription) authDescription.textContent = user.email || "Sua conta está conectada ao Neon Auth.";
+  if (profileName) profileName.value = user?.name || "";
+  if (profileEmail) profileEmail.value = user?.email || "";
+  if (profileEmailSummary) profileEmailSummary.textContent = user?.email || "Conta conectada ao Neon Auth.";
+  if (profileAvatar) profileAvatar.textContent = user?.name?.trim()?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || "A";
+  return user;
+}
+
+async function signUpAccount() {
+  const email = normalizeAuthEmail(authEmail?.value);
+  const password = String(authPassword?.value || "");
+  const name = String(authName?.value || "").trim();
+
+  // Cadastro usa exclusivamente signUp.email().
+  // Não há tentativa automática de login quando o cadastro retorna erro.
+  const result = await neonClient.auth.signUp.email({ email, password, name });
+  if (result?.error) throw result.error;
+
+  const resultSession = extractSession(result);
+  const user = resultSession?.user || await getCurrentUser();
+
+  if (!user) {
+    throw new Error("A conta foi criada, mas o Neon Auth não devolveu uma sessão.");
+  }
+
+  return user;
+}
+
+async function signInAccount() {
+  const email = normalizeAuthEmail(authEmail?.value);
+  const password = String(authPassword?.value || "");
+
+  // Login usa exclusivamente signIn.email().
+  const result = await neonClient.auth.signIn.email({ email, password });
+  if (result?.error) throw result.error;
+
+  const resultSession = extractSession(result);
+  const user = resultSession?.user || await getCurrentUser();
+
+  if (!user) {
+    throw new Error("Login concluído, mas a sessão não foi recuperada.");
+  }
+
   return user;
 }
 
 async function signInOrSignUp(event) {
   event.preventDefault();
-  if (!authEmail?.value.trim() || !authPassword?.value) {
-    if (authFeedback) authFeedback.textContent = "Informe e-mail e senha.";
+
+  const mode = authMode;
+  const validationError = validateAuthInput(mode);
+  if (validationError) {
+    if (authFeedback) authFeedback.textContent = validationError;
     return;
   }
-  if (authMode === "signup" && !authName?.value.trim()) {
-    if (authFeedback) authFeedback.textContent = "Informe seu nome.";
-    return;
-  }
+
   authSubmit.disabled = true;
-  if (authFeedback) authFeedback.textContent = "Conectando...";
+  if (authFeedback) authFeedback.textContent = mode === "signup" ? "Criando sua conta..." : "Entrando...";
+
   try {
-    const result = authMode === "signup"
-      ? await neonClient.auth.signUp.email({ email: authEmail.value.trim(), password: authPassword.value, name: authName.value.trim() })
-      : await neonClient.auth.signIn.email({ email: authEmail.value.trim(), password: authPassword.value });
-    if (result?.error) throw result.error;
-    const user = await getCurrentUser();
+    const user = mode === "signup"
+      ? await signUpAccount()
+      : await signInAccount();
+
     await updateAuthUI(user);
-    if (user) {
-      closeAuthModal();
-      showToast(authMode === "signup" ? "Conta criada e conectada ao banco." : "Login realizado com sucesso.");
-      await loadOpportunityFromServer();
-    } else {
-      if (authFeedback) authFeedback.textContent = "A autenticação foi concluída, mas a sessão não foi recuperada. Tente entrar novamente.";
-    }
+    setApplicationAccess(user);
+    closeAuthModal();
+    showToast(mode === "signup" ? "Conta criada e conectada ao banco." : "Login realizado com sucesso.");
+    await loadOpportunityFromServer();
   } catch (error) {
-    if (authFeedback) authFeedback.textContent = getAuthErrorMessage(error);
+    console.error("Neon Auth:", error);
+    if (authFeedback) authFeedback.textContent = getAuthErrorMessage(error, mode);
   } finally {
     authSubmit.disabled = false;
   }
@@ -163,21 +430,74 @@ async function signInOrSignUp(event) {
 authButton?.addEventListener("click", async () => {
   const user = await getCurrentUser();
   if (user) {
-    openAuthModal();
     await updateAuthUI(user);
+    if (profileModal) {
+      profileModal.hidden = false;
+      profileName?.focus();
+    }
   } else {
     openAuthModal();
   }
 });
+document.getElementById("userAvatar")?.addEventListener("click", () => authButton?.click());
+profileClose?.addEventListener("click", () => { if (profileModal) profileModal.hidden = true; });
+profileModal?.addEventListener("click", (event) => { if (event.target === profileModal) profileModal.hidden = true; });
+
+profileForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const user = await getCurrentUser();
+  if (!user) {
+    if (profileModal) profileModal.hidden = true;
+    setApplicationAccess(null);
+    return;
+  }
+  const name = String(profileName?.value || "").trim();
+  if (!name) {
+    if (profileFeedback) profileFeedback.textContent = "Informe seu nome.";
+    return;
+  }
+  profileSave.disabled = true;
+  if (profileFeedback) profileFeedback.textContent = "Salvando...";
+  try {
+    const result = await neonClient.auth.updateUser({ name });
+    if (result?.error) throw result.error;
+    const updated = result?.data?.user || result?.user || { ...user, name };
+    await updateAuthUI(updated);
+    if (profileFeedback) profileFeedback.textContent = "Dados atualizados com sucesso.";
+    showToast("Perfil atualizado.");
+  } catch (error) {
+    console.error("Neon Auth perfil:", error);
+    if (profileFeedback) profileFeedback.textContent = getAuthErrorMessage(error, "signin");
+  } finally {
+    profileSave.disabled = false;
+  }
+});
 authClose?.addEventListener("click", closeAuthModal);
+authSignInTab?.addEventListener("click", () => setAuthMode("signin"));
+authSignUpTab?.addEventListener("click", () => setAuthMode("signup"));
 authModal?.addEventListener("click", (event) => { if (event.target === authModal) closeAuthModal(); });
 authForm?.addEventListener("submit", signInOrSignUp);
 authSwitch?.addEventListener("click", () => setAuthMode(authMode === "signin" ? "signup" : "signin"));
-authLogout?.addEventListener("click", async () => {
-  await neonClient.auth.signOut();
-  closeAuthModal();
-  updateAuthUI(null);
-  showToast("Você saiu da conta.");
+async function performLogout() {
+  try {
+    await neonClient.auth.signOut();
+  } finally {
+    window.__currentAuthUser = null;
+    await updateAuthUI(null);
+    if (profileModal) profileModal.hidden = true;
+    setApplicationAccess(null);
+    showToast("Você saiu da conta.");
+  }
+}
+authLogout?.addEventListener("click", performLogout);
+profileLogout?.addEventListener("click", performLogout);
+
+window.addEventListener("pageshow", async () => {
+  const user = await getCurrentUser();
+  if (user) {
+    await updateAuthUI(user);
+    setApplicationAccess(user);
+  }
 });
 // Neon Auth Better Auth não expõe o listener Supabase-compatível neste cliente.
 // A sessão é consultada diretamente após cada operação de autenticação.
@@ -255,8 +575,7 @@ async function ensureServerPlan() {
   const { data: workspaceRows, error: workspaceError } = await neonClient
     .from("espacos_trabalho")
     .insert({ nome: businessName })
-    .select("id")
-    .limit(1);
+    .select("id");
   if (workspaceError) throw workspaceError;
   const workspace = workspaceRows?.[0];
   if (!workspace?.id) throw new Error("Não foi possível criar o espaço de trabalho.");
@@ -264,8 +583,7 @@ async function ensureServerPlan() {
   const { data: planRows, error: planError } = await neonClient
     .from("planos_negocio")
     .insert({ espaco_trabalho_id: workspace.id, nome: businessName })
-    .select("id, espaco_trabalho_id, nome")
-    .limit(1);
+    .select("id, espaco_trabalho_id, nome");
   if (planError) throw planError;
   const plan = planRows?.[0];
   if (!plan?.id) throw new Error("Não foi possível criar o plano de negócio.");
@@ -455,7 +773,12 @@ if (form) {
   updateScore();
   updateCompletion();
   updateDashboardState();
-  getCurrentUser().then((user) => updateAuthUI(user).then(() => { if (user) loadOpportunityFromServer(); }));
+  (async () => {
+    const user = await getCurrentUser();
+    const currentUser = await updateAuthUI(user);
+    setApplicationAccess(currentUser);
+    if (currentUser) await loadOpportunityFromServer();
+  })();
 }
 
 
@@ -876,6 +1199,7 @@ if(planModule){
 
 
 /* Proteção e desbloqueio sequencial do Módulo 3 */
+
 window.addEventListener("hashchange",()=>{
   if(location.hash==="#plano" && getEnvironmentProgress()<100){
     history.replaceState(null,"","#ambientes");
@@ -1320,11 +1644,8 @@ if(exportModule){
     const rows=getExportRows(),csv="\ufeff"+[["Campo","Conteúdo"],...rows].map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(";")).join("\r\n");
     downloadBlob(csv,"text/csv;charset=utf-8","plano-de-negocio.csv");setExportStatus("Arquivo CSV gerado e compatível com Excel.");
   });
-  document.getElementById("createShareLink")?.addEventListener("click",()=>{
-    const output=document.getElementById("shareLinkOutput");if(output)output.value=getShareUrl();
-    updateShareControls();
-    setExportStatus("Link criado. Ele contém uma cópia dos dados do plano. Quanto mais conteúdo houver, maior será o link.");
-  });
+  // O compartilhamento persistente é controlado por js/server-sync.js para evitar dois
+  // handlers concorrentes no mesmo botão. O leitor de links locais antigos permanece compatível.
   document.getElementById("copyShareLink")?.addEventListener("click",async()=>{
     const output=document.getElementById("shareLinkOutput");if(!output?.value)return;
     try{await navigator.clipboard.writeText(output.value);setExportStatus("Link copiado para a área de transferência.");}catch{output.select();document.execCommand("copy");setExportStatus("Link copiado.");}
@@ -1374,3 +1695,19 @@ window.addEventListener("hashchange",()=>{
     if(!financialComplete){history.replaceState(null,"","#financeiro");showToast("Conclua as premissas obrigatórias do Módulo 4 antes de iniciar os Planos Complementares.");}
   }
 });
+
+// Funções usadas pelos módulos clássicos e pela integração Neon.
+// app.js é um ES module, portanto suas funções não ficam globais automaticamente.
+Object.assign(window, {
+  showToast,
+  getOpportunityProgress,
+  getSwotState,
+  getEnvironmentProgress,
+  updateEnvironmentProgress,
+  updateDashboardState,
+  getPlanSectionProgress,
+  getComplementaryProgress,
+  updateComplementaryProgress,
+  renderFinancial
+});
+
