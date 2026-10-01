@@ -315,3 +315,15 @@ button { font: inherit; }
 .legal-notice{display:flex;gap:10px;align-items:flex-start;padding:13px 15px;margin-bottom:18px;border-radius:12px;background:#fff8e8;border:1px solid #f1dfad;color:#6b5420}
 .legal-notice strong{white-space:nowrap}
 @media(max-width:700px){.complementary-tabs{scrollbar-width:thin}.complementary-progress{padding:12px}.legal-notice{display:block}.legal-notice strong{display:block;margin-bottom:4px}}
+
+/* Refinamento M5 */
+.complementary-tabs{align-items:stretch}
+.complementary-tab{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:132px}
+.complementary-tab i{font-style:normal;font-size:.72rem;color:#7b8190;padding:2px 6px;border-radius:999px;background:#f2f3f7}
+.complementary-tab.complete i{background:#e9f8ef;color:#176b3a}
+.complementary-tab.complete{border-color:#b8dec7}
+.complementary-guidance{display:flex;align-items:center;gap:12px;margin:-4px 0 20px;padding:12px 15px;border:1px solid #e7e8ee;border-radius:12px;background:#fafafa;color:#5f6675;font-size:.88rem}
+.complementary-guidance strong{color:#202532;white-space:nowrap}
+.complementary-guidance .text-button{margin-left:auto;white-space:nowrap}
+.complementary-panel[hidden]{display:none}
+@media(max-width:700px){.complementary-guidance{align-items:flex-start;flex-wrap:wrap}.complementary-guidance .text-button{margin-left:0}.complementary-tab{min-width:124px}}
