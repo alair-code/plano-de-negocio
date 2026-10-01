@@ -182,12 +182,12 @@
         </div>
 
         <div class="environment-tabs" role="tablist" aria-label="Ferramentas de análise">
-          <button class="environment-tab active" type="button" data-environment-tab="swot">SWOT</button>
-          <button class="environment-tab" type="button" data-environment-tab="pestel">PESTEL</button>
-          <button class="environment-tab" type="button" data-environment-tab="porter">5 Forças de Porter</button>
+          <button class="environment-tab active" type="button" role="tab" aria-selected="true" aria-controls="panel-swot" data-environment-tab="swot">SWOT</button>
+          <button class="environment-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-pestel" data-environment-tab="pestel">PESTEL</button>
+          <button class="environment-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-porter" data-environment-tab="porter">5 Forças de Porter</button>
         </div>
 
-        <div class="environment-panel active" data-environment-panel="swot">
+        <div class="environment-panel active" id="panel-swot" role="tabpanel" data-environment-panel="swot">
           <div class="form-card">
             <div class="form-card-title"><span class="section-number">SW</span><div><h3>Matriz SWOT</h3><p>Separe o que está dentro do negócio do que vem do ambiente externo.</p></div></div>
             <div class="swot-grid">
@@ -197,10 +197,14 @@
               <label class="swot-card threat"><span>Ameaças <small>Externo · negativo</small></span><textarea id="swotThreats" rows="7" placeholder="Ex.: concorrência, custos, legislação, sazonalidade..."></textarea></label>
             </div>
             <div class="environment-tip"><strong>Como usar</strong><span>Seja específico. Registre fatos e hipóteses que possam ser verificados depois.</span></div>
+            <div class="swot-actions">
+              <button type="button" class="button secondary-light" id="suggestSwot">Adicionar exemplo</button>
+              <small>Você pode editar, apagar ou reorganizar os itens depois.</small>
+            </div>
           </div>
         </div>
 
-        <div class="environment-panel" data-environment-panel="pestel">
+        <div class="environment-panel" id="panel-pestel" role="tabpanel" data-environment-panel="pestel">
           <div class="form-card">
             <div class="form-card-title"><span class="section-number">PE</span><div><h3>Análise PESTEL</h3><p>Registre fatores externos que podem afetar seu negócio.</p></div></div>
             <div class="strategy-grid">
@@ -214,7 +218,7 @@
           </div>
         </div>
 
-        <div class="environment-panel" data-environment-panel="porter">
+        <div class="environment-panel" id="panel-porter" role="tabpanel" data-environment-panel="porter">
           <div class="form-card">
             <div class="form-card-title"><span class="section-number">5F</span><div><h3>5 Forças de Porter</h3><p>Avalie a pressão competitiva que pode influenciar a atratividade do setor.</p></div></div>
             <div class="porter-list">
@@ -227,7 +231,7 @@
           </div>
         </div>
 
-        <div class="form-actions environment-actions">
+        <div class="form-actions environment-actions" aria-live="polite">
           <span id="environmentSaveStatus" class="save-status">Rascunho salvo automaticamente.</span>
           <button type="button" class="button secondary-light" id="clearEnvironment">Limpar módulo</button>
           <button type="button" class="button primary" id="saveEnvironment">Salvar análise →</button>
