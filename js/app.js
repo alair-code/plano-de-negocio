@@ -248,6 +248,7 @@ async function signInOrSignUp(event) {
       : await signInAccount();
 
     await updateAuthUI(user);
+    setApplicationAccess(user);
     closeAuthModal();
     showToast(mode === "signup" ? "Conta criada e conectada ao banco." : "Login realizado com sucesso.");
     await loadOpportunityFromServer();
