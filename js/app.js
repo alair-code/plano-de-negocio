@@ -161,14 +161,40 @@ function extractSession(result) {
 }
 
 async function getCurrentUser() {
-  try {
-    const result = await neonClient.auth.getSession();
-    if (result?.error) return null;
-    const session = extractSession(result);
-    return session?.user || null;
-  } catch {
-    return null;
+  // O Neon Auth mantém a sessão em cookie httpOnly no domínio do Auth.
+  // Em um frontend estático hospedado em outro domínio, a primeira leitura
+  // após um reload pode sofrer uma corrida de inicialização. Tentamos o SDK
+  // algumas vezes e, se necessário, consultamos diretamente o endpoint de
+  // sessão com credenciais explícitas.
+  const attempts = 4;
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    try {
+      const result = await neonClient.auth.getSession();
+      if (!result?.error) {
+        const session = extractSession(result);
+        if (session?.user) return session.user;
+      }
+    } catch {}
+
+    try {
+      const response = await fetch(`${NEON_AUTH_URL}/get-session`, {
+        method: "GET",
+        credentials: "include",
+        cache: "no-store",
+        headers: { Accept: "application/json" }
+      });
+      if (response.ok) {
+        const payload = await response.json();
+        const user = payload?.user || payload?.data?.user || payload?.session?.user || payload?.data?.session?.user || null;
+        if (user) return user;
+      }
+    } catch {}
+
+    if (attempt < attempts - 1) {
+      await new Promise(resolve => setTimeout(resolve, 250 * (attempt + 1)));
+    }
   }
+  return null;
 }
 
 async function updateAuthUI(user = null) {
@@ -281,6 +307,14 @@ authLogout?.addEventListener("click", async () => {
   updateAuthUI(null);
   setApplicationAccess(null);
   showToast("Você saiu da conta.");
+});
+
+window.addEventListener("pageshow", async () => {
+  const user = await getCurrentUser();
+  if (user) {
+    await updateAuthUI(user);
+    setApplicationAccess(user);
+  }
 });
 // Neon Auth Better Auth não expõe o listener Supabase-compatível neste cliente.
 // A sessão é consultada diretamente após cada operação de autenticação.
@@ -556,10 +590,12 @@ if (form) {
   updateScore();
   updateCompletion();
   updateDashboardState();
-  getCurrentUser().then((user) => updateAuthUI(user).then((currentUser) => {
+  (async () => {
+    const user = await getCurrentUser();
+    const currentUser = await updateAuthUI(user);
     setApplicationAccess(currentUser);
-    if (currentUser) loadOpportunityFromServer();
-  }));
+    if (currentUser) await loadOpportunityFromServer();
+  })();
 }
 
 
