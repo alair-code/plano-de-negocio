@@ -622,3 +622,75 @@ window.addEventListener("hashchange",()=>{
   }
 });
 updateDashboardState();
+
+/* Refinamento: aproveitamento dos dados dos módulos 1 e 2 */
+function readOpportunitySource(){
+  try{return JSON.parse(localStorage.getItem("business-plan-builder:opportunity:v2")||"null")||{};}catch{return {};}
+}
+function readEnvironmentSource(){
+  try{return JSON.parse(localStorage.getItem(environmentStorageKey)||"null")||{};}catch{return {};}
+}
+function swotText(state,key){return Array.isArray(state?.[key]) ? state[key].filter(Boolean).join("; ") : "";}
+function buildPlanSuggestions(){
+  const o=readOpportunitySource(), e=readEnvironmentSource();
+  const swot=e.swot||{};
+  const suggestions={
+    executiveSummary:[o.businessName&&("Negócio: "+o.businessName),o.problem&&("Problema: "+o.problem),o.solution&&("Solução: "+o.solution),o.audience&&("Público: "+o.audience),o.marketLocation&&("Localização: "+o.marketLocation)].filter(Boolean).join("\n\n"),
+    companyMission:o.solution||"",
+    companyModel:o.products||o.solution||"",
+    companyLocation:o.marketLocation||"",
+    productsDescription:o.products||o.solution||"",
+    marketAudience:o.audience||"",
+    marketTrends:swotText(swot,"opportunities"),
+    competitors:swotText(swot,"threats"),
+    marketPositioning:[o.differentials,swotText(swot,"strengths")].filter(Boolean).join("\n\n"),
+    strategicObjectives:[swotText(swot,"opportunities"),swotText(swot,"strengths")].filter(Boolean).join("\n\n"),
+    strategicActions:[swotText(swot,"weaknesses"),swotText(swot,"threats")].filter(Boolean).join("\n\n")
+  };
+  return {suggestions,opportunity:o,environment:e};
+}
+function fillPlanSuggestion(section){
+  const data=buildPlanSuggestions(), map={
+    executiveSummary:["executiveSummary"],
+    companyDescription:["companyMission","companyModel","companyLocation"],
+    productsServices:["productsDescription"],
+    marketCompetition:["marketAudience","marketTrends","competitors","marketPositioning"],
+    strategicAnalysis:["strategicObjectives","strategicActions"]
+  };
+  const fields=map[section]||[];
+  let changed=0;
+  fields.forEach((key)=>{
+    const value=data.suggestions[key];
+    const field=document.querySelector('[data-plan-field="'+key+'"]');
+    if(field && value && !field.value.trim()){field.value=value;changed++;}
+  });
+  updatePlanCounters();updatePlanProgress();savePlanDraft();updateDashboardState();
+  return changed;
+}
+function updatePlanSourceSummary(){
+  const data=buildPlanSuggestions(), o=data.opportunity, e=data.environment;
+  const sources=[];
+  if(o.businessName||o.problem||o.solution||o.audience)sources.push("Módulo 1 preenchido");
+  const swot=e.swot||{};
+  if(Object.values(swot).some(v=>Array.isArray(v)&&v.length))sources.push("SWOT disponível");
+  if(Object.values(e).some(v=>typeof v==="string"&&v.trim()))sources.push("PESTEL/Porter disponíveis");
+  const el=document.getElementById("planSourceSummary");
+  if(el)el.textContent=sources.length?sources.join(" · "):"Nenhum dado anterior disponível.";
+}
+if(planModule){
+  document.querySelectorAll("[data-plan-suggest]").forEach((button)=>{
+    button.addEventListener("click",()=>{
+      const changed=fillPlanSuggestion(button.dataset.planSuggest);
+      showToast(changed?changed+" campo(s) preenchido(s) com dados anteriores. Revise antes de salvar.":"Nenhum campo vazio pôde receber sugestão.");
+    });
+  });
+  document.getElementById("suggestPlanContent")?.addEventListener("click",()=>{
+    const order=["executiveSummary","companyDescription","productsServices","marketCompetition","strategicAnalysis"];
+    const changed=order.reduce((total,key)=>total+fillPlanSuggestion(key),0);
+    updatePlanSourceSummary();
+    document.getElementById("planSourcePanel")?.removeAttribute("hidden");
+    showToast(changed?changed+" campo(s) sugerido(s) a partir dos módulos anteriores.":"O Módulo 3 já possui conteúdo nos campos relacionados.");
+  });
+  document.getElementById("closePlanSource")?.addEventListener("click",()=>document.getElementById("planSourcePanel")?.setAttribute("hidden",""));
+  updatePlanSourceSummary();
+}
