@@ -61,7 +61,6 @@ const authEmail = document.getElementById("authEmail");
 const authPassword = document.getElementById("authPassword");
 const authSubmit = document.getElementById("authSubmit");
 const authSwitch = document.getElementById("authSwitch");
-const authGoogle = document.getElementById("authGoogle");
 const authLogout = document.getElementById("authLogout");
 const authFeedback = document.getElementById("authFeedback");
 let authMode = "signin";
@@ -119,7 +118,6 @@ async function updateAuthUI(user = null) {
   }
   if (authLogout) authLogout.hidden = !user;
   if (authSubmit) authSubmit.hidden = Boolean(user);
-  if (authGoogle) authGoogle.hidden = Boolean(user);
   if (authSwitch) authSwitch.hidden = Boolean(user);
   if (authNameField) authNameField.hidden = Boolean(user) || authMode !== "signup";
   if (authEmail) authEmail.disabled = Boolean(user);
@@ -180,13 +178,6 @@ authLogout?.addEventListener("click", async () => {
   closeAuthModal();
   updateAuthUI(null);
   showToast("Você saiu da conta.");
-});
-authGoogle?.addEventListener("click", async () => {
-  try {
-    await neonClient.auth.signIn.social({ provider: "google", callbackURL: window.location.href });
-  } catch (error) {
-    if (authFeedback) authFeedback.textContent = getAuthErrorMessage(error);
-  }
 });
 // Neon Auth Better Auth não expõe o listener Supabase-compatível neste cliente.
 // A sessão é consultada diretamente após cada operação de autenticação.
