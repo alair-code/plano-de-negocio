@@ -299,3 +299,19 @@ button { font: inherit; }
 .financial-scenario-table tbody tr.selected{background:#f7f6ff}
 .financial-scenario-table tbody th{font-size:.9rem;border-bottom:1px solid #eceef2;white-space:nowrap}
 @media(max-width:900px){.financial-scenario-table{min-width:980px}}
+
+/* Módulo 5 — Planos Complementares */
+.complementary-progress{margin:0 0 24px;padding:14px 18px;border:1px solid #e7e8ee;border-radius:14px;background:#fff}
+.complementary-progress>div:first-child{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:9px}
+.complementary-progress strong{font-size:1rem}
+.complementary-progress small{display:block;margin-top:8px;color:#6b7280}
+.complementary-tabs{display:flex;gap:8px;overflow:auto;padding-bottom:8px;margin-bottom:16px}
+.complementary-tab{border:1px solid #e4e5eb;background:#fff;border-radius:10px;padding:10px 14px;white-space:nowrap;cursor:pointer;font:inherit}
+.complementary-tab:hover,.complementary-tab:focus-visible,.complementary-tab.active{border-color:#4f46e5}
+.complementary-tab.active{background:#f5f3ff;font-weight:700}
+.complementary-panel{display:none}
+.complementary-panel.active{display:block}
+.complementary-actions{margin-top:20px}
+.legal-notice{display:flex;gap:10px;align-items:flex-start;padding:13px 15px;margin-bottom:18px;border-radius:12px;background:#fff8e8;border:1px solid #f1dfad;color:#6b5420}
+.legal-notice strong{white-space:nowrap}
+@media(max-width:700px){.complementary-tabs{scrollbar-width:thin}.complementary-progress{padding:12px}.legal-notice{display:block}.legal-notice strong{display:block;margin-bottom:4px}}
