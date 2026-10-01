@@ -288,7 +288,7 @@
 
   async function syncFinancial(planId) {
     const p=financialInputs();
-    const r=await client.from("planos_financeiros").upsert({plano_negocio_id:planId,...p},{onConflict:"plano_negocio_id"}).select("id").limit(1);
+    const r=await client.from("planos_financeiros").upsert({plano_negocio_id:planId,...p},{onConflict:"plano_negocio_id"}).select("id");
     if(r.error)throw r.error;
     const pf=r.data?.[0]; if(!pf?.id)throw new Error("Plano financeiro não retornou ID.");
     const labels={pessimistic:"pessimista",realistic:"realista",optimistic:"otimista"};
@@ -300,7 +300,7 @@
         receita:d.revenue,lucro_operacional:d.profit,ponto_equilibrio:d.breakEven,
         margem:d.margin,valor_presente_liquido:d.npv,taxa_interna_retorno:null,
         payback_meses:d.payback,roi:d.roi
-      },{onConflict:"plano_financeiro_id,tipo_cenario"}).select("id").limit(1);
+      },{onConflict:"plano_financeiro_id,tipo_cenario"}).select("id");
       if(sr.error)throw sr.error;
       const scenarioId=sr.data?.[0]?.id;
       if(!scenarioId)continue;
