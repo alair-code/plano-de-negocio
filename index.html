@@ -166,6 +166,137 @@
         </form>
       </section>
 
+
+      <section class="module-section business-plan-section" id="plano">
+        <div class="module-header">
+          <div>
+            <p class="eyebrow">MÓDULO 03 · ESTRUTURA DO PLANO DE NEGÓCIOS</p>
+            <h2>Agora vamos transformar as análises em um plano completo.</h2>
+            <p>Preencha as dez seções essenciais. O conteúdo é salvo automaticamente neste navegador e pode ser refinado a qualquer momento.</p>
+          </div>
+          <a class="button secondary-light" href="#ambientes">← Módulo 2</a>
+        </div>
+
+        <div class="plan-progress-card">
+          <div>
+            <span>Progresso do plano</span>
+            <strong id="planProgressPercent">0%</strong>
+          </div>
+          <div class="completion-track"><i id="planProgressFill"></i></div>
+          <small id="planProgressText">0 de 10 seções preenchidas</small>
+        </div>
+
+        <div class="plan-layout">
+          <aside class="plan-outline" aria-label="Seções do plano">
+            <div class="plan-outline-head"><strong>Estrutura</strong><span id="planSectionCount">0/10</span></div>
+            <nav id="planSectionNav">
+              <button type="button" class="plan-nav-item active" data-plan-target="executiveSummary"><b>01</b><span>Resumo Executivo</span><i></i></button>
+              <button type="button" class="plan-nav-item" data-plan-target="companyDescription"><b>02</b><span>Descrição da Empresa</span><i></i></button>
+              <button type="button" class="plan-nav-item" data-plan-target="productsServices"><b>03</b><span>Produtos e Serviços</span><i></i></button>
+              <button type="button" class="plan-nav-item" data-plan-target="marketCompetition"><b>04</b><span>Mercado e Concorrência</span><i></i></button>
+              <button type="button" class="plan-nav-item" data-plan-target="marketingSales"><b>05</b><span>Marketing e Vendas</span><i></i></button>
+              <button type="button" class="plan-nav-item" data-plan-target="operationalPlan"><b>06</b><span>Plano Operacional</span><i></i></button>
+              <button type="button" class="plan-nav-item" data-plan-target="peopleManagement"><b>07</b><span>Gestão de Pessoas</span><i></i></button>
+              <button type="button" class="plan-nav-item" data-plan-target="financialPlan"><b>08</b><span>Plano Financeiro</span><i></i></button>
+              <button type="button" class="plan-nav-item" data-plan-target="strategicAnalysis"><b>09</b><span>Análise Estratégica</span><i></i></button>
+              <button type="button" class="plan-nav-item" data-plan-target="appendices"><b>10</b><span>Anexos</span><i></i></button>
+            </nav>
+          </aside>
+
+          <div class="plan-editor" id="planEditor">
+            <section class="plan-section-card active" data-plan-section="executiveSummary">
+              <div class="plan-section-head"><span>01</span><div><h3>Resumo Executivo</h3><p>Sintetize o negócio, a oportunidade, o público e os objetivos principais.</p></div></div>
+              <label class="field"><span>Resumo do negócio</span><textarea data-plan-field="executiveSummary" rows="7" maxlength="2500" placeholder="Explique em poucas linhas o que é o negócio, qual problema resolve, para quem e qual resultado pretende alcançar."></textarea><small class="field-help" data-plan-count="executiveSummary">0/2500</small></label>
+              <div class="plan-guidance"><strong>Dica</strong><span>Escreva esta parte por último se ainda não tiver clareza suficiente. Ela funciona como uma visão geral do plano.</span></div>
+            </section>
+
+            <section class="plan-section-card" data-plan-section="companyDescription">
+              <div class="plan-section-head"><span>02</span><div><h3>Descrição da Empresa</h3><p>Defina identidade, localização, modelo de negócio e objetivos.</p></div></div>
+              <div class="field-grid">
+                <label class="field"><span>Missão</span><textarea data-plan-field="companyMission" rows="4" maxlength="1000" placeholder="Por que a empresa existe?"></textarea></label>
+                <label class="field"><span>Visão</span><textarea data-plan-field="companyVision" rows="4" maxlength="1000" placeholder="Onde pretende chegar?"></textarea></label>
+                <label class="field"><span>Modelo de negócio</span><textarea data-plan-field="companyModel" rows="4" maxlength="1200" placeholder="Como a empresa cria, entrega e captura valor?"></textarea></label>
+                <label class="field"><span>Localização e estrutura</span><textarea data-plan-field="companyLocation" rows="4" maxlength="1200" placeholder="Onde opera e qual estrutura será necessária?"></textarea></label>
+              </div>
+            </section>
+
+            <section class="plan-section-card" data-plan-section="productsServices">
+              <div class="plan-section-head"><span>03</span><div><h3>Produtos e Serviços</h3><p>Descreva o que será oferecido e por que isso gera valor para o cliente.</p></div></div>
+              <label class="field"><span>Portfólio</span><textarea data-plan-field="productsDescription" rows="6" maxlength="2200" placeholder="Liste produtos ou serviços, características, benefícios e diferenciais."></textarea></label>
+              <label class="field"><span>Política de preços</span><textarea data-plan-field="productsPricing" rows="5" maxlength="1600" placeholder="Como os preços serão definidos?"></textarea></label>
+            </section>
+
+            <section class="plan-section-card" data-plan-section="marketCompetition">
+              <div class="plan-section-head"><span>04</span><div><h3>Mercado e Concorrência</h3><p>Conecte público, tamanho do mercado, tendências e concorrentes às análises do módulo 2.</p></div></div>
+              <div class="field-grid">
+                <label class="field"><span>Público-alvo</span><textarea data-plan-field="marketAudience" rows="5" maxlength="1600" placeholder="Quem compra, usa ou influencia a compra?"></textarea></label>
+                <label class="field"><span>Tendências e demanda</span><textarea data-plan-field="marketTrends" rows="5" maxlength="1600" placeholder="Quais mudanças sustentam a oportunidade?"></textarea></label>
+                <label class="field"><span>Concorrentes</span><textarea data-plan-field="competitors" rows="5" maxlength="1800" placeholder="Quem já atende essa necessidade?"></textarea></label>
+                <label class="field"><span>Posicionamento</span><textarea data-plan-field="marketPositioning" rows="5" maxlength="1600" placeholder="Como pretende ser percebido frente às alternativas?"></textarea></label>
+              </div>
+            </section>
+
+            <section class="plan-section-card" data-plan-section="marketingSales">
+              <div class="plan-section-head"><span>05</span><div><h3>Marketing e Vendas</h3><p>Defina como o mercado conhecerá, avaliará e comprará sua solução.</p></div></div>
+              <div class="field-grid">
+                <label class="field"><span>Canais de divulgação</span><textarea data-plan-field="marketingChannels" rows="5" maxlength="1600" placeholder="Redes sociais, indicação, tráfego pago, parceiros..."></textarea></label>
+                <label class="field"><span>Estratégia comercial</span><textarea data-plan-field="salesStrategy" rows="5" maxlength="1600" placeholder="Como será o processo de venda?"></textarea></label>
+                <label class="field"><span>Relacionamento</span><textarea data-plan-field="customerRelationship" rows="5" maxlength="1600" placeholder="Como atrair, atender e fidelizar clientes?"></textarea></label>
+                <label class="field"><span>Metas comerciais</span><textarea data-plan-field="salesGoals" rows="5" maxlength="1200" placeholder="Quais metas iniciais serão acompanhadas?"></textarea></label>
+              </div>
+            </section>
+
+            <section class="plan-section-card" data-plan-section="operationalPlan">
+              <div class="plan-section-head"><span>06</span><div><h3>Plano Operacional</h3><p>Explique como o negócio funcionará no dia a dia.</p></div></div>
+              <div class="field-grid">
+                <label class="field"><span>Processos principais</span><textarea data-plan-field="operationalProcesses" rows="5" maxlength="1800" placeholder="Quais atividades precisam acontecer para entregar valor?"></textarea></label>
+                <label class="field"><span>Fornecedores e parceiros</span><textarea data-plan-field="suppliersPartners" rows="5" maxlength="1600" placeholder="Quem fornece recursos ou apoia a operação?"></textarea></label>
+                <label class="field"><span>Capacidade e recursos</span><textarea data-plan-field="operationalCapacity" rows="5" maxlength="1600" placeholder="Equipe, equipamentos, espaço, tecnologia..."></textarea></label>
+                <label class="field"><span>Indicadores operacionais</span><textarea data-plan-field="operationalMetrics" rows="5" maxlength="1200" placeholder="Quais indicadores mostram se a operação está funcionando?"></textarea></label>
+              </div>
+            </section>
+
+            <section class="plan-section-card" data-plan-section="peopleManagement">
+              <div class="plan-section-head"><span>07</span><div><h3>Gestão de Pessoas</h3><p>Planeje funções, responsabilidades, competências e crescimento da equipe.</p></div></div>
+              <div class="field-grid">
+                <label class="field"><span>Estrutura da equipe</span><textarea data-plan-field="teamStructure" rows="5" maxlength="1600" placeholder="Quais funções existirão e quem será responsável por cada uma?"></textarea></label>
+                <label class="field"><span>Competências necessárias</span><textarea data-plan-field="teamSkills" rows="5" maxlength="1600" placeholder="Quais conhecimentos e habilidades são essenciais?"></textarea></label>
+                <label class="field"><span>Contratação e desenvolvimento</span><textarea data-plan-field="hiringDevelopment" rows="5" maxlength="1600" placeholder="Como contratar, treinar e desenvolver pessoas?"></textarea></label>
+                <label class="field"><span>Cultura e liderança</span><textarea data-plan-field="cultureLeadership" rows="5" maxlength="1200" placeholder="Que comportamentos e princípios orientarão a equipe?"></textarea></label>
+              </div>
+            </section>
+
+            <section class="plan-section-card" data-plan-section="financialPlan">
+              <div class="plan-section-head"><span>08</span><div><h3>Plano Financeiro</h3><p>Prepare a base financeira que será aprofundada no Módulo 4.</p></div></div>
+              <div class="field-grid">
+                <label class="field"><span>Investimento inicial</span><textarea data-plan-field="financialInvestment" rows="5" maxlength="1400" placeholder="Quais recursos serão necessários para iniciar?"></textarea></label>
+                <label class="field"><span>Fontes de receita</span><textarea data-plan-field="financialRevenue" rows="5" maxlength="1400" placeholder="Como o negócio gerará receita?"></textarea></label>
+                <label class="field"><span>Principais custos</span><textarea data-plan-field="financialCosts" rows="5" maxlength="1400" placeholder="Quais custos fixos e variáveis precisam ser considerados?"></textarea></label>
+                <label class="field"><span>Premissas financeiras</span><textarea data-plan-field="financialAssumptions" rows="5" maxlength="1400" placeholder="Quais hipóteses sustentam suas projeções?"></textarea></label>
+              </div>
+              <div class="plan-guidance"><strong>Importante</strong><span>O Módulo 4 transformará essas premissas em projeções, fluxo de caixa e indicadores financeiros.</span></div>
+            </section>
+
+            <section class="plan-section-card" data-plan-section="strategicAnalysis">
+              <div class="plan-section-head"><span>09</span><div><h3>Análise Estratégica</h3><p>Converta as análises anteriores em prioridades e decisões.</p></div></div>
+              <label class="field"><span>Objetivos estratégicos</span><textarea data-plan-field="strategicObjectives" rows="6" maxlength="1800" placeholder="Quais resultados estratégicos devem ser alcançados nos próximos períodos?"></textarea></label>
+              <label class="field"><span>Prioridades e ações</span><textarea data-plan-field="strategicActions" rows="6" maxlength="1800" placeholder="O que precisa ser feito primeiro, por quem e com qual prazo?"></textarea></label>
+            </section>
+
+            <section class="plan-section-card" data-plan-section="appendices">
+              <div class="plan-section-head"><span>10</span><div><h3>Anexos</h3><p>Registre documentos, fontes, pesquisas e observações que sustentam o plano.</p></div></div>
+              <label class="field"><span>Referências e documentos</span><textarea data-plan-field="appendices" rows="8" maxlength="3000" placeholder="Liste pesquisas, links, documentos, tabelas, entrevistas, evidências ou observações complementares."></textarea></label>
+            </section>
+
+            <div class="plan-editor-actions">
+              <span id="planSaveStatus" class="save-status">Rascunho salvo automaticamente.</span>
+              <button type="button" class="button secondary-light" id="clearPlan">Limpar módulo</button>
+              <button type="button" class="button primary" id="savePlan">Salvar plano →</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section class="module-section environment-section" id="ambientes">
         <div class="module-header">
           <div>
