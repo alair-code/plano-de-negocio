@@ -418,11 +418,16 @@
         </div>
 
         <div class="complementary-tabs" role="tablist" aria-label="Planos complementares">
-          <button type="button" class="complementary-tab active" role="tab" aria-selected="true" aria-controls="complementary-marketing" data-complementary-tab="marketing">Marketing</button>
-          <button type="button" class="complementary-tab" role="tab" aria-selected="false" aria-controls="complementary-operations" data-complementary-tab="operations">Operações</button>
-          <button type="button" class="complementary-tab" role="tab" aria-selected="false" aria-controls="complementary-people" data-complementary-tab="people">Pessoas & RH</button>
-          <button type="button" class="complementary-tab" role="tab" aria-selected="false" aria-controls="complementary-legal" data-complementary-tab="legal">Jurídico</button>
-          <button type="button" class="complementary-tab" role="tab" aria-selected="false" aria-controls="complementary-it" data-complementary-tab="it">Tecnologia</button>
+          <button type="button" class="complementary-tab active" role="tab" aria-selected="true" aria-controls="complementary-marketing" data-complementary-tab="marketing" tabindex="0"><span>Marketing</span><i data-complementary-tab-progress="marketing">0/5</i></button>
+          <button type="button" class="complementary-tab" role="tab" aria-selected="false" aria-controls="complementary-operations" data-complementary-tab="operations" tabindex="-1"><span>Operações</span><i data-complementary-tab-progress="operations">0/5</i></button>
+          <button type="button" class="complementary-tab" role="tab" aria-selected="false" aria-controls="complementary-people" data-complementary-tab="people" tabindex="-1"><span>Pessoas & RH</span><i data-complementary-tab-progress="people">0/4</i></button>
+          <button type="button" class="complementary-tab" role="tab" aria-selected="false" aria-controls="complementary-legal" data-complementary-tab="legal" tabindex="-1"><span>Jurídico</span><i data-complementary-tab-progress="legal">0/4</i></button>
+          <button type="button" class="complementary-tab" role="tab" aria-selected="false" aria-controls="complementary-it" data-complementary-tab="it" tabindex="-1"><span>Tecnologia</span><i data-complementary-tab-progress="it">0/4</i></button>
+        </div>
+        <div class="complementary-guidance" aria-live="polite">
+          <strong>Como preencher</strong>
+          <span>Complete os campos essenciais de cada aba. Você pode voltar a qualquer etapa e revisar o plano quando quiser.</span>
+          <button type="button" class="text-button" id="suggestComplementaryContent">Usar dados anteriores</button>
         </div>
 
         <div class="complementary-panel active" id="complementary-marketing" role="tabpanel" data-complementary-panel="marketing">
