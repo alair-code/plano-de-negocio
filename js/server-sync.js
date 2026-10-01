@@ -99,12 +99,12 @@
     if (plans?.[0]) { storePlanId(plans[0].id); return plans[0]; }
 
     const name = val("businessName") || "Meu Plano de Negócio";
-    const {data:spaces,error:spaceError} = await client.from("espacos_trabalho").insert({nome:name}).select("id");
+    const {data:spaces,error:spaceError} = await client.from("espacos_trabalho").insert({nome:name,proprietario_usuario_id:user.id}).select("id");
     if (spaceError) throw spaceError;
     const space = spaces?.[0];
     if (!space?.id) throw new Error("Não foi possível criar o espaço de trabalho.");
     const {data:created,error:planError} = await client.from("planos_negocio")
-      .insert({espaco_trabalho_id:space.id,nome:name}).select("id,espaco_trabalho_id,nome,status");
+      .insert({espaco_trabalho_id:space.id,nome:name,proprietario_usuario_id:user.id}).select("id,espaco_trabalho_id,nome,status");
     if (planError) throw planError;
     if (!created?.[0]) throw new Error("Não foi possível criar o plano.");
     storePlanId(created[0].id);
@@ -173,10 +173,10 @@
     const name = prompt("Nome do novo plano de negócio:", "Novo Plano de Negócio");
     if (!name?.trim()) return;
     try {
-      const {data:spaces,error:spaceError} = await client.from("espacos_trabalho").insert({nome:name.trim()}).select("id");
+      const {data:spaces,error:spaceError} = await client.from("espacos_trabalho").insert({nome:name.trim(),proprietario_usuario_id:user.id}).select("id");
       if (spaceError) throw spaceError;
       const {data:plans,error:planError} = await client.from("planos_negocio")
-        .insert({espaco_trabalho_id:spaces[0].id,nome:name.trim()}).select("id");
+        .insert({espaco_trabalho_id:spaces[0].id,nome:name.trim(),proprietario_usuario_id:user.id}).select("id");
       if (planError) throw planError;
       storePlanId(plans[0].id);
       clearUI();
