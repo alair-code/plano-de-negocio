@@ -439,16 +439,12 @@ As branches `main` e `manutencao` fazem parte do fluxo de trabalho. `manutencao`
 
 ## ⚠️ Limitações Conhecidas
 
-- Neon integrado diretamente ao Módulo 1.
-- M2–M7 ainda utilizam principalmente persistência local.
-- Interface de múltiplos planos ainda em evolução.
-- Compartilhamento por link ainda não utiliza armazenamento persistente no banco.
-- Versionamento ainda é local.
-- RLS ainda precisa ser ampliado para o restante do schema à medida que as tabelas forem integradas.
-- Colaboração multiusuário ainda não está disponível.
+- O frontend continua sendo uma aplicação client-side; não há backend tradicional próprio.
+- Compartilhamento persistente atualmente é autenticado e precisa de uma camada pública controlada para compartilhamento externo sem login.
+- Permissões de colaboração existem no schema, mas a interface de convite e gestão de membros ainda está em evolução.
 - IA ainda não está integrada como serviço do produto.
-- Cálculos financeiros precisam de suíte de testes automatizados antes de serem considerados formalmente validados para uso profissional.
-- Validação completa de acessibilidade, responsividade, autenticação e persistência ainda precisa ser automatizada.
+- Cálculos financeiros estão implementados e persistidos, mas ainda precisam de uma suíte específica de testes e revisão para uso profissional.
+- Validação completa de acessibilidade, responsividade, autenticação, persistência e isolamento entre usuários ainda precisa ser automatizada no navegador.
 
 ---
 
