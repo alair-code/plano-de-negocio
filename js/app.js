@@ -25,8 +25,49 @@ updateActiveNav();
 
 const form = document.getElementById("opportunityForm");
 const saveStatus = document.getElementById("saveStatus");
-const storageKey = "business-plan-builder:opportunity:v1";
+const storageKey = "business-plan-builder:opportunity:v2";
 const rangeIds = ["scoreNeed", "scoreSolution", "scoreDifferentiation", "scoreCommercial"];
+
+function updateCompletion() {
+  if (!form) return;
+  const required = ["businessName", "problem", "solution", "audience"];
+  const complete = required.filter((name) => String(form.elements.namedItem(name)?.value || "").trim().length > 0).length;
+  const percent = Math.round((complete / required.length) * 100);
+  const label = document.getElementById("completionPercent");
+  const fill = document.getElementById("completionFill");
+  if (label) label.textContent = percent + "%";
+  if (fill) fill.style.width = percent + "%";
+}
+
+function updateCounters() {
+  if (!form) return;
+  document.querySelectorAll("[data-count-for]").forEach((counter) => {
+    const field = form.elements.namedItem(counter.dataset.countFor);
+    if (field && field.maxLength > 0) counter.textContent = field.value.length + "/" + field.maxLength;
+  });
+}
+
+function validateOpportunity() {
+  if (!form) return false;
+  let valid = true;
+  ["businessName", "problem", "solution", "audience"].forEach((name) => {
+    const field = form.elements.namedItem(name);
+    const wrapper = field?.closest(".field");
+    if (!field || !wrapper) return;
+    const ok = field.value.trim().length > 0;
+    wrapper.classList.toggle("invalid", !ok);
+    if (!ok) {
+      valid = false;
+      if (!wrapper.querySelector(".field-error")) {
+        const error = document.createElement("small");
+        error.className = "field-error";
+        error.textContent = "Preencha este campo para continuar.";
+        wrapper.appendChild(error);
+      }
+    }
+  });
+  return valid;
+}
 
 function updateScore() {
   const values = rangeIds.map((id) => Number(document.getElementById(id)?.value || 0));
