@@ -1,3 +1,15 @@
+import { createClient } from "https://esm.sh/@neondatabase/neon-js@0.7.0-beta";
+
+const neonClient = createClient({
+  auth: {
+    url: "https://ep-late-violet-b6sxri3o.neonauth.c-2.sa-east-1.aws.neon.tech/neondb/auth"
+  },
+  dataApi: {
+    url: "https://ep-late-violet-b6sxri3o.apirest.c-2.sa-east-1.aws.neon.tech/neondb/rest/v1"
+  }
+});
+window.neonClient = neonClient;
+
 
 const menuButton = document.getElementById("menuButton");
 const sidebar = document.getElementById("sidebar");
@@ -33,6 +45,151 @@ document.querySelectorAll(".nav-item[href^='#']").forEach((item) => {
       showToast(target === "#ambientes" ? "Conclua o módulo 1 para acessar o módulo 2." : "Conclua o módulo 2 para acessar o módulo 3.");
     }
   });
+});
+
+
+/* Integração com Neon Auth e Neon Data API — Módulo 1 */
+const authModal = document.getElementById("authModal");
+const authButton = document.getElementById("authButton");
+const authClose = document.getElementById("authClose");
+const authForm = document.getElementById("authForm");
+const authTitle = document.getElementById("authTitle");
+const authDescription = document.getElementById("authDescription");
+const authNameField = document.getElementById("authNameField");
+const authName = document.getElementById("authName");
+const authEmail = document.getElementById("authEmail");
+const authPassword = document.getElementById("authPassword");
+const authSubmit = document.getElementById("authSubmit");
+const authSwitch = document.getElementById("authSwitch");
+const authGoogle = document.getElementById("authGoogle");
+const authLogout = document.getElementById("authLogout");
+const authFeedback = document.getElementById("authFeedback");
+let authMode = "signin";
+
+function getAuthErrorMessage(error) {
+  return error?.message || error?.error?.message || "Não foi possível concluir a autenticação.";
+}
+
+function setAuthMode(mode) {
+  authMode = mode;
+  const signup = mode === "signup";
+  if (authTitle) authTitle.textContent = signup ? "Criar minha conta" : "Entrar no Plano de Negócio";
+  if (authDescription) authDescription.textContent = signup
+    ? "Crie sua conta para salvar os planos no banco e continuar de qualquer dispositivo."
+    : "Entre para salvar seus planos no banco de dados e acessar seus dados de qualquer dispositivo.";
+  if (authNameField) authNameField.hidden = !signup;
+  if (authPassword) authPassword.autocomplete = signup ? "new-password" : "current-password";
+  if (authSubmit) authSubmit.textContent = signup ? "Criar conta" : "Entrar";
+  if (authSwitch) authSwitch.textContent = signup ? "Já tenho uma conta" : "Ainda não tenho conta";
+  if (authFeedback) authFeedback.textContent = "";
+}
+
+function openAuthModal() {
+  if (!authModal) return;
+  authModal.hidden = false;
+  setAuthMode("signin");
+  authEmail?.focus();
+}
+
+function closeAuthModal() {
+  if (authModal) authModal.hidden = true;
+}
+
+function extractSession(result) {
+  return result?.data?.session || result?.session || result?.data || null;
+}
+
+async function getCurrentUser() {
+  try {
+    const result = await neonClient.auth.getSession();
+    const session = extractSession(result);
+    return session?.user || null;
+  } catch {
+    return null;
+  }
+}
+
+async function updateAuthUI(user = null) {
+  if (!user) user = await getCurrentUser();
+  if (authButton) authButton.textContent = user ? "Minha conta" : "Entrar";
+  const avatar = document.getElementById("userAvatar");
+  if (avatar) {
+    avatar.textContent = user?.name?.trim()?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || "A";
+    avatar.title = user ? user.email : "Usuário";
+  }
+  if (authLogout) authLogout.hidden = !user;
+  if (authSubmit) authSubmit.hidden = Boolean(user);
+  if (authGoogle) authGoogle.hidden = Boolean(user);
+  if (authSwitch) authSwitch.hidden = Boolean(user);
+  if (authNameField) authNameField.hidden = Boolean(user) || authMode !== "signup";
+  if (authEmail) authEmail.disabled = Boolean(user);
+  if (authPassword) authPassword.disabled = Boolean(user);
+  if (user && authTitle) authTitle.textContent = "Conta conectada";
+  if (user && authDescription) authDescription.textContent = user.email || "Sua conta está conectada ao Neon Auth.";
+  return user;
+}
+
+async function signInOrSignUp(event) {
+  event.preventDefault();
+  if (!authEmail?.value.trim() || !authPassword?.value) {
+    if (authFeedback) authFeedback.textContent = "Informe e-mail e senha.";
+    return;
+  }
+  if (authMode === "signup" && !authName?.value.trim()) {
+    if (authFeedback) authFeedback.textContent = "Informe seu nome.";
+    return;
+  }
+  authSubmit.disabled = true;
+  if (authFeedback) authFeedback.textContent = "Conectando...";
+  try {
+    const result = authMode === "signup"
+      ? await neonClient.auth.signUp.email({ email: authEmail.value.trim(), password: authPassword.value, name: authName.value.trim() })
+      : await neonClient.auth.signIn.email({ email: authEmail.value.trim(), password: authPassword.value });
+    if (result?.error) throw result.error;
+    const user = await getCurrentUser();
+    await updateAuthUI(user);
+    if (user) {
+      closeAuthModal();
+      showToast(authMode === "signup" ? "Conta criada e conectada ao banco." : "Login realizado com sucesso.");
+      await loadOpportunityFromServer();
+    } else {
+      if (authFeedback) authFeedback.textContent = "A autenticação foi concluída, mas a sessão não foi recuperada. Tente entrar novamente.";
+    }
+  } catch (error) {
+    if (authFeedback) authFeedback.textContent = getAuthErrorMessage(error);
+  } finally {
+    authSubmit.disabled = false;
+  }
+}
+
+authButton?.addEventListener("click", async () => {
+  const user = await getCurrentUser();
+  if (user) {
+    openAuthModal();
+    await updateAuthUI(user);
+  } else {
+    openAuthModal();
+  }
+});
+authClose?.addEventListener("click", closeAuthModal);
+authModal?.addEventListener("click", (event) => { if (event.target === authModal) closeAuthModal(); });
+authForm?.addEventListener("submit", signInOrSignUp);
+authSwitch?.addEventListener("click", () => setAuthMode(authMode === "signin" ? "signup" : "signin"));
+authLogout?.addEventListener("click", async () => {
+  await neonClient.auth.signOut();
+  closeAuthModal();
+  updateAuthUI(null);
+  showToast("Você saiu da conta.");
+});
+authGoogle?.addEventListener("click", async () => {
+  try {
+    await neonClient.auth.signIn.social({ provider: "google", callbackURL: window.location.href });
+  } catch (error) {
+    if (authFeedback) authFeedback.textContent = getAuthErrorMessage(error);
+  }
+});
+neonClient.auth.onAuthStateChange?.((_event, session) => {
+  updateAuthUI(session?.user || null);
 });
 
 const form = document.getElementById("opportunityForm");
@@ -94,6 +251,148 @@ function updateScore() {
   if (scoreLabel) scoreLabel.textContent = total <= 8 ? "Precisa de validação" : total <= 14 ? "Em construção" : "Boa base inicial";
 }
 
+
+async function ensureServerPlan() {
+  const { data: plans, error: plansError } = await neonClient
+    .from("planos_negocio")
+    .select("id, espaco_trabalho_id, nome")
+    .order("criado_em", { ascending: true })
+    .limit(1);
+  if (plansError) throw plansError;
+  if (plans?.[0]) return plans[0];
+
+  const businessName = String(form?.elements.namedItem("businessName")?.value || "").trim() || "Meu Plano de Negócio";
+  const { data: workspaceRows, error: workspaceError } = await neonClient
+    .from("espacos_trabalho")
+    .insert({ nome: businessName })
+    .select("id")
+    .limit(1);
+  if (workspaceError) throw workspaceError;
+  const workspace = workspaceRows?.[0];
+  if (!workspace?.id) throw new Error("Não foi possível criar o espaço de trabalho.");
+
+  const { data: planRows, error: planError } = await neonClient
+    .from("planos_negocio")
+    .insert({ espaco_trabalho_id: workspace.id, nome: businessName })
+    .select("id, espaco_trabalho_id, nome")
+    .limit(1);
+  if (planError) throw planError;
+  const plan = planRows?.[0];
+  if (!plan?.id) throw new Error("Não foi possível criar o plano de negócio.");
+  return plan;
+}
+
+async function saveOpportunityToServer() {
+  const user = await getCurrentUser();
+  if (!user) return { skipped: true, reason: "auth" };
+  const plan = await ensureServerPlan();
+  const data = formDataObject();
+  const score = rangeIds.reduce((sum, id) => sum + Number(document.getElementById(id)?.value || 0), 0);
+
+  const { error: planError } = await neonClient
+    .from("planos_negocio")
+    .update({ nome: data.businessName || plan.nome, percentual_conclusao: getOpportunityProgress(), modulo_atual: 1 })
+    .eq("id", plan.id);
+  if (planError) throw planError;
+
+  const opportunity = {
+    plano_negocio_id: plan.id,
+    problema: data.problem || null,
+    solucao: data.solution || null,
+    publico_alvo: data.audience || null,
+    localizacao: data.marketLocation || null,
+    diferenciais: data.differentials || null,
+    pontuacao_atratividade: score
+  };
+  const { error: opportunityError } = await neonClient
+    .from("analises_oportunidade")
+    .upsert(opportunity, { onConflict: "plano_negocio_id" });
+  if (opportunityError) throw opportunityError;
+
+  const value = {
+    plano_negocio_id: plan.id,
+    trabalhos_clientes: data.customerJobs || null,
+    dores: data.customerPains || null,
+    ganhos: data.customerGains || null,
+    produtos_servicos: data.products || null,
+    alivios_dores: data.painRelievers || null,
+    criadores_ganhos: data.gainCreators || null
+  };
+  const { error: valueError } = await neonClient
+    .from("propostas_valor")
+    .upsert(value, { onConflict: "plano_negocio_id" });
+  if (valueError) throw valueError;
+
+  localStorage.setItem("business-plan-builder:server-plan:v1", JSON.stringify({ planId: plan.id }));
+  return { saved: true, planId: plan.id };
+}
+
+async function loadOpportunityFromServer() {
+  const user = await getCurrentUser();
+  if (!user || !form) return;
+  try {
+    const localDraft = localStorage.getItem(storageKey);
+    if (localDraft) {
+      if (saveStatus) saveStatus.textContent = "Rascunho local preservado. Salve a oportunidade para sincronizar com o banco.";
+      return;
+    }
+    const { data: plans, error: plansError } = await neonClient
+      .from("planos_negocio")
+      .select("id, nome")
+      .order("criado_em", { ascending: true })
+      .limit(1);
+    if (plansError) throw plansError;
+    const plan = plans?.[0];
+    if (!plan) return;
+
+    const { data: opportunityRows, error: opportunityError } = await neonClient
+      .from("analises_oportunidade")
+      .select("*")
+      .eq("plano_negocio_id", plan.id)
+      .limit(1);
+    if (opportunityError) throw opportunityError;
+    const { data: valueRows, error: valueError } = await neonClient
+      .from("propostas_valor")
+      .select("*")
+      .eq("plano_negocio_id", plan.id)
+      .limit(1);
+    if (valueError) throw valueError;
+
+    const opportunity = opportunityRows?.[0];
+    const value = valueRows?.[0];
+    const values = {
+      businessName: plan.nome,
+      problem: opportunity?.problema || "",
+      solution: opportunity?.solucao || "",
+      audience: opportunity?.publico_alvo || "",
+      marketLocation: opportunity?.localizacao || "",
+      differentials: opportunity?.diferenciais || "",
+      customerJobs: value?.trabalhos_clientes || "",
+      customerPains: value?.dores || "",
+      customerGains: value?.ganhos || "",
+      products: value?.produtos_servicos || "",
+      painRelievers: value?.alivios_dores || "",
+      gainCreators: value?.criadores_ganhos || ""
+    };
+    Object.entries(values).forEach(([name, value]) => {
+      const field = form.elements.namedItem(name);
+      if (field && value !== "") field.value = value;
+    });
+    const score = Number(opportunity?.pontuacao_atratividade);
+    if (Number.isFinite(score) && score >= 0) {
+      const base = Math.max(1, Math.min(5, Math.round(score / 4)));
+      rangeIds.forEach((id) => { const field = document.getElementById(id); if (field) field.value = base; });
+    }
+    updateScore();
+    updateCompletion();
+    updateCounters();
+    updateDashboardState();
+    if (saveStatus) saveStatus.textContent = "Dados do Módulo 1 recuperados do banco.";
+  } catch (error) {
+    console.warn("Neon: não foi possível carregar o Módulo 1.", error);
+  }
+}
+
 function formDataObject() {
   if (!form) return {};
   return Object.fromEntries(new FormData(form).entries());
@@ -129,14 +428,29 @@ if (form) {
     window.clearTimeout(form._saveTimer);
     form._saveTimer = window.setTimeout(saveDraft, 250);
   });
-  form.addEventListener("submit", (event) => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (!validateOpportunity()) {
       showToast("Preencha os campos obrigatórios para continuar.");
       return;
     }
     saveDraft();
-    showToast("Oportunidade salva. O próximo passo será a análise de ambientes.");
+    const user = await getCurrentUser();
+    if (!user) {
+      openAuthModal();
+      if (authFeedback) authFeedback.textContent = "Entre ou crie uma conta para salvar este plano no banco de dados.";
+      return;
+    }
+    try {
+      if (saveStatus) saveStatus.textContent = "Salvando no banco de dados...";
+      await saveOpportunityToServer();
+      if (saveStatus) saveStatus.textContent = "Oportunidade salva no banco de dados e neste navegador.";
+      showToast("Oportunidade salva no banco de dados.");
+    } catch (error) {
+      console.error("Neon: falha ao salvar Módulo 1.", error);
+      if (saveStatus) saveStatus.textContent = "Salvo neste navegador. O banco não foi atualizado.";
+      showToast("Não foi possível salvar no banco. Seus dados locais foram preservados.");
+    }
   });
   document.getElementById("clearOpportunity")?.addEventListener("click", () => {
     if (!window.confirm("Limpar todo o preenchimento deste módulo?")) return;
@@ -151,6 +465,7 @@ if (form) {
   updateScore();
   updateCompletion();
   updateDashboardState();
+  getCurrentUser().then((user) => updateAuthUI(user).then(() => { if (user) loadOpportunityFromServer(); }));
 }
 
 
