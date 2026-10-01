@@ -358,8 +358,7 @@ async function ensureServerPlan() {
   const { data: workspaceRows, error: workspaceError } = await neonClient
     .from("espacos_trabalho")
     .insert({ nome: businessName })
-    .select("id")
-    .limit(1);
+    .select("id");
   if (workspaceError) throw workspaceError;
   const workspace = workspaceRows?.[0];
   if (!workspace?.id) throw new Error("Não foi possível criar o espaço de trabalho.");
@@ -367,8 +366,7 @@ async function ensureServerPlan() {
   const { data: planRows, error: planError } = await neonClient
     .from("planos_negocio")
     .insert({ espaco_trabalho_id: workspace.id, nome: businessName })
-    .select("id, espaco_trabalho_id, nome")
-    .limit(1);
+    .select("id, espaco_trabalho_id, nome");
   if (planError) throw planError;
   const plan = planRows?.[0];
   if (!plan?.id) throw new Error("Não foi possível criar o plano de negócio.");
@@ -982,6 +980,22 @@ if(planModule){
 
 
 /* Proteção e desbloqueio sequencial do Módulo 3 */
+
+// Funções usadas pelos módulos clássicos e pela integração Neon.
+// app.js é um ES module, portanto suas funções não ficam globais automaticamente.
+Object.assign(window, {
+  showToast,
+  getOpportunityProgress,
+  getSwotState,
+  getEnvironmentProgress,
+  updateEnvironmentProgress,
+  updateDashboardState,
+  getPlanSectionProgress,
+  getComplementaryProgress,
+  updateComplementaryProgress,
+  renderFinancial
+});
+
 window.addEventListener("hashchange",()=>{
   if(location.hash==="#plano" && getEnvironmentProgress()<100){
     history.replaceState(null,"","#ambientes");
@@ -1426,11 +1440,8 @@ if(exportModule){
     const rows=getExportRows(),csv="\ufeff"+[["Campo","Conteúdo"],...rows].map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(";")).join("\r\n");
     downloadBlob(csv,"text/csv;charset=utf-8","plano-de-negocio.csv");setExportStatus("Arquivo CSV gerado e compatível com Excel.");
   });
-  document.getElementById("createShareLink")?.addEventListener("click",()=>{
-    const output=document.getElementById("shareLinkOutput");if(output)output.value=getShareUrl();
-    updateShareControls();
-    setExportStatus("Link criado. Ele contém uma cópia dos dados do plano. Quanto mais conteúdo houver, maior será o link.");
-  });
+  // O compartilhamento persistente é controlado por js/server-sync.js para evitar dois
+  // handlers concorrentes no mesmo botão. O leitor de links locais antigos permanece compatível.
   document.getElementById("copyShareLink")?.addEventListener("click",async()=>{
     const output=document.getElementById("shareLinkOutput");if(!output?.value)return;
     try{await navigator.clipboard.writeText(output.value);setExportStatus("Link copiado para a área de transferência.");}catch{output.select();document.execCommand("copy");setExportStatus("Link copiado.");}
