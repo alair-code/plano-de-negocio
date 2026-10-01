@@ -23,6 +23,18 @@ function updateActiveNav() {
 window.addEventListener("hashchange", updateActiveNav);
 updateActiveNav();
 
+document.querySelectorAll(".nav-item[href^='#']").forEach((item) => {
+  item.addEventListener("click", (event) => {
+    const target = item.getAttribute("href");
+    const guards = {"#ambientes": () => getOpportunityProgress() === 100, "#plano": () => getEnvironmentProgress() === 100};
+    const guard = guards[target];
+    if (guard && !guard()) {
+      event.preventDefault();
+      showToast(target === "#ambientes" ? "Conclua o módulo 1 para acessar o módulo 2." : "Conclua o módulo 2 para acessar o módulo 3.");
+    }
+  });
+});
+
 const form = document.getElementById("opportunityForm");
 const saveStatus = document.getElementById("saveStatus");
 const storageKey = "business-plan-builder:opportunity:v2";
@@ -179,9 +191,13 @@ function getOpportunityProgress() {
 }
 
 function getEnvironmentProgress() {
-  const fields = environmentFields();
-  if (!fields.length) return 0;
-  return Math.round((fields.filter((field) => String(field.value || "").trim()).length / fields.length) * 100);
+  const coreIds = [
+    "swotStrengths","swotWeaknesses","swotOpportunities","swotThreats",
+    "pestelPolitical","pestelEconomic","pestelSocial","pestelTechnological","pestelEnvironmental","pestelLegal",
+    "porterRivalry","porterEntrants","porterSuppliers","porterCustomers","porterSubstitutes"
+  ];
+  const filled = coreIds.filter((id) => String(document.getElementById(id)?.value || "").trim()).length;
+  return Math.round((filled / coreIds.length) * 100);
 }
 
 function updateEnvironmentProgress() {
@@ -190,7 +206,45 @@ function updateEnvironmentProgress() {
   const fill = document.getElementById("environmentProgressFill");
   if (label) label.textContent = percent + "%";
   if (fill) fill.style.width = percent + "%";
+  updateSwotReading();
+  updatePestelReading();
   updateDashboardState();
+}
+
+function updateSwotReading() {
+  const ids = ["swotStrengths","swotWeaknesses","swotOpportunities","swotThreats"];
+  const names = ["Forças","Fraquezas","Oportunidades","Ameaças"];
+  const values = ids.map((id) => String(document.getElementById(id)?.value || "").trim());
+  const answered = values.filter(Boolean).length;
+  const title = document.getElementById("swotReading");
+  const text = document.getElementById("swotReadingText");
+  if (!title || !text) return;
+  if (!answered) {
+    title.textContent = "Matriz ainda sem dados";
+    text.textContent = "Preencha os quatro quadrantes para gerar um resumo da análise.";
+    return;
+  }
+  const missing = names.filter((_, index) => !values[index]);
+  title.textContent = answered === 4 ? "Matriz SWOT preenchida" : "Matriz SWOT em construção";
+  text.textContent = answered === 4 ? "Os quatro quadrantes já têm conteúdo. Revise se os itens são específicos e verificáveis." : "Faltam: " + missing.join(", ") + ".";
+}
+
+function updatePestelReading() {
+  const ids = ["pestelPolitical","pestelEconomic","pestelSocial","pestelTechnological","pestelEnvironmental","pestelLegal"];
+  const names = ["Político","Econômico","Social","Tecnológico","Ambiental","Legal"];
+  const values = ids.map((id) => String(document.getElementById(id)?.value || "").trim());
+  const answered = values.filter(Boolean).length;
+  const title = document.getElementById("pestelReading");
+  const text = document.getElementById("pestelReadingText");
+  if (!title || !text) return;
+  if (!answered) {
+    title.textContent = "PESTEL em aberto";
+    text.textContent = "Registre os seis fatores para concluir esta análise.";
+    return;
+  }
+  const missing = names.filter((_, index) => !values[index]);
+  title.textContent = answered === 6 ? "PESTEL preenchido" : "PESTEL em construção";
+  text.textContent = answered === 6 ? "Os seis fatores foram registrados. Revise impactos, evidências e hipóteses antes de avançar." : "Faltam: " + missing.join(", ") + ".";
 }
 
 function updateDashboardState() {
@@ -200,45 +254,55 @@ function updateDashboardState() {
   const overall = Math.round(modules.reduce((sum, value) => sum + value, 0) / modules.length);
   const progressLabel = document.querySelector(".progress-mini .progress-label strong");
   const progressFill = document.querySelector(".progress-mini .progress-track span");
+  const heroPercent = document.getElementById("heroProgressPercent");
+  const heroFill = document.getElementById("heroProgressFill");
   if (progressLabel) progressLabel.textContent = overall + "%";
   if (progressFill) progressFill.style.width = overall + "%";
+  if (heroPercent) heroPercent.textContent = overall + "%";
+  if (heroFill) heroFill.style.width = overall + "%";
 
+  const completed = modules.filter((value) => value === 100).length;
+  const started = modules.filter((value) => value > 0).length;
   const status = document.getElementById("dashboardStatus");
-  if (status) status.textContent = modules.filter((value) => value > 0).length + " de 7 módulos iniciados";
+  if (status) status.textContent = completed + " de 7 módulos concluídos · " + started + " em andamento/iniciados";
 
   document.querySelectorAll("[data-dashboard-module]").forEach((card) => {
     const module = Number(card.dataset.dashboardModule);
     const value = modules[module - 1] || 0;
     const previous = module > 1 ? modules[module - 2] || 0 : 100;
+    const unlocked = module === 1 || previous === 100;
     const statusEl = card.querySelector(".module-status");
     const lockedEl = card.querySelector(".locked");
-    const action = card.querySelector("a");
+    let action = card.querySelector("a.module-action");
 
     card.classList.toggle("completed", value === 100);
-    card.classList.toggle("current", value > 0 && value < 100);
+    card.classList.toggle("current", unlocked && value > 0 && value < 100);
 
     if (statusEl) {
-      statusEl.classList.toggle("muted", value === 0 && module > 1 && previous < 100);
-      statusEl.textContent = value === 100 ? "Concluído" : value > 0 ? "Em andamento" : module === 1 ? "Próximo" : "Bloqueado";
+      statusEl.classList.toggle("muted", !unlocked && value === 0);
+      statusEl.textContent = value === 100 ? "Concluído" : value > 0 ? "Em andamento" : module === 1 ? "Próximo" : unlocked ? "Disponível" : "Bloqueado";
     }
 
     if (lockedEl && module > 1) {
-      lockedEl.textContent = previous === 100 ? "Pronto para começar" : "Disponível após concluir o módulo " + (module - 1);
+      lockedEl.textContent = unlocked ? "Pronto para começar" : "Disponível após concluir o módulo " + (module - 1);
     }
 
-    if (module === 2) {
-      if (opportunity === 100 && !action) {
-        const link = document.createElement("a");
-        link.href = "#ambientes";
-        link.className = "module-action";
-        link.textContent = value === 100 ? "Revisar →" : "Começar →";
-        card.appendChild(link);
-      } else if (opportunity < 100 && action) {
-        action.remove();
+    if (module > 1 && module < 4) {
+      if (unlocked && !action) {
+        action = document.createElement("a");
+        action.className = "module-action";
+        card.appendChild(action);
+      }
+      if (action) {
+        action.href = module === 2 ? "#ambientes" : "#plano";
+        action.textContent = value === 100 ? "Revisar →" : module === 3 ? "Começar quando liberado →" : "Continuar →";
+        action.setAttribute("aria-disabled", String(!unlocked));
+        action.classList.toggle("disabled", !unlocked);
       }
     }
   });
 }
+
 function saveEnvironmentDraft() {
   if (!environmentForm) return;
   const data = {};
@@ -260,6 +324,16 @@ function loadEnvironmentDraft() {
 }
 if (environmentForm) {
   document.querySelectorAll("[data-environment-tab]").forEach((tab) => {
+    tab.addEventListener("keydown", (event) => {
+      const tabs = [...document.querySelectorAll("[data-environment-tab]")];
+      const current = tabs.indexOf(tab);
+      const next = event.key === "ArrowRight" ? (current + 1) % tabs.length : event.key === "ArrowLeft" ? (current - 1 + tabs.length) % tabs.length : -1;
+      if (next >= 0) {
+        event.preventDefault();
+        tabs[next].focus();
+        tabs[next].click();
+      }
+    });
     tab.addEventListener("click", () => {
       const target = tab.dataset.environmentTab;
       document.querySelectorAll("[data-environment-tab]").forEach((item) => {
@@ -295,6 +369,8 @@ if (environmentForm) {
   });
   loadEnvironmentDraft();
   updatePorterReading();
+  updateSwotReading();
+  updatePestelReading();
   updateEnvironmentProgress();
 
   document.querySelectorAll("#opportunityForm .field input, #opportunityForm .field textarea").forEach((field) => {
