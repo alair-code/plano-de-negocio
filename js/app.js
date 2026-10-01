@@ -15,6 +15,26 @@ const neonClient = createClient({
 window.neonClient = neonClient;
 
 
+
+// Microinterações: menu móvel, estado ativo e feedback de navegação.
+document.querySelectorAll(".nav-item").forEach((item) => {
+  item.addEventListener("click", () => {
+    document.querySelectorAll(".nav-item").forEach((nav) => nav.classList.remove("active"));
+    item.classList.add("active");
+  });
+});
+document.querySelectorAll(".module-card a").forEach((link) => {
+  link.addEventListener("click", () => {
+    const card = link.closest(".module-card");
+    if (card) {
+      card.animate(
+        [{ transform: "translateY(0)" }, { transform: "translateY(-3px)" }, { transform: "translateY(0)" }],
+        { duration: 260, easing: "ease-out" }
+      );
+    }
+  });
+});
+
 const menuButton = document.getElementById("menuButton");
 const sidebar = document.getElementById("sidebar");
 const demoButton = document.getElementById("demoButton");
