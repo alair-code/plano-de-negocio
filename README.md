@@ -146,15 +146,18 @@ A primeira versão do projeto será desenvolvida **exclusivamente com tecnologia
 | Persistência local | LocalStorage |
 | Gráficos | JavaScript + APIs/recursos compatíveis com o navegador |
 | Exportação | APIs do navegador + geração de arquivos no frontend |
-| Hospedagem | GitHub Pages / hospedagem web estática |
+| Autenticação | Neon Auth |
+| Banco de dados | PostgreSQL / Neon |
+| API de dados | Neon Data API |
+| Hospedagem | Vercel / hospedagem web |
 
-> **Decisão arquitetural:** React, TypeScript, Tailwind CSS, Node.js, PostgreSQL, autenticação e infraestrutura em nuvem **não fazem parte da primeira etapa**. O objetivo inicial é concluir um frontend funcional com HTML, CSS e JavaScript puro.
+> **Estado atual:** o frontend continua em HTML, CSS e JavaScript puro, mas o projeto já iniciou a integração com **Neon Auth + PostgreSQL/Neon + Neon Data API**. A integração começou pelo Módulo 1 e será expandida gradualmente para os demais módulos.
 
-### Evolução futura — Aplicação completa
+### Evolução da aplicação
 
-Caso o produto evolua para uma aplicação multiusuário, os recursos que exigem persistência centralizada, autenticação e colaboração poderão ser adicionados posteriormente:
+A aplicação já iniciou a transição para persistência centralizada e autenticação. O Módulo 1 está integrado ao Neon; os demais módulos serão integrados progressivamente.
 
-| Necessidade futura | Tecnologia possível |
+| Próxima necessidade | Tecnologia possível |
 |---|---|
 | Frontend escalável | React/TypeScript ou evolução do frontend atual |
 | Backend/API | Node.js (NestJS) ou Python (FastAPI) |
@@ -168,11 +171,13 @@ A adoção dessas tecnologias será avaliada **somente quando houver necessidade
 ## 🚀 Jornada do Usuário
 
 1. **Cadastro/Login**
-2. **Criação de novo plano** (template ou em branco)
-3. **Preenchimento guiado** por etapas (wizard)
+2. **Criação de novo plano**
+3. **Preenchimento guiado** por módulos
 4. **Inserção de dados financeiros** → cálculos automáticos
 5. **Revisão** com checklist de consistência
 6. **Exportação/Compartilhamento**
+
+> A autenticação e a persistência no Neon estão atualmente integradas ao Módulo 1. Os módulos 2–7 continuam em integração progressiva.
 
 ---
 
@@ -190,11 +195,17 @@ A adoção dessas tecnologias será avaliada **somente quando houver necessidade
 
 ## 🗺️ Roadmap
 
-| Fase | Prazo | Entregas |
+| Fase | Status | Entregas |
 |---|---|---|
-| **MVP** | 3 meses | Módulos 1, 3, 4 e 6 |
-| **v1.0** | 6 meses | + Módulos 2, 5 e 7 |
-| **v2.0** | 12 meses | + IA, colaboração, mobile |
+| Frontend base | ✅ Concluída | Estrutura e módulos principais |
+| Módulos 1–7 | ✅ Implementados no frontend | Formulários, cálculos, exportação e painel |
+| Autenticação | ✅ Inicialmente integrada | Neon Auth no Módulo 1 |
+| Persistência M1 | ✅ Integrada | Neon Data API + RLS inicial |
+| Persistência M2–M7 | 🔄 Em evolução | Integração módulo por módulo |
+| Segurança completa do schema | 🔄 Em evolução | Ampliação das políticas RLS |
+| Colaboração multiusuário | 📋 Planejada | Espaços, membros e permissões |
+| IA | 📋 Planejada | Assistência inteligente |
+| Mobile/PWA | 📋 Planejada | Evolução para dispositivos móveis |
 
 ---
 
@@ -210,10 +221,20 @@ A adoção dessas tecnologias será avaliada **somente quando houver necessidade
 
 ## 🧪 Testes e Qualidade
 
-- **Testes unitários:** cobertura mínima de 80%
-- **Testes de integração:** fluxos críticos (cadastro, cálculo, exportação)
-- **Testes de usabilidade:** sessões com 10 usuários por release
-- **CI/CD:** GitHub Actions + deploy automatizado
+### Já realizado
+- Validação de sintaxe do JavaScript principal
+- Verificação de build/deploy na Vercel
+- Validação da integração inicial do Neon no Módulo 1
+- Preservação do rascunho local durante a conexão com o banco
+
+### Planejado
+- Testes automatizados dos cálculos financeiros
+- Testes de integração dos fluxos críticos
+- Testes completos de autenticação e persistência
+- Testes de responsividade e acessibilidade
+- CI/CD e validações automatizadas
+
+> Metas de cobertura e testes com usuários são objetivos de qualidade, não resultados já atingidos.
 
 ---
 
