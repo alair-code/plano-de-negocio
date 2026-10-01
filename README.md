@@ -8,7 +8,7 @@
 
 O **Business Plan Builder** é uma aplicação web que orienta empreendedores, estudantes e consultores na elaboração de um plano de negócios, passando pela identificação da oportunidade, análise de ambientes, estruturação do plano, viabilidade financeira, planos complementares, exportação e revisão de gestão.
 
-O projeto foi concebido para começar com uma arquitetura web simples e leve e evoluir gradualmente para persistência centralizada, autenticação, colaboração e recursos avançados.
+O projeto começou com uma arquitetura web simples e leve e atualmente combina persistência local para recuperação de rascunhos com autenticação e persistência centralizada no Neon. Colaboração avançada e recursos adicionais continuam em evolução.
 
 ### 🎯 Problema
 
@@ -22,7 +22,7 @@ Empreendedores, especialmente iniciantes, podem ter dificuldade para:
 
 ### 💡 Solução
 
-Uma ferramenta **guiada**, com formulários estruturados, cálculos automáticos, indicadores, validações, salvamento local, autenticação e integração progressiva com banco de dados.
+Uma ferramenta **guiada**, com formulários estruturados, cálculos automáticos, indicadores, validações, recuperação local de rascunhos, autenticação e persistência centralizada no banco de dados.
 
 ### 👥 Público-Alvo
 
@@ -35,7 +35,7 @@ Uma ferramenta **guiada**, com formulários estruturados, cálculos automáticos
 
 ## 🟢 Estado Atual do Projeto
 
-O projeto já possui uma base funcional completa no frontend e iniciou a transição para uma arquitetura com autenticação e persistência centralizada.
+O projeto possui os Módulos 1 a 7 implementados no frontend, autenticação integrada e persistência centralizada dos dados dos módulos por meio do Neon Data API e da camada de sincronização.
 
 ### Implementado
 
@@ -51,7 +51,7 @@ O projeto já possui uma base funcional completa no frontend e iniciou a transi�
 - Persistência centralizada dos Módulos 1 a 7 através da camada de sincronização
 - Gerenciamento de múltiplos planos com seleção, criação e arquivamento
 - Preservação do rascunho local durante a autenticação e sincronização
-- RLS habilitado em todo o schema funcional, com autorização por usuário/espaço/plano
+- RLS habilitado nas tabelas funcionais integradas, com autorização por usuário/espaço/plano
 - Exportação para PDF via impressão do navegador
 - Exportação compatível com Word em `.doc`
 - Exportação tabular em CSV compatível com Excel
@@ -64,8 +64,9 @@ O projeto já possui uma base funcional completa no frontend e iniciou a transi�
 ### Em evolução
 
 - Colaboração entre usuários com permissões de membro mais granulares
-- Testes de integração reais no navegador e cenários completos de RLS
+- Testes E2E reais no navegador e cenários completos de RLS
 - Evolução da experiência de gestão de múltiplos planos
+- Persistência server-side da marcação de revisão final do Módulo 7
 
 ### Planejado
 
@@ -85,12 +86,13 @@ Inclui:
 
 - Nome do negócio, problema, solução, público-alvo, localização e diferenciais
 - Canvas de Proposta de Valor: trabalhos dos clientes, dores, ganhos, produtos/serviços, aliviadores de dores e criadores de ganhos
-- Score de atratividade de 0 a 20
+- Score de atratividade de 4 a 20
 - Validação dos campos essenciais
 - Contadores de caracteres
 - Barra de conclusão e stepper
 - Salvamento automático local e recuperação de rascunho
 - Cadastro/login pelo Neon Auth
+- Persistência local para recuperação de rascunho
 - Persistência no PostgreSQL/Neon através da Neon Data API
 
 ### Módulo 2 — Análise de Ambientes
@@ -101,7 +103,8 @@ Inclui:
 - Inclusão, remoção e reorganização de itens SWOT
 - PESTEL: político, econômico, social, tecnológico, ambiental e legal
 - Cinco Forças de Porter, com intensidade e observações
-- Salvamento local
+- Salvamento local como recuperação de rascunho
+- Persistência centralizada via camada de sincronização
 - Recursos de navegação e interação acessíveis por teclado
 
 > A interface e a persistência centralizada no Neon estão integradas pela camada de sincronização.
@@ -304,7 +307,7 @@ A integração do Neon é carregada pelo navegador através do pacote `@neondata
 
 ## 🚀 Jornada do Usuário
 
-O fluxo planejado e parcialmente implementado é:
+O fluxo funcional atual é:
 
 1. Cadastro/login
 2. Criação do plano
@@ -325,7 +328,7 @@ Atualmente, a autenticação e a persistência centralizada estão integradas ao
 | ID | Requisito | Estado atual |
 |---|---|---|
 | RF01 | Criar e gerenciar múltiplos planos | 🟢 Implementado: seleção, criação e arquivamento |
-| RF02 | Salvamento automático | 🟢 Implementado localmente |
+| RF02 | Salvamento automático e persistência | 🟢 Implementado: rascunho local + sincronização centralizada quando autenticado |
 | RF03 | Cálculos de VPL, TIR e Payback | 🟢 Implementado no frontend |
 | RF04 | Gráficos de fluxo de caixa | 🟢 Implementado |
 | RF05 | Exportação em PDF | 🟢 Implementado via navegador |
@@ -363,7 +366,7 @@ A validação completa de responsividade e acessibilidade ainda faz parte do pla
 
 | Tela | Estado |
 |---|---|
-| Dashboard | 🟢 Painel M7 implementado; gerenciamento completo de múltiplos planos ainda em evolução |
+| Dashboard | 🟢 Painel M7 implementado; gestão de múltiplos planos integrada |
 | Wizard/Módulos | 🟢 Implementado |
 | Financeiro | 🟢 Implementado |
 | SWOT | 🟢 Implementado |
@@ -489,7 +492,7 @@ As branches `main` e `manutencao` fazem parte do fluxo de trabalho. `manutencao`
 | Erros nos cálculos financeiros | Testes automatizados e revisão dos algoritmos |
 | Crescimento prematuro da arquitetura | Evolução gradual baseada em necessidade real |
 | Acesso indevido aos dados | Neon Auth + RLS + políticas de autorização |
-| Dependência de persistência local | Migração gradual dos módulos para persistência centralizada |
+| Dependência de persistência local | LocalStorage permanece como recuperação de rascunho; persistência centralizada já cobre os Módulos 1–7 |
 | Compartilhamento inadequado de dados | Links persistentes autenticados, com token e validação de expiração/revogação; compartilhamento público sem login permanece desabilitado |
 | Complexidade da colaboração | Espaços de trabalho, membros e funções planejados no schema |
 
