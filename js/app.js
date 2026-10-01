@@ -747,7 +747,8 @@ function calculateFinancial(){
     irr=(low+high)/2;
   }
   const roi=investment>0?((profit-investment)/investment)*100:null;
-  return {investment,fixed,variable,price,initialDemand,growth,horizon,annualDiscount,rows,revenue,costs,profit,margin,breakEven,npv,irr,roi};
+  const annualizedIrr=irr===null?null:(Math.pow(1+irr,12)-1);
+  return {investment,fixed,variable,price,initialDemand,growth,horizon,annualDiscount,rows,revenue,costs,profit,margin,breakEven,npv,irr,annualizedIrr,roi};
 }
 function updateFinancialProgress(){
   const required=["financialInvestment","financialFixedCosts","financialVariableCost","financialUnitPrice","financialInitialDemand"];
@@ -767,6 +768,7 @@ function renderFinancial(){
     set("financialReading","Preencha as premissas.");
     set("financialReadingText","Informe investimento, custos, preço e demanda para gerar os indicadores.");
     const body=document.getElementById("financialCashflowBody");if(body)body.innerHTML='<tr><td colspan="6">Preencha as premissas para gerar a projeção.</td></tr>';
+    const chart=document.getElementById("financialCashflowChart");if(chart)chart.innerHTML="";
     return;
   }
   set("financialRevenue",financialMoney(data.revenue));
@@ -774,9 +776,14 @@ function renderFinancial(){
   set("financialBreakEven",Number.isFinite(data.breakEven)?Math.ceil(data.breakEven).toLocaleString("pt-BR"):"—");
   set("financialMargin",financialPercent(data.margin*100));
   set("financialNpv",financialMoney(data.npv));
-  set("financialIrr",data.irr===null?"—":financialPercent(data.irr*100*12));
+  set("financialIrr",data.annualizedIrr===null?"—":financialPercent(data.annualizedIrr*100));
   set("financialPayback",data.rows[data.rows.length-1].cumulative<0?"Não atingido":data.rows.length?data.rows[Math.min(Math.ceil(data.rows.findIndex(r=>r.cumulative>=0)+1,data.rows.length)-1, data.rows.length-1)].month+" meses":"—");
   set("financialRoi",financialPercent(data.roi));
+  const chart=document.getElementById("financialCashflowChart");
+  if(chart){
+    const max=Math.max(...data.rows.map(r=>Math.abs(r.net)),1);
+    chart.innerHTML=data.rows.map(r=>'<div class="cashflow-bar '+(r.net<0?"negative":"")+'" title="Mês '+r.month+': '+financialMoney(r.net)+'"><i style="height:'+Math.max(3,Math.min(100,Math.abs(r.net)/max*100))+'%"></i><span>'+r.month+'</span></div>').join("");
+  }
   const positive=data.npv>=0&&data.profit>data.investment;
   set("financialReading",positive?"Cenário com resultado positivo":"Cenário exige atenção");
   set("financialReadingText",positive?"As premissas atuais indicam recuperação do investimento no horizonte projetado. Compare também os cenários antes de tomar decisões.":"Com estas premissas, o retorno projetado não cobre o investimento no horizonte selecionado. Revise preço, demanda, custos ou prazo.");
@@ -805,7 +812,7 @@ if(financialModule){
     document.querySelectorAll("[data-financial-scenario]").forEach(item=>{const active=item===button;item.classList.toggle("active",active);item.setAttribute("aria-selected",String(active));});
     renderFinancial();saveFinancialDraft();
   }));
-  financialFieldIds.forEach(id=>document.getElementById(id)?.addEventListener("input",()=>{renderFinancial();clearTimeout(financialModule._saveTimer);financialModule._saveTimer=setTimeout(saveFinancialDraft,250);}));
+  financialFieldIds.forEach(id=>document.getElementById(id)?.addEventListener("input",()=>{renderFinancial();updateDashboardState();clearTimeout(financialModule._saveTimer);financialModule._saveTimer=setTimeout(saveFinancialDraft,250);}));
   document.getElementById("saveFinancial")?.addEventListener("click",()=>{saveFinancialDraft();showToast("Análise financeira salva com sucesso.");});
   document.getElementById("clearFinancial")?.addEventListener("click",()=>{
     if(!confirm("Limpar todo o preenchimento do Módulo 4?"))return;
@@ -826,7 +833,8 @@ updateDashboardState=function(){
   const planValues=typeof getPlanSectionProgress==="function"?getPlanSectionProgress():[];
   const plan=planValues.length?Math.round(planValues.reduce((a,b)=>a+b,0)/planValues.length):0;
   const financialRequired=["financialInvestment","financialFixedCosts","financialVariableCost","financialUnitPrice","financialInitialDemand"];
-  const financial=financialRequired.length&&financialRequired.every(id=>financialNumber(id)>0)?100:financialRequired.filter(id=>financialNumber(id)>0).length/financialRequired.length*100;
+  const financialFilled=financialRequired.filter(id=>{const el=document.getElementById(id);return el&&el.value!==""&&Number.isFinite(Number(el.value));}).length;
+  const financial=financialFilled===financialRequired.length?100:financialFilled/financialRequired.length*100;
   const modules=[opportunity,environment,plan,financial,0,0,0];
   const overall=Math.round(modules.reduce((sum,value)=>sum+value,0)/modules.length);
   const progressLabel=document.querySelector(".progress-mini .progress-label strong"),progressFill=document.querySelector(".progress-mini .progress-track span"),heroPercent=document.getElementById("heroProgressPercent"),heroFill=document.getElementById("heroProgressFill");
