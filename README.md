@@ -59,7 +59,7 @@ O projeto já possui uma base funcional completa no frontend e iniciou a transi�
 - Versionamento local de planos
 - Painel de gestão do Módulo 7
 - Deploy na Vercel configurado e utilizado para hospedagem
-- CI com validação de sintaxe JavaScript e smoke test
+- CI com validação de sintaxe, smoke test, regressão estrutural e verificação automatizada de segredos
 
 ### Em evolução
 
@@ -168,7 +168,7 @@ Atualmente permite:
 - **Versionamento:** até 10 versões armazenadas localmente no navegador
 - Preview consolidado
 
-> O compartilhamento atual não utiliza ainda a tabela `links_compartilhamento` do banco. A persistência de links e versões no servidor faz parte da evolução do projeto.
+> O compartilhamento persistente já utiliza a tabela `links_compartilhamento` do banco e exige autenticação. O compartilhamento público sem login ainda não está habilitado por segurança.
 
 ### Módulo 7 — Painel e Gestão
 
@@ -317,7 +317,7 @@ O fluxo planejado e parcialmente implementado é:
 8. Exportação/compartilhamento
 9. Revisão e gestão
 
-Atualmente, a autenticação e a persistência centralizada estão integradas ao **Módulo 1**. Os módulos seguintes continuam funcionando principalmente com persistência local enquanto são integrados ao banco.
+Atualmente, a autenticação e a persistência centralizada estão integradas aos **Módulos 1 a 7** por meio da camada `js/server-sync.js`. O LocalStorage permanece como camada de recuperação local/offline.
 
 ---
 
@@ -425,12 +425,11 @@ As branches `main` e `manutencao` fazem parte do fluxo de trabalho. `manutencao`
 |---|---|---|
 | Frontend base | 🟢 Concluída | Estrutura da aplicação |
 | Módulos 1–7 | 🟢 Implementados | Formulários, análises, cálculos, exportação e gestão |
-| Neon Auth | 🟢 Inicialmente integrado | Autenticação no Módulo 1 |
-| Persistência M1 | 🟢 Integrada | Neon Data API + RLS inicial |
-| Persistência M2–M7 | 🟡 Em evolução | Integração progressiva |
-| Segurança completa do schema | 🟡 Em evolução | Ampliação das políticas RLS |
-| Múltiplos planos | 🟡 Em evolução | Gestão completa pela interface |
-| Compartilhamento persistente | 🟡 Em evolução | Uso da estrutura de links do banco |
+| Neon Auth | 🟢 Integrado | Autenticação do produto |
+| Persistência M1–M7 | 🟢 Integrada | Neon Data API + camada de sincronização |
+| Segurança do schema | 🟢 Aplicada | RLS nas 21 tabelas funcionais |
+| Múltiplos planos | 🟢 Integrados | Seleção, criação e arquivamento |
+| Compartilhamento persistente | 🟢 Integrado | Link persistido no banco com autenticação |
 | Colaboração multiusuário | 🔵 Planejada | Espaços, membros e permissões |
 | IA | 🔵 Planejada | Assistência inteligente integrada |
 | Mobile/PWA | 🔵 Planejada | Evolução para dispositivos móveis |
@@ -444,7 +443,7 @@ As branches `main` e `manutencao` fazem parte do fluxo de trabalho. `manutencao`
 - Permissões de colaboração existem no schema, mas a interface de convite e gestão de membros ainda está em evolução.
 - IA ainda não está integrada como serviço do produto.
 - Cálculos financeiros estão implementados e persistidos, mas ainda precisam de uma suíte específica de testes e revisão para uso profissional.
-- Validação completa de acessibilidade, responsividade, autenticação, persistência e isolamento entre usuários ainda precisa ser automatizada no navegador.
+- Testes E2E reais de navegador, incluindo isolamento entre usuários, ainda precisam ser executados em ambiente de browser; os testes atuais são estruturais/automatizados por CI.
 
 ---
 
@@ -454,6 +453,8 @@ As branches `main` e `manutencao` fazem parte do fluxo de trabalho. `manutencao`
 
 - `.github/workflows/quality.yml` valida a sintaxe dos arquivos JavaScript
 - Smoke test verifica estrutura essencial do HTML e presença das integrações de persistência
+- Teste de regressão verifica M1–M7, RLS, compartilhamento, exportações, persistência local e responsividade estrutural
+- Smoke test de segurança detecta padrões de credenciais e arquivos `.env` reais no repositório
 - A qualidade é executada em pushes para `manutencao`/`main` e Pull Requests para `main`
 
 ### Já realizado
@@ -468,17 +469,12 @@ As branches `main` e `manutencao` fazem parte do fluxo de trabalho. `manutencao`
 
 ### Próximos testes
 
-- Testes automatizados dos cálculos financeiros
-- Testes de integração dos fluxos críticos
-- Testes completos de cadastro, login e logout
-- Testes de persistência e recuperação de todos os módulos no navegador
-- Testes de segurança das políticas RLS com usuários distintos
-- Testes de múltiplos planos e isolamento de dados
-- Testes de responsividade
-- Testes de acessibilidade
-- Testes de compartilhamento e restauração de versões
-- Testes de regressão dos módulos 1–7
-- CI/CD e validações automatizadas
+- Testes automatizados específicos dos cálculos financeiros
+- Testes E2E no navegador para cadastro, login/logout, persistência e recuperação
+- Testes E2E com usuários distintos para isolamento de dados/RLS
+- Testes E2E de responsividade e acessibilidade
+- Testes E2E de compartilhamento persistente e restauração de versões
+- CI/CD com execução desses cenários de navegador
 
 > Metas de cobertura, desempenho, disponibilidade e testes com usuários não devem ser tratadas como resultados até que sejam medidos.
 
