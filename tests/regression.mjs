@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import assert from "node:assert/strict";
 
 const app=readFileSync("js/app.js","utf8");
+const html=readFileSync("index.html","utf8");
 const management=readFileSync("js/management.js","utf8");
 const rls=readFileSync("database/migrations/2026-10-01-rls-completo.sql","utf8");
 const sync=readFileSync("js/server-sync.js","utf8");
@@ -12,7 +13,7 @@ const sections=[
   "strategicAnalysis","appendices"
 ];
 for (const key of sections) {
-  assert.match(app,new RegExp('data-plan-section="'+key+'"'),"Seção ausente no HTML/JS: "+key);
+  assert.match(html,new RegExp('data-plan-section="'+key+'"'),"Seção ausente no HTML/JS: "+key);
 }
 assert.equal((management.match(/Plano · /g)||[]).length,10,"Checklist do M3 deve conter 10 seções individuais");
 
