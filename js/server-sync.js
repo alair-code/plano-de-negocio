@@ -99,7 +99,7 @@
     if (plans?.[0]) { storePlanId(plans[0].id); return plans[0]; }
 
     const name = val("businessName") || "Meu Plano de Negócio";
-    const {data:spaces,error:spaceError} = await client.from("espacos_trabalho").insert({nome:name}).select("id").limit(1);
+    const {data:spaces,error:spaceError} = await client.from("espacos_trabalho").insert({nome:name}).select("id");
     if (spaceError) throw spaceError;
     const space = spaces?.[0];
     if (!space?.id) throw new Error("Não foi possível criar o espaço de trabalho.");
@@ -173,7 +173,7 @@
     const name = prompt("Nome do novo plano de negócio:", "Novo Plano de Negócio");
     if (!name?.trim()) return;
     try {
-      const {data:spaces,error:spaceError} = await client.from("espacos_trabalho").insert({nome:name.trim()}).select("id").limit(1);
+      const {data:spaces,error:spaceError} = await client.from("espacos_trabalho").insert({nome:name.trim()}).select("id");
       if (spaceError) throw spaceError;
       const {data:plans,error:planError} = await client.from("planos_negocio")
         .insert({espaco_trabalho_id:spaces[0].id,nome:name.trim()}).select("id").limit(1);
