@@ -63,7 +63,7 @@ ALTER TABLE public.painel_gestao ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.alertas_plano ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.registros_atividade ENABLE ROW LEVEL SECURITY;
 
--- As políticas abaixo são idempotentes: remova/recrie ao evoluir a autorização.
+-- As políticas são aplicadas como parte desta migração; ao evoluir a autorização, atualize os nomes/definições com cuidado.
 DROP POLICY IF EXISTS usuarios_perfis_select ON public.usuarios_perfis;
 DROP POLICY IF EXISTS usuarios_perfis_insert ON public.usuarios_perfis;
 DROP POLICY IF EXISTS usuarios_perfis_update ON public.usuarios_perfis;
