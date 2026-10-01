@@ -459,3 +459,8 @@ body{background:radial-gradient(circle at 80% -10%,rgba(124,108,242,.08),transpa
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}.orbit,.module-card,.visual-card,.button:after{animation:none!important;transition:none!important}
 }
+
+/* Revisão final — estado de conclusão do Módulo 7 */
+#gestao #finalReviewButton:disabled{opacity:.55;cursor:not-allowed;transform:none}
+#gestao #finalReviewButton:disabled:after{display:none}
+#gestao .management-status{min-height:20px}
