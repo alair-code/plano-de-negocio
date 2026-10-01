@@ -995,7 +995,18 @@ function buildExportHtml(){
   return "<!doctype html><html lang='pt-BR'><head><meta charset='utf-8'><title>"+escapeExport(name)+"</title><style>body{font-family:Arial,sans-serif;max-width:900px;margin:40px auto;color:#202532}h1{margin-bottom:6px}p{color:#626a78}table{width:100%;border-collapse:collapse;margin-top:24px}td{border:1px solid #ddd;padding:10px;vertical-align:top}td:first-child{width:30%;font-weight:700;background:#f5f5f5}</style></head><body><h1>"+escapeExport(name)+"</h1><p>Plano de negócio — exportado em "+new Date().toLocaleString("pt-BR")+"</p><table>"+rows.map(row=>"<tr><td>"+escapeExport(row[0])+"</td><td>"+escapeExport(row[1]).replace(/\n/g,"<br>")+"</td></tr>").join("")+"</table></body></html>";
 }
 function createSharePayload(){
-  return btoa(unescape(encodeURIComponent(JSON.stringify({v:1,createdAt:new Date().toISOString(),data:getAllPlanData()}))));
+  const payload={v:2,createdAt:new Date().toISOString(),data:getAllPlanData()};
+  return btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+}
+function getShareUrl(){
+  const url=new URL(location.href);url.searchParams.set(exportShareParam,createSharePayload());url.hash="exportacao";return url.toString();
+}
+function updateShareControls(){
+  const output=document.getElementById("shareLinkOutput"),copy=document.getElementById("copyShareLink");
+  if(!output||!copy)return;
+  const hasValue=Boolean(output.value.trim());copy.disabled=!hasValue;
+  const length=output.value.length;
+  output.classList.toggle("share-link-long",length>1800);
 }
 function readSharePayload(){
   try{
@@ -1049,16 +1060,16 @@ if(exportModule){
     downloadBlob(csv,"text/csv;charset=utf-8","plano-de-negocio.csv");setExportStatus("Arquivo CSV gerado e compatível com Excel.");
   });
   document.getElementById("createShareLink")?.addEventListener("click",()=>{
-    const url=new URL(location.href);url.searchParams.set(exportShareParam,createSharePayload());url.hash="exportacao";
-    const output=document.getElementById("shareLinkOutput");if(output)output.value=url.toString();
-    const copy=document.getElementById("copyShareLink");if(copy)copy.disabled=false;setExportStatus("Link criado. Ele contém uma cópia dos dados do plano.");
+    const output=document.getElementById("shareLinkOutput");if(output)output.value=getShareUrl();
+    updateShareControls();
+    setExportStatus("Link criado. Ele contém uma cópia dos dados do plano. Quanto mais conteúdo houver, maior será o link.");
   });
   document.getElementById("copyShareLink")?.addEventListener("click",async()=>{
     const output=document.getElementById("shareLinkOutput");if(!output?.value)return;
     try{await navigator.clipboard.writeText(output.value);setExportStatus("Link copiado para a área de transferência.");}catch{output.select();document.execCommand("copy");setExportStatus("Link copiado.");}
   });
   document.getElementById("savePlanVersion")?.addEventListener("click",savePlanVersion);
-  updateExportProgress();loadPlanVersions();restoreSharePayload();updateExportPreview(); exportModule.querySelectorAll("[data-field],[data-plan-field],[data-complementary-field]").forEach(el=>el.addEventListener("input",()=>{clearTimeout(exportModule._previewTimer);exportModule._previewTimer=setTimeout(updateExportPreview,250);}));
+  updateExportProgress();loadPlanVersions();restoreSharePayload();updateExportPreview();updateShareControls(); exportModule.querySelectorAll("[data-field],[data-plan-field],[data-complementary-field]").forEach(el=>el.addEventListener("input",()=>{clearTimeout(exportModule._previewTimer);exportModule._previewTimer=setTimeout(updateExportPreview,250);}));
 }
 /* Integra Módulos ao dashboard e ao desbloqueio sequencial */
 const previousUpdateDashboardState=updateDashboardState;
