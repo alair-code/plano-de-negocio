@@ -54,6 +54,16 @@ document.querySelectorAll(".nav-item[href^='#']").forEach((item) => {
 
 /* Integração com Neon Auth e Neon Data API — Módulo 1 */
 const authModal = document.getElementById("authModal");
+const profileModal = document.getElementById("profileModal");
+const profileClose = document.getElementById("profileClose");
+const profileForm = document.getElementById("profileForm");
+const profileName = document.getElementById("profileName");
+const profileEmail = document.getElementById("profileEmail");
+const profileEmailSummary = document.getElementById("profileEmailSummary");
+const profileAvatar = document.getElementById("profileAvatar");
+const profileFeedback = document.getElementById("profileFeedback");
+const profileSave = document.getElementById("profileSave");
+const profileLogout = document.getElementById("profileLogout");
 const authButton = document.getElementById("authButton");
 const authClose = document.getElementById("authClose");
 const authForm = document.getElementById("authForm");
@@ -217,6 +227,10 @@ async function updateAuthUI(user = null) {
   if (authPassword) authPassword.disabled = Boolean(user);
   if (user && authTitle) authTitle.textContent = "Conta conectada";
   if (user && authDescription) authDescription.textContent = user.email || "Sua conta está conectada ao Neon Auth.";
+  if (profileName) profileName.value = user?.name || "";
+  if (profileEmail) profileEmail.value = user?.email || "";
+  if (profileEmailSummary) profileEmailSummary.textContent = user?.email || "Conta conectada ao Neon Auth.";
+  if (profileAvatar) profileAvatar.textContent = user?.name?.trim()?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || "A";
   return user;
 }
 
@@ -292,10 +306,46 @@ async function signInOrSignUp(event) {
 authButton?.addEventListener("click", async () => {
   const user = await getCurrentUser();
   if (user) {
-    openAuthModal();
     await updateAuthUI(user);
+    if (profileModal) {
+      profileModal.hidden = false;
+      profileName?.focus();
+    }
   } else {
     openAuthModal();
+  }
+});
+document.getElementById("userAvatar")?.addEventListener("click", () => authButton?.click());
+profileClose?.addEventListener("click", () => { if (profileModal) profileModal.hidden = true; });
+profileModal?.addEventListener("click", (event) => { if (event.target === profileModal) profileModal.hidden = true; });
+
+profileForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const user = await getCurrentUser();
+  if (!user) {
+    if (profileModal) profileModal.hidden = true;
+    setApplicationAccess(null);
+    return;
+  }
+  const name = String(profileName?.value || "").trim();
+  if (!name) {
+    if (profileFeedback) profileFeedback.textContent = "Informe seu nome.";
+    return;
+  }
+  profileSave.disabled = true;
+  if (profileFeedback) profileFeedback.textContent = "Salvando...";
+  try {
+    const result = await neonClient.auth.updateUser({ name });
+    if (result?.error) throw result.error;
+    const updated = result?.data?.user || result?.user || { ...user, name };
+    await updateAuthUI(updated);
+    if (profileFeedback) profileFeedback.textContent = "Dados atualizados com sucesso.";
+    showToast("Perfil atualizado.");
+  } catch (error) {
+    console.error("Neon Auth perfil:", error);
+    if (profileFeedback) profileFeedback.textContent = getAuthErrorMessage(error, "signin");
+  } finally {
+    profileSave.disabled = false;
   }
 });
 authClose?.addEventListener("click", closeAuthModal);
@@ -304,13 +354,19 @@ authSignUpTab?.addEventListener("click", () => setAuthMode("signup"));
 authModal?.addEventListener("click", (event) => { if (event.target === authModal) closeAuthModal(); });
 authForm?.addEventListener("submit", signInOrSignUp);
 authSwitch?.addEventListener("click", () => setAuthMode(authMode === "signin" ? "signup" : "signin"));
-authLogout?.addEventListener("click", async () => {
-  await neonClient.auth.signOut();
-  window.__currentAuthUser = null;
-  updateAuthUI(null);
-  setApplicationAccess(null);
-  showToast("Você saiu da conta.");
-});
+async function performLogout() {
+  try {
+    await neonClient.auth.signOut();
+  } finally {
+    window.__currentAuthUser = null;
+    await updateAuthUI(null);
+    if (profileModal) profileModal.hidden = true;
+    setApplicationAccess(null);
+    showToast("Você saiu da conta.");
+  }
+}
+authLogout?.addEventListener("click", performLogout);
+profileLogout?.addEventListener("click", performLogout);
 
 window.addEventListener("pageshow", async () => {
   const user = await getCurrentUser();
