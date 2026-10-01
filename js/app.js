@@ -981,21 +981,6 @@ if(planModule){
 
 /* Proteção e desbloqueio sequencial do Módulo 3 */
 
-// Funções usadas pelos módulos clássicos e pela integração Neon.
-// app.js é um ES module, portanto suas funções não ficam globais automaticamente.
-Object.assign(window, {
-  showToast,
-  getOpportunityProgress,
-  getSwotState,
-  getEnvironmentProgress,
-  updateEnvironmentProgress,
-  updateDashboardState,
-  getPlanSectionProgress,
-  getComplementaryProgress,
-  updateComplementaryProgress,
-  renderFinancial
-});
-
 window.addEventListener("hashchange",()=>{
   if(location.hash==="#plano" && getEnvironmentProgress()<100){
     history.replaceState(null,"","#ambientes");
@@ -1491,3 +1476,19 @@ window.addEventListener("hashchange",()=>{
     if(!financialComplete){history.replaceState(null,"","#financeiro");showToast("Conclua as premissas obrigatórias do Módulo 4 antes de iniciar os Planos Complementares.");}
   }
 });
+
+// Funções usadas pelos módulos clássicos e pela integração Neon.
+// app.js é um ES module, portanto suas funções não ficam globais automaticamente.
+Object.assign(window, {
+  showToast,
+  getOpportunityProgress,
+  getSwotState,
+  getEnvironmentProgress,
+  updateEnvironmentProgress,
+  updateDashboardState,
+  getPlanSectionProgress,
+  getComplementaryProgress,
+  updateComplementaryProgress,
+  renderFinancial
+});
+
