@@ -104,7 +104,7 @@
     const space = spaces?.[0];
     if (!space?.id) throw new Error("Não foi possível criar o espaço de trabalho.");
     const {data:created,error:planError} = await client.from("planos_negocio")
-      .insert({espaco_trabalho_id:space.id,nome:name}).select("id,espaco_trabalho_id,nome,status").limit(1);
+      .insert({espaco_trabalho_id:space.id,nome:name}).select("id,espaco_trabalho_id,nome,status");
     if (planError) throw planError;
     if (!created?.[0]) throw new Error("Não foi possível criar o plano.");
     storePlanId(created[0].id);
@@ -176,7 +176,7 @@
       const {data:spaces,error:spaceError} = await client.from("espacos_trabalho").insert({nome:name.trim()}).select("id");
       if (spaceError) throw spaceError;
       const {data:plans,error:planError} = await client.from("planos_negocio")
-        .insert({espaco_trabalho_id:spaces[0].id,nome:name.trim()}).select("id").limit(1);
+        .insert({espaco_trabalho_id:spaces[0].id,nome:name.trim()}).select("id");
       if (planError) throw planError;
       storePlanId(plans[0].id);
       clearUI();
