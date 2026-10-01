@@ -44,8 +44,8 @@ assert.match(app,/Object\.assign\(window,\s*\{/,"APIs do app devem ser expostas 
 for (const api of ["getOpportunityProgress","getEnvironmentProgress","getPlanSectionProgress","getComplementaryProgress","getSwotState","updateDashboardState","renderFinancial","showToast"]) {
   assert.match(app,new RegExp("\\b"+api+"\\b"),"API compartilhada ausente: "+api);
 }
-assert.doesNotMatch(app,/\.insert\([\\s\\S]{0,400}\)\\.select\([\\s\\S]{0,250}\)\\.limit\(1\)/,"INSERT do Módulo 1 não deve receber limit após a operação.");
-assert.doesNotMatch(sync,/\.insert\([\\s\\S]{0,400}\)\\.select\([\\s\\S]{0,250}\)\\.limit\(1\)/,"INSERT do Neon Sync não deve receber limit após a operação.");
+assert.doesNotMatch(app,/\.insert\([\s\S]{0,400}\)\.select\([\s\S]{0,250}\)\.limit\(1\)/,"INSERT do Módulo 1 não deve receber limit após a operação.");
+assert.doesNotMatch(sync,/\.insert\([\s\S]{0,400}\)\.select\([\s\S]{0,250}\)\.limit\(1\)/,"INSERT do Neon Sync não deve receber limit após a operação.");
 assert.doesNotMatch(app,/createShareLink.*addEventListener\(["']click["']/s,"O botão de compartilhamento não pode ter um segundo handler concorrente.");
 const css=readFileSync("css/style.css","utf8");
 assert.match(css,/@media\(max-width:980px\)/,"Responsividade tablet ausente");
