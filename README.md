@@ -132,20 +132,38 @@ Seções guiadas com templates e exemplos:
 
 ---
 
-## 🧱 Stack Tecnológica Sugerida
+## 🧱 Stack Tecnológica
+
+### Versão atual — Frontend
+
+A primeira versão do projeto será desenvolvida **exclusivamente com tecnologias web nativas**, mantendo a implementação simples, leve e fácil de hospedar:
 
 | Camada | Tecnologia |
 |---|---|
-| Frontend | React + TypeScript + Tailwind CSS |
-| Backend | Node.js (NestJS) ou Python (FastAPI) |
-| Banco de Dados | PostgreSQL |
-| Cálculos Financeiros | numpy-financial / mathjs |
-| Gráficos | Chart.js / Recharts |
-| Exportação | Puppeteer (PDF) / docx (Word) |
-| Autenticação | Auth0 / Firebase Auth |
-| Infraestrutura | Docker + AWS / GCP |
+| Estrutura | HTML5 |
+| Estilos | CSS3 |
+| Lógica e interações | JavaScript (Vanilla JS) |
+| Persistência local | LocalStorage |
+| Gráficos | JavaScript + APIs/recursos compatíveis com o navegador |
+| Exportação | APIs do navegador + geração de arquivos no frontend |
+| Hospedagem | GitHub Pages / hospedagem web estática |
 
----
+> **Decisão arquitetural:** React, TypeScript, Tailwind CSS, Node.js, PostgreSQL, autenticação e infraestrutura em nuvem **não fazem parte da primeira etapa**. O objetivo inicial é concluir um frontend funcional com HTML, CSS e JavaScript puro.
+
+### Evolução futura — Aplicação completa
+
+Caso o produto evolua para uma aplicação multiusuário, os recursos que exigem persistência centralizada, autenticação e colaboração poderão ser adicionados posteriormente:
+
+| Necessidade futura | Tecnologia possível |
+|---|---|
+| Frontend escalável | React/TypeScript ou evolução do frontend atual |
+| Backend/API | Node.js (NestJS) ou Python (FastAPI) |
+| Banco de Dados | PostgreSQL |
+| Autenticação | Serviço de autenticação ou autenticação própria |
+| Colaboração multiusuário | Backend + banco de dados + controle de acesso |
+| Infraestrutura | Docker + AWS / GCP / Azure ou serviço equivalente |
+
+A adoção dessas tecnologias será avaliada **somente quando houver necessidade real**, sem obrigar a migração prematura do frontend atual.
 
 ## 🚀 Jornada do Usuário
 
