@@ -45,7 +45,7 @@ O projeto já possui uma base funcional completa no frontend e iniciou a transi�
 - Salvamento automático em LocalStorage
 - Recuperação de rascunhos
 - Validações e indicadores de progresso
-- Neon Auth integrado ao Módulo 1
+- Neon Auth integrado ao produto e utilizado pelos Módulos 1 a 7
 - PostgreSQL/Neon configurado
 - Neon Data API integrada ao frontend
 - Persistência centralizada dos Módulos 1 a 7 através da camada de sincronização
@@ -55,15 +55,14 @@ O projeto já possui uma base funcional completa no frontend e iniciou a transi�
 - Exportação para PDF via impressão do navegador
 - Exportação compatível com Word em `.doc`
 - Exportação tabular em CSV compatível com Excel
-- Compartilhamento por link contendo uma cópia dos dados no próprio link
-- Versionamento local de planos
+- Compartilhamento por link persistente no banco, com autenticação, expiração/revogação verificadas e restauração do plano compartilhado
+- Versionamento local e persistente de planos (até 10 versões locais; versões também registradas em `versoes_plano`)
 - Painel de gestão do Módulo 7
 - Deploy na Vercel configurado e utilizado para hospedagem
 - CI com validação de sintaxe, smoke test, regressão estrutural e verificação automatizada de segredos
 
 ### Em evolução
 
-- Compartilhamento persistente com regras adicionais de acesso/expiração
 - Colaboração entre usuários com permissões de membro mais granulares
 - Testes de integração reais no navegador e cenários completos de RLS
 - Evolução da experiência de gestão de múltiplos planos
@@ -164,8 +163,8 @@ Atualmente permite:
 - **PDF:** através da impressão do navegador e opção “Salvar como PDF”
 - **Word:** arquivo HTML compatível com Word, salvo como `.doc`
 - **Excel:** CSV compatível com Excel, não um arquivo `.xlsx` nativo
-- **Compartilhamento:** link contendo uma cópia dos dados do plano codificada na URL
-- **Versionamento:** até 10 versões armazenadas localmente no navegador
+- **Compartilhamento:** link persistente registrado no banco, protegido por autenticação e validado por token, expiração e revogação
+- **Versionamento:** até 10 versões armazenadas localmente no navegador, com versões persistidas também em `versoes_plano`
 - Preview consolidado
 
 > O compartilhamento persistente já utiliza a tabela `links_compartilhamento` do banco e exige autenticação. O compartilhamento público sem login ainda não está habilitado por segurança.
@@ -325,7 +324,7 @@ Atualmente, a autenticação e a persistência centralizada estão integradas ao
 
 | ID | Requisito | Estado atual |
 |---|---|---|
-| RF01 | Criar e gerenciar múltiplos planos | 🟡 Estrutura preparada; interface completa em evolução |
+| RF01 | Criar e gerenciar múltiplos planos | 🟢 Implementado: seleção, criação e arquivamento |
 | RF02 | Salvamento automático | 🟢 Implementado localmente |
 | RF03 | Cálculos de VPL, TIR e Payback | 🟢 Implementado no frontend |
 | RF04 | Gráficos de fluxo de caixa | 🟢 Implementado |
@@ -439,7 +438,7 @@ As branches `main` e `manutencao` fazem parte do fluxo de trabalho. `manutencao`
 ## ⚠️ Limitações Conhecidas
 
 - O frontend continua sendo uma aplicação client-side; não há backend tradicional próprio.
-- Compartilhamento persistente atualmente é autenticado e precisa de uma camada pública controlada para compartilhamento externo sem login.
+- Compartilhamento persistente está implementado com autenticação, token, expiração/revogação e restauração do plano; compartilhamento público sem login permanece desabilitado por segurança.
 - Permissões de colaboração existem no schema, mas a interface de convite e gestão de membros ainda está em evolução.
 - IA ainda não está integrada como serviço do produto.
 - Cálculos financeiros estão implementados e persistidos, mas ainda precisam de uma suíte específica de testes e revisão para uso profissional.
@@ -463,6 +462,8 @@ As branches `main` e `manutencao` fazem parte do fluxo de trabalho. `manutencao`
 - Verificação do build/deploy na Vercel
 - Validação da integração inicial do Neon no Módulo 1
 - Persistência centralizada dos módulos por camada de sincronização
+- Versionamento e compartilhamento persistentes registrados no banco
+- Registro das exportações concluídas em `exportacoes`
 - Preservação do rascunho local durante a conexão com o banco
 - RLS validado em branch temporária antes da aplicação no branch principal do Neon
 - Revisão estrutural da integração entre frontend, Neon Auth e Neon Data API
@@ -489,7 +490,7 @@ As branches `main` e `manutencao` fazem parte do fluxo de trabalho. `manutencao`
 | Crescimento prematuro da arquitetura | Evolução gradual baseada em necessidade real |
 | Acesso indevido aos dados | Neon Auth + RLS + políticas de autorização |
 | Dependência de persistência local | Migração gradual dos módulos para persistência centralizada |
-| Compartilhamento inadequado de dados | Evolução para links persistentes, permissões e expiração |
+| Compartilhamento inadequado de dados | Links persistentes autenticados, com token e validação de expiração/revogação; compartilhamento público sem login permanece desabilitado |
 | Complexidade da colaboração | Espaços de trabalho, membros e funções planejados no schema |
 
 ---
