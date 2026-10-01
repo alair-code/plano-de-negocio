@@ -117,6 +117,10 @@ if (form) {
   });
   form.addEventListener("submit", (event) => {
     event.preventDefault();
+    if (!validateOpportunity()) {
+      showToast("Preencha os campos obrigatórios para continuar.");
+      return;
+    }
     saveDraft();
     showToast("Oportunidade salva. O próximo passo será a análise de ambientes.");
   });
@@ -177,8 +181,14 @@ if (environmentForm) {
   document.querySelectorAll("[data-environment-tab]").forEach((tab) => {
     tab.addEventListener("click", () => {
       const target = tab.dataset.environmentTab;
-      document.querySelectorAll("[data-environment-tab]").forEach((item) => item.classList.toggle("active", item === tab));
-      document.querySelectorAll("[data-environment-panel]").forEach((panel) => panel.classList.toggle("active", panel.dataset.environmentPanel === target));
+      document.querySelectorAll("[data-environment-tab]").forEach((item) => {
+        const active = item === tab;
+        item.classList.toggle("active", active);
+        item.setAttribute("aria-selected", String(active));
+      });
+      document.querySelectorAll("[data-environment-panel]").forEach((panel) => {
+        panel.classList.toggle("active", panel.dataset.environmentPanel === target);
+      });
     });
   });
   environmentFields().forEach((field) => {
@@ -202,4 +212,31 @@ if (environmentForm) {
   });
   loadEnvironmentDraft();
   updateEnvironmentProgress();
+
+  document.querySelectorAll("#opportunityForm .field input, #opportunityForm .field textarea").forEach((field) => {
+    field.addEventListener("blur", () => {
+      if (["businessName", "problem", "solution", "audience"].includes(field.id)) validateOpportunity();
+    });
+  });
+
+  document.getElementById("suggestSwot")?.addEventListener("click", () => {
+    const examples = {
+      swotStrengths: "Atendimento próximo e conhecimento do mercado local.",
+      swotWeaknesses: "Marca ainda pouco conhecida e recursos iniciais limitados.",
+      swotOpportunities: "Crescimento da demanda e novos canais digitais.",
+      swotThreats: "Entrada de concorrentes e aumento de custos."
+    };
+    const firstEmpty = environmentFieldIds.slice(0, 4).find((id) => {
+      const field = document.getElementById(id);
+      return field && !String(field.value || "").trim();
+    });
+    if (!firstEmpty) {
+      showToast("Os quatro campos da SWOT já possuem conteúdo.");
+      return;
+    }
+    document.getElementById(firstEmpty).value = examples[firstEmpty];
+    updateEnvironmentProgress();
+    saveEnvironmentDraft();
+    showToast("Exemplo adicionado. Edite o conteúdo para refletir seu negócio.");
+  });
 }
