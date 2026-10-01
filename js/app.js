@@ -848,7 +848,50 @@ if(financialModule){
   renderFinancial();
 }
 
-/* Integra Módulo 4 ao dashboard e ao desbloqueio sequencial */
+
+// Módulo 5 — Planos Complementares
+const complementaryStorageKey="business-plan-builder:complementary:v1";
+const complementaryFields=[...document.querySelectorAll("[data-complementary-field]")].map(el=>el.dataset.complementaryField);
+function getComplementaryProgress(){
+  const filled=complementaryFields.filter(key=>{const el=document.querySelector('[data-complementary-field="'+key+'"]');return el&&el.value.trim().length>0;}).length;
+  return complementaryFields.length?Math.round(filled/complementaryFields.length*100):0;
+}
+function updateComplementaryProgress(){
+  const value=getComplementaryProgress();
+  const percent=document.getElementById("complementaryProgressPercent"),fill=document.getElementById("complementaryProgressFill"),text=document.getElementById("complementaryProgressText");
+  if(percent)percent.textContent=value+"%"; if(fill)fill.style.width=value+"%";
+  if(text)text.textContent=value===100?"Planos complementares preenchidos. Revise os pontos antes de avançar.":Math.round(complementaryFields.filter(key=>document.querySelector('[data-complementary-field="'+key+'"]')?.value.trim()).length)+" de "+complementaryFields.length+" campos preenchidos.";
+}
+function saveComplementaryDraft(){
+  const data={}; complementaryFields.forEach(key=>{const el=document.querySelector('[data-complementary-field="'+key+'"]');if(el)data[key]=el.value;});
+  localStorage.setItem(complementaryStorageKey,JSON.stringify(data));
+  const status=document.getElementById("complementarySaveStatus");if(status)status.textContent="Rascunho salvo automaticamente.";
+}
+function loadComplementaryDraft(){
+  try{const data=JSON.parse(localStorage.getItem(complementaryStorageKey)||"null");if(!data)return;complementaryFields.forEach(key=>{const el=document.querySelector('[data-complementary-field="'+key+'"]');if(el&&data[key]!==undefined)el.value=data[key];});const status=document.getElementById("complementarySaveStatus");if(status)status.textContent="Rascunho recuperado deste navegador.";}catch{localStorage.removeItem(complementaryStorageKey);}
+}
+const complementaryModule=document.getElementById("complementares");
+if(complementaryModule){
+  loadComplementaryDraft();
+  document.querySelectorAll("[data-complementary-tab]").forEach(tab=>tab.addEventListener("click",()=>{
+    const key=tab.dataset.complementaryTab;
+    document.querySelectorAll("[data-complementary-tab]").forEach(item=>{const active=item===tab;item.classList.toggle("active",active);item.setAttribute("aria-selected",String(active));});
+    document.querySelectorAll("[data-complementary-panel]").forEach(panel=>panel.classList.toggle("active",panel.dataset.complementaryPanel===key));
+  }));
+  complementaryModule.querySelectorAll("[data-complementary-field]").forEach(el=>el.addEventListener("input",()=>{
+    updateComplementaryProgress();updateDashboardState();clearTimeout(complementaryModule._saveTimer);complementaryModule._saveTimer=setTimeout(saveComplementaryDraft,250);
+  }));
+  document.getElementById("saveComplementary")?.addEventListener("click",()=>{saveComplementaryDraft();showToast("Planos complementares salvos com sucesso.");});
+  document.getElementById("clearComplementary")?.addEventListener("click",()=>{
+    if(!confirm("Limpar todo o preenchimento do Módulo 5?"))return;
+    complementaryModule.querySelectorAll("[data-complementary-field]").forEach(el=>el.value="");
+    localStorage.removeItem(complementaryStorageKey);updateComplementaryProgress();updateDashboardState();
+    const status=document.getElementById("complementarySaveStatus");if(status)status.textContent="Módulo limpo. Nenhum dado foi enviado para servidor.";
+  });
+  updateComplementaryProgress();
+}
+
+/* Integra Módulos ao dashboard e ao desbloqueio sequencial */
 const previousUpdateDashboardState=updateDashboardState;
 updateDashboardState=function(){
   const opportunity=getOpportunityProgress();
@@ -858,7 +901,8 @@ updateDashboardState=function(){
   const financialRequired=["financialInvestment","financialFixedCosts","financialVariableCost","financialUnitPrice","financialInitialDemand"];
   const financialFilled=financialRequired.filter(id=>{const el=document.getElementById(id);if(!el||el.value==="")return false;const value=Number(el.value);return Number.isFinite(value)&&(["financialInvestment","financialUnitPrice","financialInitialDemand"].includes(id)?value>0:value>=0);}).length;
   const financial=financialFilled===financialRequired.length?100:financialFilled/financialRequired.length*100;
-  const modules=[opportunity,environment,plan,financial,0,0,0];
+  const complementary=typeof getComplementaryProgress==="function"?getComplementaryProgress():0;
+  const modules=[opportunity,environment,plan,financial,complementary,0,0];
   const overall=Math.round(modules.reduce((sum,value)=>sum+value,0)/modules.length);
   const progressLabel=document.querySelector(".progress-mini .progress-label strong"),progressFill=document.querySelector(".progress-mini .progress-track span"),heroPercent=document.getElementById("heroProgressPercent"),heroFill=document.getElementById("heroProgressFill");
   if(progressLabel)progressLabel.textContent=overall+"%";if(progressFill)progressFill.style.width=overall+"%";if(heroPercent)heroPercent.textContent=overall+"%";if(heroFill)heroFill.style.width=overall+"%";
@@ -870,15 +914,21 @@ updateDashboardState=function(){
     card.classList.toggle("completed",value===100);card.classList.toggle("current",unlocked&&value>0&&value<100);
     if(statusEl){statusEl.classList.toggle("muted",!unlocked&&value===0);statusEl.textContent=value===100?"Concluído":value>0?"Em andamento":module===1?"Próximo":unlocked?"Disponível":"Bloqueado";}
     if(lockedEl&&module>1)lockedEl.textContent=unlocked?"Pronto para começar":"Disponível após concluir o módulo "+(module-1);
-    if(module>=2&&module<=4&&unlocked){
+    if(module>=2&&module<=5&&unlocked){
       if(!action){action=document.createElement("a");action.className="module-action";card.appendChild(action);}
-      action.href=module===2?"#ambientes":module===3?"#plano":"#financeiro";action.textContent=value===100?"Revisar →":module===4?"Começar →":"Continuar →";action.removeAttribute("aria-disabled");action.classList.remove("disabled");
-    }else if(action&&module>=2&&module<=4){action.setAttribute("aria-disabled","true");action.classList.add("disabled");}
+      action.href=module===2?"#ambientes":module===3?"#plano":module===4?"#financeiro":"#complementares";action.textContent=value===100?"Revisar →":module===5?"Começar →":"Continuar →";action.removeAttribute("aria-disabled");action.classList.remove("disabled");
+    }else if(action&&module>=2&&module<=5){action.setAttribute("aria-disabled","true");action.classList.add("disabled");}
   });
 };
 updateDashboardState();
 window.addEventListener("hashchange",()=>{
   if(location.hash==="#financeiro"&&getPlanSectionProgress().some(v=>v<100)){
     history.replaceState(null,"","#plano");showToast("Conclua as 10 seções do Módulo 3 antes de iniciar a Viabilidade Financeira.");
+    return;
+  }
+  if(location.hash==="#complementares"){
+    const financialRequired=["financialInvestment","financialFixedCosts","financialVariableCost","financialUnitPrice","financialInitialDemand"];
+    const financialComplete=financialRequired.every(id=>{const el=document.getElementById(id);if(!el||el.value==="")return false;const value=Number(el.value);return Number.isFinite(value)&&(["financialInvestment","financialUnitPrice","financialInitialDemand"].includes(id)?value>0:value>=0);});
+    if(!financialComplete){history.replaceState(null,"","#financeiro");showToast("Conclua as premissas obrigatórias do Módulo 4 antes de iniciar os Planos Complementares.");}
   }
 });
