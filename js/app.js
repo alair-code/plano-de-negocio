@@ -1,12 +1,15 @@
 import { createClient, BetterAuthVanillaAdapter } from "https://esm.sh/@neondatabase/neon-js@0.7.0-beta";
 
+const NEON_AUTH_URL = "https://ep-late-violet-b6sxri3o.neonauth.c-2.sa-east-1.aws.neon.tech/neondb/auth";
+const NEON_DATA_API_URL = "https://ep-late-violet-b6sxri3o.apirest.c-2.sa-east-1.aws.neon.tech/neondb/rest/v1";
+
 const neonClient = createClient({
   auth: {
     adapter: BetterAuthVanillaAdapter(),
-    url: "https://ep-late-violet-b6sxri3o.neonauth.c-2.sa-east-1.aws.neon.tech/neondb/auth"
+    url: NEON_AUTH_URL
   },
   dataApi: {
-    url: "https://ep-late-violet-b6sxri3o.apirest.c-2.sa-east-1.aws.neon.tech/neondb/rest/v1"
+    url: NEON_DATA_API_URL
   }
 });
 window.neonClient = neonClient;
