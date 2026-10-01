@@ -349,9 +349,9 @@
               <button type="button" class="scenario-button" data-financial-scenario="optimistic" aria-selected="false">Otimista</button>
             </div>
             <div class="scenario-cards">
-              <div class="scenario-mini"><span>Pessimista</span><strong>−20% demanda</strong><small>+10% custos variáveis</small></div>
-              <div class="scenario-mini selected"><span>Realista</span><strong>Base</strong><small>Premissas informadas</small></div>
-              <div class="scenario-mini"><span>Otimista</span><strong>+20% demanda</strong><small>−10% custos variáveis</small></div>
+              <div class="scenario-mini" data-financial-scenario-card="pessimistic"><span>Pessimista</span><strong>−20% demanda</strong><small>+10% custos variáveis</small></div>
+              <div class="scenario-mini selected" data-financial-scenario-card="realistic"><span>Realista</span><strong>Base</strong><small>Premissas informadas</small></div>
+              <div class="scenario-mini" data-financial-scenario-card="optimistic"><span>Otimista</span><strong>+20% demanda</strong><small>−10% custos variáveis</small></div>
             </div>
             <div class="financial-note"><strong>Boa prática</strong><span>Altere as premissas conforme pesquisas reais de preço, demanda e custos. Os indicadores são estimativas, não garantias.</span></div>
           </section>
@@ -361,13 +361,13 @@
           <div class="form-card-title"><span class="section-number">03</span><div><h3>Indicadores de viabilidade</h3><p>Os principais indicadores são recalculados automaticamente a cada alteração.</p></div></div>
           <div class="metric-grid financial-metrics">
             <article class="financial-metric"><span>Receita acumulada</span><strong id="financialRevenue">R$ 0,00</strong><small>no horizonte selecionado</small></article>
-            <article class="financial-metric"><span>Lucro acumulado</span><strong id="financialProfit">R$ 0,00</strong><small>após custos e investimento</small></article>
+            <article class="financial-metric"><span>Lucro operacional acumulado</span><strong id="financialProfit">R$ 0,00</strong><small>receita menos custos; investimento é separado</small></article>
             <article class="financial-metric"><span>Ponto de equilíbrio</span><strong id="financialBreakEven">—</strong><small>unidades/mês</small></article>
             <article class="financial-metric"><span>Margem líquida</span><strong id="financialMargin">—</strong><small>sobre a receita</small></article>
             <article class="financial-metric"><span>VPL</span><strong id="financialNpv">—</strong><small>valor presente líquido</small></article>
             <article class="financial-metric"><span>TIR</span><strong id="financialIrr">—</strong><small>taxa interna de retorno</small></article>
             <article class="financial-metric"><span>Payback simples</span><strong id="financialPayback">—</strong><small>tempo estimado</small></article>
-            <article class="financial-metric"><span>ROI</span><strong id="financialRoi">—</strong><small>retorno sobre investimento</small></article>
+            <article class="financial-metric"><span>ROI líquido</span><strong id="financialRoi">—</strong><small>resultado após investimento ÷ investimento</small></article>
           </div>
           <div class="financial-reading" aria-live="polite"><strong id="financialReading">Preencha as premissas.</strong><span id="financialReadingText">Quando houver dados suficientes, esta área apresentará uma leitura objetiva dos resultados.</span></div>
         </section>
@@ -379,6 +379,16 @@
             <table class="cashflow-table">
               <thead><tr><th>Mês</th><th>Demanda</th><th>Receita</th><th>Custos</th><th>Caixa líquido</th><th>Caixa acumulado</th></tr></thead>
               <tbody id="financialCashflowBody"><tr><td colspan="6">Preencha as premissas para gerar a projeção.</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="form-card financial-comparison">
+          <div class="form-card-title"><span class="section-number">05</span><div><h3>Comparação dos cenários</h3><p>Veja os principais indicadores lado a lado sem alterar as premissas-base.</p></div></div>
+          <div class="cashflow-wrap">
+            <table class="cashflow-table financial-scenario-table">
+              <thead><tr><th scope="col">Cenário</th><th scope="col">Receita</th><th scope="col">Lucro</th><th scope="col">Margem</th><th scope="col">VPL</th><th scope="col">TIR</th><th scope="col">Payback</th><th scope="col">ROI</th></tr></thead>
+              <tbody id="financialScenarioComparisonBody"><tr><td colspan="8">Preencha as premissas para comparar os cenários.</td></tr></tbody>
             </table>
           </div>
         </section>
