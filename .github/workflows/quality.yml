@@ -26,3 +26,5 @@ jobs:
         run: node tests/syntax.mjs
       - name: Run smoke test
         run: node tests/smoke.mjs
+      - name: Run regression test
+        run: node tests/regression.mjs
