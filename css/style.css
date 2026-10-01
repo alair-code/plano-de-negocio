@@ -346,6 +346,9 @@ button { font: inherit; }
 .auth-modal{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:20px;background:rgba(15,23,42,.38);backdrop-filter:blur(5px)}
 .auth-modal[hidden]{display:none}
 .auth-card{position:relative;width:min(440px,100%);padding:28px;border:1px solid var(--line);border-radius:22px;background:#fff;box-shadow:0 24px 70px rgba(15,23,42,.2)}
+.auth-mode-switch{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;margin:0 0 18px;border:1px solid var(--line);border-radius:12px;background:#f7f8fa}
+.auth-mode-button{border:0;border-radius:9px;padding:9px 12px;background:transparent;color:var(--muted);font:inherit;font-size:11px;font-weight:800;cursor:pointer}
+.auth-mode-button.active{background:#fff;color:var(--primary);box-shadow:0 2px 8px rgba(15,23,42,.08)}
 .auth-card h2{margin:4px 0 8px;font-size:24px}
 .auth-card>p:not(.eyebrow){margin:0 0 20px;color:var(--muted);line-height:1.5;font-size:12px}
 .auth-close{position:absolute;right:16px;top:14px;width:34px;height:34px;border:0;border-radius:9px;background:#f4f5f8;color:#667085;font-size:22px;cursor:pointer}
