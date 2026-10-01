@@ -218,21 +218,22 @@ function updateEnvironmentProgress() {
 }
 
 function updateSwotReading() {
-  const ids = ["swotStrengths","swotWeaknesses","swotOpportunities","swotThreats"];
+  const state = getSwotState();
+  const keys = ["strengths","weaknesses","opportunities","threats"];
   const names = ["Forças","Fraquezas","Oportunidades","Ameaças"];
-  const values = ids.map((id) => String(document.getElementById(id)?.value || "").trim());
-  const answered = values.filter(Boolean).length;
+  const answered = keys.filter((key) => state[key].length > 0).length;
+  const totalItems = keys.reduce((sum, key) => sum + state[key].length, 0);
   const title = document.getElementById("swotReading");
   const text = document.getElementById("swotReadingText");
   if (!title || !text) return;
   if (!answered) {
     title.textContent = "Matriz ainda sem dados";
-    text.textContent = "Preencha os quatro quadrantes para gerar um resumo da análise.";
+    text.textContent = "Adicione itens aos quatro quadrantes para gerar um resumo da análise.";
     return;
   }
-  const missing = names.filter((_, index) => !values[index]);
+  const missing = names.filter((_, index) => state[keys[index]].length === 0);
   title.textContent = answered === 4 ? "Matriz SWOT preenchida" : "Matriz SWOT em construção";
-  text.textContent = answered === 4 ? "Os quatro quadrantes já têm conteúdo. Revise se os itens são específicos e verificáveis." : "Faltam: " + missing.join(", ") + ".";
+  text.textContent = answered === 4 ? totalItems + " itens registrados. Revise se cada ponto é específico e verificável." : "Faltam: " + missing.join(", ") + ".";
 }
 
 function updatePestelReading() {
