@@ -1145,8 +1145,7 @@ if(exportModule){
     const rows=getExportRows(),csv="\ufeff"+[["Campo","Conteúdo"],...rows].map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(";")).join("\r\n");
     downloadBlob(csv,"text/csv;charset=utf-8","plano-de-negocio.csv");setExportStatus("Arquivo CSV gerado e compatível com Excel.");
   });
-  // O compartilhamento persistente é controlado por js/server-sync.js para evitar dois
-  // handlers concorrentes no mesmo botão. O leitor de links locais antigos permanece compatível.
+  // Mantém compatibilidade com links de compartilhamento locais já existentes.
   document.getElementById("copyShareLink")?.addEventListener("click",async()=>{
     const output=document.getElementById("shareLinkOutput");if(!output?.value)return;
     try{await navigator.clipboard.writeText(output.value);setExportStatus("Link copiado para a área de transferência.");}catch{output.select();document.execCommand("copy");setExportStatus("Link copiado.");}
