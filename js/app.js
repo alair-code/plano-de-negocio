@@ -275,13 +275,10 @@ function openAuthModal(mode = "signin") {
 }
 
 function setApplicationAccess(user) {
-  const locked = !user;
-  document.body.classList.toggle("auth-required", locked);
-  if (authModal) authModal.hidden = !locked && authModal.hidden;
-  if (locked) {
-    openAuthModal("signin");
-    if (authFeedback) authFeedback.textContent = "Faça login ou crie uma conta para acessar o sistema.";
-  }
+  // O acesso à interface é livre. A autenticação fica opcional para quem
+  // quiser sincronizar os planos com o banco de dados em outros dispositivos.
+  document.body.classList.remove("auth-required");
+  if (user && authModal) authModal.hidden = true;
 }
 
 function closeAuthModal() {
