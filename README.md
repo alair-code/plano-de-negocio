@@ -8,7 +8,7 @@
 
 O **Business Plan Builder** é uma aplicação web que orienta empreendedores, estudantes e consultores na elaboração de um plano de negócios, passando pela identificação da oportunidade, análise de ambientes, estruturação do plano, viabilidade financeira, planos complementares, exportação e revisão de gestão.
 
-O projeto começou com uma arquitetura web simples e leve e atualmente combina persistência local para recuperação de rascunhos com autenticação e persistência centralizada no Neon. Colaboração avançada e recursos adicionais continuam em evolução.
+O projeto começou com uma arquitetura web simples e leve e atualmente combina persistência local para recuperação de rascunhos com e persistência centralizada no Neon. Colaboração avançada e recursos adicionais continuam em evolução.
 
 ### 🎯 Problema
 
@@ -22,7 +22,7 @@ Empreendedores, especialmente iniciantes, podem ter dificuldade para:
 
 ### 💡 Solução
 
-Uma ferramenta **guiada**, com formulários estruturados, cálculos automáticos, indicadores, validações, recuperação local de rascunhos, autenticação e persistência centralizada no banco de dados.
+Uma ferramenta **guiada**, com formulários estruturados, cálculos automáticos, indicadores, validações, recuperação local de rascunhos, persistência local no navegador.
 
 ### 👥 Público-Alvo
 
@@ -35,7 +35,7 @@ Uma ferramenta **guiada**, com formulários estruturados, cálculos automáticos
 
 ## 🟢 Estado Atual do Projeto
 
-O projeto possui os Módulos 1 a 7 implementados no frontend, autenticação integrada e persistência centralizada dos dados dos módulos por meio do Neon Data API e da camada de sincronização.
+O projeto possui os Módulos 1 a 7 implementados no frontend, integrada e persistência centralizada dos dados dos módulos por meio do Neon Data API e da camada de sincronização.
 
 ### Implementado
 
@@ -50,12 +50,12 @@ O projeto possui os Módulos 1 a 7 implementados no frontend, autenticação int
 - Neon Data API integrada ao frontend
 - Persistência centralizada dos Módulos 1 a 7 através da camada de sincronização
 - Gerenciamento de múltiplos planos com seleção, criação e arquivamento
-- Preservação do rascunho local durante a autenticação e sincronização
+- Preservação do rascunho local durante a e sincronização
 - RLS habilitado nas tabelas funcionais integradas, com autorização por usuário/espaço/plano
 - Exportação para PDF via impressão do navegador
 - Exportação compatível com Word em `.doc`
 - Exportação tabular em CSV compatível com Excel
-- Compartilhamento por link persistente no banco, com autenticação, expiração/revogação verificadas e restauração do plano compartilhado
+- Compartilhamento por link persistente no banco, com expiração/revogação verificadas e restauração do plano compartilhado
 - Versionamento local e persistente de planos (até 10 versões locais; versões também registradas em `versoes_plano`)
 - Painel de gestão do Módulo 7
 - Deploy na Vercel configurado e utilizado para hospedagem
@@ -166,7 +166,7 @@ Atualmente permite:
 - **PDF:** através da impressão do navegador e opção “Salvar como PDF”
 - **Word:** arquivo HTML compatível com Word, salvo como `.doc`
 - **Excel:** CSV compatível com Excel, não um arquivo `.xlsx` nativo
-- **Compartilhamento:** link persistente registrado no banco, protegido por autenticação e validado por token, expiração e revogação
+- **Compartilhamento:** link persistente registrado no banco, protegido por e validado por token, expiração e revogação
 - **Versionamento:** até 10 versões armazenadas localmente no navegador, com versões persistidas também em `versoes_plano`
 - Preview consolidado
 
@@ -247,7 +247,7 @@ A persistência centralizada já cobre os dados dos Módulos 1 a 7 por meio de `
 
 ## 🔐 Segurança e Controle de Acesso
 
-A autenticação utiliza **Neon Auth**.
+A utiliza **Neon Auth**.
 
 O banco utiliza **Row-Level Security (RLS)** para controlar o acesso aos dados atualmente integrados.
 
@@ -295,7 +295,7 @@ Uma camada de backend poderá ser introduzida quando houver necessidade real de 
 | Estilos | CSS3 |
 | Lógica | JavaScript Vanilla |
 | Persistência local | LocalStorage |
-| Autenticação | Neon Auth |
+| | Neon Auth |
 | Banco | PostgreSQL / Neon |
 | API de dados | Neon Data API |
 | Hospedagem | Vercel |
@@ -319,7 +319,7 @@ O fluxo funcional atual é:
 8. Exportação/compartilhamento
 9. Revisão e gestão
 
-Atualmente, a autenticação e a persistência centralizada estão integradas aos **Módulos 1 a 7** por meio da camada `js/server-sync.js`. O LocalStorage permanece como camada de recuperação local/offline.
+Atualmente, a e a persistência centralizada estão integradas aos **Módulos 1 a 7** por meio da camada `js/server-sync.js`. O LocalStorage permanece como camada de recuperação local/offline.
 
 ---
 
@@ -371,7 +371,7 @@ A validação completa de responsividade e acessibilidade ainda faz parte do pla
 | Financeiro | 🟢 Implementado |
 | SWOT | 🟢 Implementado |
 | Exportação | 🟢 Implementado |
-| Autenticação | 🟢 Integrada ao Neon Auth |
+| | 🟢 Integrada ao Neon Auth |
 | Gestão multiusuário | 🔵 Planejada |
 
 ---
@@ -395,7 +395,7 @@ python3 -m http.server 8080
 
 Depois, acesse `http://localhost:8080`.
 
-> Configurações de autenticação e Data API usadas pelo frontend não devem conter credenciais administrativas.
+> Configurações de e Data API usadas pelo frontend não devem conter credenciais administrativas.
 
 ---
 
@@ -427,11 +427,11 @@ As branches `main` e `manutencao` fazem parte do fluxo de trabalho. `manutencao`
 |---|---|---|
 | Frontend base | 🟢 Concluída | Estrutura da aplicação |
 | Módulos 1–7 | 🟢 Implementados | Formulários, análises, cálculos, exportação e gestão |
-| Neon Auth | 🟢 Integrado | Autenticação do produto |
+| Neon Auth | 🟢 Integrado | do produto |
 | Persistência M1–M7 | 🟢 Integrada | Neon Data API + camada de sincronização |
 | Segurança do schema | 🟢 Aplicada | RLS nas 21 tabelas funcionais |
 | Múltiplos planos | 🟢 Integrados | Seleção, criação e arquivamento |
-| Compartilhamento persistente | 🟢 Integrado | Link persistido no banco com autenticação |
+| Compartilhamento persistente | 🟢 Integrado | Link persistido no banco com |
 | Colaboração multiusuário | 🔵 Planejada | Espaços, membros e permissões |
 | IA | 🔵 Planejada | Assistência inteligente integrada |
 | Mobile/PWA | 🔵 Planejada | Evolução para dispositivos móveis |
@@ -441,7 +441,7 @@ As branches `main` e `manutencao` fazem parte do fluxo de trabalho. `manutencao`
 ## ⚠️ Limitações Conhecidas
 
 - O frontend continua sendo uma aplicação client-side; não há backend tradicional próprio.
-- Compartilhamento persistente está implementado com autenticação, token, expiração/revogação e restauração do plano; compartilhamento público sem login permanece desabilitado por segurança.
+- Compartilhamento persistente está implementado com token, expiração/revogação e restauração do plano; compartilhamento público sem login permanece desabilitado por segurança.
 - Permissões de colaboração existem no schema, mas a interface de convite e gestão de membros ainda está em evolução.
 - IA ainda não está integrada como serviço do produto.
 - Cálculos financeiros estão implementados e persistidos, mas ainda precisam de uma suíte específica de testes e revisão para uso profissional.
