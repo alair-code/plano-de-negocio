@@ -341,46 +341,6 @@ button { font: inherit; }
 .export-guidance{display:flex;gap:12px;align-items:flex-start;padding:15px 17px;margin-bottom:18px;border:1px solid #e4e7ec;border-radius:14px;background:#f8fafc}.export-guidance .info-symbol{flex:0 0 auto}.export-guidance strong{display:block;margin-bottom:3px}.export-guidance p{margin:0;color:#687180;line-height:1.5;font-size:.9rem}.export-card{display:flex;flex-direction:column}.export-card .export-note{margin-top:auto;padding-top:14px}.export-actions .button,.share-row .button{min-height:42px}.share-link-output{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;line-height:1.45}.share-link-output.share-link-long{border-color:#d4a72c}.plan-version{transition:transform .15s ease,box-shadow .15s ease}.plan-version:hover{transform:translateY(-1px);box-shadow:0 5px 18px rgba(20,30,50,.07)}.plan-version .text-button{padding:5px 7px}.export-status{min-height:22px}.export-document-preview{background:#fff}.export-document-preview table{margin-top:18px}
 
 
-/* Integração Neon Auth + Neon Data API */
-.auth-button{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:10px;padding:8px 12px;font:inherit;font-size:11px;font-weight:800;cursor:pointer}
-.auth-button:hover{border-color:#aaaaff;color:var(--primary)}
-.auth-modal{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:20px;background:rgba(15,23,42,.38);backdrop-filter:blur(5px)}
-.auth-modal[hidden]{display:none}
-.auth-card{position:relative;width:min(440px,100%);padding:28px;border:1px solid var(--line);border-radius:22px;background:#fff;box-shadow:0 24px 70px rgba(15,23,42,.2)}
-.auth-mode-switch{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;margin:0 0 18px;border:1px solid var(--line);border-radius:12px;background:#f7f8fa}
-.auth-mode-button{border:0;border-radius:9px;padding:9px 12px;background:transparent;color:var(--muted);font:inherit;font-size:11px;font-weight:800;cursor:pointer}
-.auth-mode-button.active{background:#fff;color:var(--primary);box-shadow:0 2px 8px rgba(15,23,42,.08)}
-.auth-card h2{margin:4px 0 8px;font-size:24px}
-.auth-card>p:not(.eyebrow){margin:0 0 20px;color:var(--muted);line-height:1.5;font-size:12px}
-.auth-close{position:absolute;right:16px;top:14px;width:34px;height:34px;border:0;border-radius:9px;background:#f4f5f8;color:#667085;font-size:22px;cursor:pointer}
-.auth-form,.auth-card form{display:grid;gap:13px}
-.auth-feedback{min-height:18px;margin:0;color:#b54747;font-size:11px;line-height:1.4}
-.auth-divider{display:flex;align-items:center;gap:10px;margin:16px 0;color:#98a2b3;font-size:10px}
-.auth-divider:before,.auth-divider:after{content:"";height:1px;flex:1;background:var(--line)}
-.auth-google,.auth-switch,.auth-logout{width:100%;margin-top:8px}
-.auth-switch,.auth-logout{border:0;background:transparent;color:var(--primary);font:inherit;font-size:11px;font-weight:800;cursor:pointer}
-.auth-logout{color:#b54747}
-.auth-logged-in .auth-card h2{font-size:20px}
-@media(max-width:560px){.topbar-actions{gap:6px}.auth-button{padding:7px 9px}.auth-card{padding:22px}.auth-card h2{font-size:20px}}
-
-body.auth-required .sidebar,body.auth-required .topbar,body.auth-required .content{visibility:hidden;pointer-events:none}
-body.auth-required .auth-modal{visibility:visible;pointer-events:auto}
-
-.profile-modal{position:fixed;inset:0;z-index:1001;display:grid;place-items:center;padding:20px;background:rgba(15,23,42,.38);backdrop-filter:blur(5px)}
-.profile-modal[hidden]{display:none}
-.profile-card{position:relative;width:min(460px,100%);padding:28px;border:1px solid var(--line);border-radius:22px;background:#fff;box-shadow:0 24px 70px rgba(15,23,42,.2)}
-.profile-heading{display:flex;align-items:center;gap:14px;margin:8px 0 24px}
-.profile-avatar{width:54px;height:54px;flex:0 0 54px;border-radius:50%;background:#e4e4ff;color:#5556c9;display:grid;place-items:center;font-size:18px;font-weight:800}
-.profile-heading h2{margin:0 0 4px;font-size:22px}
-.profile-heading p{margin:0;color:var(--muted);font-size:11px;word-break:break-word}
-.profile-form{display:grid;gap:13px}
-.profile-section{margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
-.profile-section-title{margin:0 0 6px;font-size:10px;font-weight:800;letter-spacing:.08em;color:var(--muted)}
-.profile-muted{margin:0;color:var(--muted);font-size:11px;line-height:1.5}
-.profile-logout{margin-top:18px;padding:11px;border:1px solid #f0caca;border-radius:10px;background:#fff5f5}
-#profileEmail{background:#f7f8fa;color:var(--muted)}
-@media(max-width:560px){.profile-card{padding:22px}}
-
 .tutorial-button{border:1px solid var(--line);background:#fff;color:var(--primary);width:34px;height:34px;border-radius:10px;font:inherit;font-size:14px;font-weight:900;cursor:pointer}
 .tutorial-button:hover{border-color:#aaaaff;background:#f7f7ff}
 .tutorial-modal{position:fixed;inset:0;z-index:1100;display:grid;place-items:center;padding:20px;background:rgba(15,23,42,.42);backdrop-filter:blur(6px)}
@@ -411,7 +371,7 @@ body{background:radial-gradient(circle at 80% -10%,rgba(124,108,242,.08),transpa
 .topbar{background:rgba(245,247,251,.78);box-shadow:0 1px 0 rgba(20,28,55,.02)}
 .avatar{cursor:pointer;transition:transform .2s ease,box-shadow .2s ease;border:2px solid rgba(255,255,255,.9);box-shadow:0 3px 12px rgba(20,28,55,.08)}
 .avatar:hover{transform:translateY(-1px) scale(1.04);box-shadow:0 7px 18px rgba(91,92,226,.18)}
-.icon-button,.tutorial-button,.auth-button{transition:transform .18s ease,background .18s ease,border-color .18s ease}
+.icon-button,.tutorial-button{transition:transform .18s ease,background .18s ease,border-color .18s ease}
 .icon-button:hover{transform:translateY(-1px)}
 .hero{box-shadow:0 24px 60px rgba(20,28,55,.14);border:1px solid rgba(255,255,255,.05)}
 .hero:before{content:"";position:absolute;width:380px;height:380px;right:-120px;top:-180px;border-radius:50%;background:radial-gradient(circle,rgba(157,154,255,.22),transparent 68%);pointer-events:none}
@@ -437,15 +397,14 @@ body{background:radial-gradient(circle at 80% -10%,rgba(124,108,242,.08),transpa
 .form-card:hover{box-shadow:0 12px 34px rgba(20,28,55,.075)}
 .field input,.field textarea,.porter-row select,.swot-card textarea,.strategy-card textarea{box-shadow:0 1px 2px rgba(20,28,55,.02);transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease}
 .field input:focus,.field textarea:focus,.porter-row select:focus,.swot-card textarea:focus,.strategy-card textarea:focus{transform:translateY(-1px)}
-.tutorial-modal,.profile-modal,.auth-modal{animation:modalIn .18s ease}
+.tutorial-modal{animation:modalIn .18s ease}
 @keyframes modalIn{from{opacity:0}to{opacity:1}}
-.tutorial-card,.profile-card,.auth-card{animation:cardIn .22s ease}
+.tutorial-card{animation:cardIn .22s ease}
 @keyframes cardIn{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}
 .toast{border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(12px)}
 @media(max-width:1050px){.content{padding-left:28px;padding-right:28px}.hero{padding:38px 34px}}
 @media(max-width:760px){
   .topbar-actions{gap:7px}.topbar-actions .icon-button{display:none}.topbar-actions .tutorial-button{display:grid;place-items:center}
-  .auth-button{max-width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .hero{min-height:auto;padding:30px 22px}.hero-visual{margin-top:4px}.orbit-one{width:260px}.orbit-two{height:250px}
   .section-heading{margin-left:0;margin-right:0}.module-card{min-height:190px}
   .module-section{background:transparent}
@@ -454,7 +413,7 @@ body{background:radial-gradient(circle at 80% -10%,rgba(124,108,242,.08),transpa
 @media(max-width:480px){
   .topbar{padding:0 12px}.content{padding:14px 11px 34px}.hero{padding:25px 18px;border-radius:18px}
   .hero h1{font-size:30px}.visual-card{width:min(220px,90vw)}
-  .module-card{padding:19px}.form-card{border-radius:15px}.tutorial-card,.profile-card,.auth-card{border-radius:18px}
+  .module-card{padding:19px}.form-card{border-radius:15px}.tutorial-card{border-radius:18px}
 }
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}.orbit,.module-card,.visual-card,.button:after{animation:none!important;transition:none!important}
